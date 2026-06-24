@@ -1,0 +1,291 @@
+/* ============================================================
+   Dermatology & Cosmetology — Bootstrap + custom CSS version
+   Recreates the original design 1:1 (colors, spacing, radii,
+   shadows). Bootstrap supplies the grid/flex/utility scaffolding;
+   this file supplies the exact visual values the original used.
+   ============================================================ */
+
+:root {
+  --teal-50: #f0fdfa;
+  --teal-100: #eaf4ff;
+  --teal-400: #3B82F6;
+  --teal-500: #6366F1;
+  --teal-600: #2563EB;
+  --teal-700: #0f2239;
+  --teal-800: #0f2239;
+
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-500: #64748b;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+}
+
+/* ---------- Page shell ---------- */
+.DermatologyandCosmetology-container {
+  min-height: 100vh;
+  background-color: var(--slate-50);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  color: var(--slate-800);
+}
+
+.DermatologyandCosmetology-main {
+  max-width: 1280px;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+/* ---------- Header ---------- */
+.DermatologyandCosmetology-header {
+  background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);;
+  padding: 5rem 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+
+.DermatologyandCosmetology-tagline {
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--teal-50);
+}
+@media (min-width: 768px) {
+  .DermatologyandCosmetology-tagline {
+    font-size: 1.5rem;
+  }
+}
+
+.DermatologyandCosmetology-intro {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--teal-50);
+}
+
+/* ---------- Doctors section ---------- */
+.DermatologyandCosmetology-doctors-section {
+  margin-bottom: 4rem;
+  margin-top: -3rem;
+  position: relative;
+  z-index: 10;
+}
+
+.DermatologyandCosmetology-badge-wrap {
+  margin-bottom: 2rem;
+}
+
+.DermatologyandCosmetology-badge {
+  background-color: #fff;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  color: var(--teal-800);
+  font-weight: 700;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+}
+
+.DermatologyandCosmetology-doctors-row {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.DermatologyandCosmetology-doctor-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid var(--teal-500);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: box-shadow 0.2s ease;
+}
+.DermatologyandCosmetology-doctor-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.DermatologyandCosmetology-doctor-icon {
+  background-color: var(--teal-100);
+  color: var(--teal-700);
+  padding: 1rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.DermatologyandCosmetology-doctor-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.DermatologyandCosmetology-doctor-role {
+  color: var(--teal-600);
+  font-size: 0.875rem;
+}
+
+.DermatologyandCosmetology-location-wrap {
+  margin-top: 2rem;
+}
+
+.DermatologyandCosmetology-location-badge {
+  background-color: var(--slate-800);
+  color: #fff;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.DermatologyandCosmetology-location-badge svg {
+  color: var(--teal-400);
+}
+
+/* ---------- Services grid (3 columns) ---------- */
+.DermatologyandCosmetology-services-row {
+  --bs-gutter-x: 2rem;
+  --bs-gutter-y: 2rem;
+}
+
+.DermatologyandCosmetology-service-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.DermatologyandCosmetology-section-header {
+  border-bottom: 2px solid var(--teal-100);
+  padding-bottom: 0.75rem;
+}
+
+.DermatologyandCosmetology-section-icon {
+  background-color: var(--teal-600);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.DermatologyandCosmetology-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.DermatologyandCosmetology-service-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--slate-100);
+}
+
+.DermatologyandCosmetology-service-card h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--teal-700);
+  margin-bottom: 0.75rem;
+}
+
+.DermatologyandCosmetology-service-card h3.is-divided {
+  padding-top: 1rem;
+  margin-top: 0;
+  border-top: 1px solid var(--slate-100);
+}
+
+.DermatologyandCosmetology-service-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.DermatologyandCosmetology-service-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.DermatologyandCosmetology-service-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: var(--slate-700);
+  margin-bottom: 0.5rem;
+}
+
+.DermatologyandCosmetology-service-list li::before {
+  content: "•";
+  color: var(--teal-500);
+  margin-top: 0.1rem;
+}
+
+.DermatologyandCosmetology-service-list.no-margin {
+  margin-bottom: 0;
+}
+
+.DermatologyandCosmetology-paragraph {
+  color: var(--slate-700);
+  line-height: 1.75;
+}
+
+.DermatologyandCosmetology-paragraph.has-margin {
+  margin-bottom: 1.5rem;
+}
+
+.DermatologyandCosmetology-area-tags {
+  margin-bottom: 1.5rem;
+}
+
+.DermatologyandCosmetology-area-tag {
+  background-color: var(--slate-100);
+  color: var(--slate-700);
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--slate-200);
+}
+
+/* ---------- Benefits section ---------- */
+.DermatologyandCosmetology-benefits-section {
+  margin-top: 4rem;
+  background-color: var(--teal-800);
+  color: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+@media (min-width: 768px) {
+  .DermatologyandCosmetology-benefits-section {
+    padding: 2.5rem;
+  }
+}
+
+.DermatologyandCosmetology-benefits-title {
+  margin-bottom: 2rem;
+}
+
+.DermatologyandCosmetology-benefits-title h2 {
+  font-size: 1.875rem;
+}
+
+.DermatologyandCosmetology-benefit-item {
+  background-color: rgba(76, 76, 76, 0.5);
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease;
+}
+.DermatologyandCosmetology-benefit-item:hover {
+  background-color: var(--teal-600);
+}

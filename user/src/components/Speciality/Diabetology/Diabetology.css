@@ -1,0 +1,293 @@
+/* ==========================================================================
+   Diabetology — Comprehensive Diabetes Care Centre
+   Design tokens
+   -------------------------------------------------------------------------- */
+
+
+.diabetology {
+  --diabetology-teal-900: #2563EB;
+  --diabetology-teal-700: #2563EB;
+  --diabetology-teal-100: #eaf4ff;
+  --diabetology-amber-500: #6366F1;
+  --diabetology-amber-100: #fbeed9;
+  --diabetology-ink: #1e2622;
+  --diabetology-ink-soft: #4a554f;
+  --diabetology-paper: #fafaf7;
+  --diabetology-border: #d8e6e2;
+  --diabetology-title-color: #0f2239;
+  background-color: var(--diabetology-paper);
+  color: var(--diabetology-ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.diabetology h1,
+.diabetology h2,
+.diabetology h3 {
+  color: var(--diabetology-title-color);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diabetology * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.diabetology-hero {
+  position: relative;
+  padding: 5.5rem 0 50px;
+  background: linear-gradient(
+    180deg,
+    var(--diabetology-teal-100) 0%,
+    var(--diabetology-paper) 100%
+  );
+}
+
+.diabetology-hero__eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--diabetology-amber-500);
+  margin: 0 0 1rem;
+}
+
+.diabetology-hero__subtitle {
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--diabetology-teal-700);
+  margin-bottom: 1.25rem;
+}
+
+.diabetology-hero__lede {
+  font-size: 1.05rem;
+  color: var(--diabetology-ink-soft);
+  max-width: 38rem;
+  margin-bottom: 0;
+}
+
+
+
+.diabetology-hero__trend {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.diabetology-hero__trend-path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.diabetology-hero__trend-path--ghost {
+  stroke: var(--diabetology-amber-100);
+  stroke-width: 3;
+}
+
+.diabetology-hero__trend-path--live {
+  stroke: var(--diabetology-teal-900);
+  stroke-width: 4;
+  stroke-dasharray: 900;
+  stroke-dashoffset: 900;
+  animation: diabetology-draw-line 2.4s ease-out forwards;
+}
+
+.diabetology-hero__trend-dot {
+  fill: var(--diabetology-amber-500);
+  opacity: 0;
+  animation: diabetology-dot-appear 0.4s ease-out 2.2s forwards;
+}
+
+@keyframes diabetology-draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes diabetology-dot-appear {
+  to {
+    opacity: 1;
+  }
+}
+
+
+
+
+/* --------------------------------------------------------------------------
+   Section shell
+   -------------------------------------------------------------------------- */
+
+.diabetology-section {
+  padding: 4.5rem 0;
+}
+
+.diabetology-section--monitoring {
+  background-color: var(--diabetology-teal-100);
+  border-top: 1px solid var(--diabetology-border);
+}
+
+.diabetology-section__title {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  position: relative;
+  padding-bottom: 0.85rem;
+}
+
+.diabetology-section__title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 3rem;
+  height: 3px;
+  background: var(--diabetology-amber-500);
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Diabetes Services — patient intake cards
+   -------------------------------------------------------------------------- */
+
+.diabetology-service-card {
+  height: 100%;
+  background: #ffffff;
+  border: 1px solid var(--diabetology-border);
+  border-radius: 12px;
+  padding: 1.75rem 1.5rem;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.diabetology-service-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.diabetology-service-card:hover {
+  border-color: var(--diabetology-teal-700);
+  box-shadow: 0 16px 32px -22px rgba(15, 92, 92, 0.4);
+}
+
+.diabetology-service-card__mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  background: var(--diabetology-teal-100);
+  border: 1px solid var(--diabetology-border);
+  margin-bottom: 1.1rem;
+  position: relative;
+}
+
+.diabetology-service-card__mark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0.65rem;
+  height: 0.65rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--diabetology-amber-500);
+  border-radius: 50%;
+}
+
+.diabetology-service-card__title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.diabetology-service-card__description {
+  font-size: 0.95rem;
+  color: var(--diabetology-ink-soft);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Monitoring & Prevention — clinical checklist
+   -------------------------------------------------------------------------- */
+
+.diabetology-checklist {
+  margin: 0;
+}
+
+.diabetology-checklist__item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: #ffffff;
+  border: 1px solid var(--diabetology-border);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.diabetology-checklist__item--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.diabetology-checklist__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--diabetology-teal-900);
+  color: #ffffff;
+}
+
+.diabetology-checklist__label {
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--diabetology-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Focus visibility
+   -------------------------------------------------------------------------- */
+
+.diabetology a:focus-visible,
+.diabetology button:focus-visible {
+  outline: 2px solid var(--diabetology-teal-700);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive adjustments
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 991.98px) {
+  .diabetology-hero {
+    padding: 3.5rem 0 3rem;
+    text-align: left;
+  }
+
+}
+
+@media (max-width: 575.98px) {
+  .diabetology-section {
+    padding: 3rem 0;
+  }
+
+  .diabetology-service-card,
+  .diabetology-checklist__item {
+    padding: 1.4rem 1.1rem;
+  }
+}

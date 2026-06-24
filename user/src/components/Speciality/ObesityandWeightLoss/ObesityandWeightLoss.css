@@ -1,0 +1,550 @@
+/* =====================================================
+   ObesityandWeightLoss.css
+   Prefix: owlm-
+   Brand: #D44E54 | Fraunces / Plus Jakarta Sans
+   ===================================================== */
+
+/* ── Tokens ── */
+:root {
+    --owlm-brand: #2563EB;
+    --owlm-brand-light: #eaf4ff;
+    --owlm-brand-mid: #2563EB;
+    --owlm-brand-dark: #b03a3f;
+    --owlm-ice: #eaf4fb;
+    --owlm-ice-deep: #c8e6f5;
+    --owlm-cryo: #2a6fa8;
+    --owlm-cryo-dark: #1b4e7a;
+    --owlm-text: #1a1a2e;
+    --owlm-muted: #6b7280;
+    --owlm-surface: #ffffff;
+    --owlm-bg: #fafafa;
+    --owlm-border: #e5e7eb;
+    --owlm-radius: 16px;
+    --owlm-radius-sm: 10px;
+    --owlm-shadow: 0 4px 24px rgba(212, 78, 84, 0.08);
+    --owlm-shadow-hover: 0 12px 40px rgba(37, 99, 235, 0.16);
+    --owlm-transition: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Base ── */
+.owlm-section {
+    background: var(--owlm-bg);
+    color: var(--owlm-text);
+    overflow: hidden;
+}
+
+/* ── Scroll Reveal ── */
+.owlm-reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.owlm-reveal.owlm-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.owlm-reveal-delay {
+    transition-delay: 0.12s;
+}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.owlm-hero {
+    position: relative;
+    background:  linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+    padding: 100px 0 50px;
+    overflow: hidden;
+}
+
+.owlm-hero-bg-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 78, 84, 0.18);
+    pointer-events: none;
+}
+
+.owlm-ring-1 {
+    width: 560px;
+    height: 560px;
+    top: -160px;
+    right: -120px;
+}
+
+.owlm-ring-2 {
+    width: 340px;
+    height: 340px;
+    bottom: -120px;
+    left: -80px;
+    border-color: rgba(212, 78, 84, 0.1);
+}
+
+.owlm-hero-inner {
+    margin: 0 auto;
+}
+
+.owlm-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 99px;
+    padding: 6px 20px;
+    margin-bottom: 28px;
+}
+
+.owlm-hero-title {
+    color: #ffffff;
+    margin-bottom: 24px;
+}
+
+.owlm-hero-title em {
+    font-weight: 400;
+    color: var(--owlm-brand-mid);
+}
+
+.owlm-hero-desc {
+    font-size:18px;
+    font-weight: 300;
+    color: rgba(255, 255, 255);
+    margin-bottom: 36px;
+}
+
+
+
+
+/* ══════════════════════════════════════
+   SECTION HEADING
+══════════════════════════════════════ */
+.owlm-section-head {
+    padding: 72px 0 40px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.owlm-section-head.owlm-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.owlm-section-title {
+    color: var(--owlm-text);
+    margin-bottom: 14px;
+}
+
+/* ── Block Label ── */
+.owlm-block-label {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--owlm-brand);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.owlm-block-label::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: var(--owlm-brand);
+    border-radius: 2px;
+}
+
+/* ══════════════════════════════════════
+   ASSESSMENT CARDS
+══════════════════════════════════════ */
+.owlm-assess-row {
+    margin-bottom: 64px;
+}
+
+.owlm-assess-card {
+    background: var(--owlm-surface);
+    border: 1px solid var(--owlm-border);
+    border-radius: var(--owlm-radius);
+    padding: 32px 20px 24px;
+    text-align: center;
+    transition: transform var(--owlm-transition), box-shadow var(--owlm-transition), border-color var(--owlm-transition);
+    height: 100%;
+}
+
+.owlm-assess-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--owlm-shadow-hover);
+    border-color: var(--owlm-brand-mid);
+}
+
+.owlm-assess-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 18px;
+    color: var(--owlm-brand);
+}
+
+.owlm-assess-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.owlm-assess-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--owlm-text);
+    line-height: 1.4;
+}
+
+/* ══════════════════════════════════════
+   MEDICAL PROGRAMS
+══════════════════════════════════════ */
+.owlm-medical-row {
+    background: var(--owlm-surface);
+    border: 1px solid var(--owlm-border);
+    border-radius: var(--owlm-radius);
+    overflow: hidden;
+    margin-bottom: 64px;
+    box-shadow: var(--owlm-shadow);
+}
+
+.owlm-medical-left {
+    background:  linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+    padding: 44px 36px;
+    display: flex;
+    align-items: center;
+}
+
+.owlm-block-label--light {
+    color: var(--owlm-brand-mid);
+}
+
+.owlm-block-label--light::before {
+    background: var(--owlm-brand-mid);
+}
+
+.owlm-medical-sub {
+    font-size: 0.92rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.owlm-medical-right {
+    padding: 12px 0;
+}
+
+.owlm-medical-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.owlm-medical-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--owlm-border);
+    transition: background var(--owlm-transition), padding-left var(--owlm-transition);
+    cursor: default;
+}
+
+.owlm-medical-item:last-child {
+    border-bottom: none;
+}
+
+.owlm-medical-item:hover {
+    background: var(--owlm-brand-light);
+    padding-left: 40px;
+}
+
+.owlm-medical-num {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--owlm-brand);
+    min-width: 32px;
+    opacity: 0.7;
+}
+
+.owlm-medical-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--owlm-text);
+    flex: 1;
+}
+
+.owlm-medical-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--owlm-brand);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity var(--owlm-transition), transform var(--owlm-transition);
+}
+
+.owlm-medical-item:hover .owlm-medical-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ══════════════════════════════════════
+   WOMEN'S PROGRAMS
+══════════════════════════════════════ */
+.owlm-women-grid {
+    margin-bottom: 72px;
+}
+
+.owlm-women-intro {
+    max-width: 600px;
+    margin-bottom: 28px;
+}
+
+.owlm-women-intro p {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--owlm-muted);
+    line-height: 1.75;
+    margin: 0;
+}
+
+.owlm-women-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--owlm-surface);
+    border: 1px solid var(--owlm-border);
+    border-radius: var(--owlm-radius-sm);
+    padding: 20px 22px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--owlm-text);
+    height: 100%;
+    transition: transform var(--owlm-transition), box-shadow var(--owlm-transition), border-color var(--owlm-transition);
+}
+
+.owlm-women-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--owlm-shadow-hover);
+    border-color: var(--owlm-brand-mid);
+}
+
+.owlm-women-dot {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+    border-radius: 50%;
+    background: var(--owlm-brand);
+}
+
+/* ══════════════════════════════════════
+   CRYOLIPOLYSIS SECTION
+══════════════════════════════════════ */
+.owlm-cryo-section {
+    position: relative;
+    background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+    overflow: hidden;
+    margin: 0 30px;
+    border-radius: 15px;
+    margin-bottom: 50px;
+}
+
+.owlm-cryo-bg-accent {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42, 111, 168, 0.25) 0%, transparent 70%);
+    top: -200px;
+    right: -200px;
+    pointer-events: none;
+}
+
+.owlm-cryo-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--owlm-ice-deep);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.owlm-cryo-eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: var(--owlm-ice-deep);
+    border-radius: 2px;
+}
+
+.owlm-cryo-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.owlm-cryo-title span {
+    font-size: 0.6em;
+    font-weight: 300;
+    color: var(--owlm-ice-deep);
+    font-style: italic;
+}
+
+.owlm-cryo-desc {
+    font-size: 18px;
+    color: rgba(255, 255, 255);
+    max-width: 640px;
+    margin-bottom: 30px;
+}
+
+/* Cryo Cards */
+.owlm-cryo-cards-row {
+    /* spacing from bootstrap g-4 */
+}
+
+.owlm-cryo-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(200, 230, 245, 0.18);
+    border-radius: var(--owlm-radius);
+    padding: 36px 32px;
+    height: 100%;
+    backdrop-filter: blur(6px);
+    transition: transform var(--owlm-transition), border-color var(--owlm-transition);
+}
+
+.owlm-cryo-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(200, 230, 245, 0.4);
+}
+
+.owlm-cryo-card--benefits {
+    background: rgba(42, 111, 168, 0.12);
+    border-color: rgba(200, 230, 245, 0.22);
+}
+
+.owlm-cryo-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--owlm-ice-deep);
+    margin-bottom: 28px;
+}
+
+.owlm-cryo-card-head svg {
+    width: 22px;
+    height: 22px;
+    color: var(--owlm-ice-deep);
+}
+
+/* Treatment area chips */
+.owlm-cryo-areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.owlm-cryo-area-chip {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(200, 230, 245, 0.2);
+    border-radius: 99px;
+    padding: 8px 18px;
+    transition: background var(--owlm-transition), border-color var(--owlm-transition);
+}
+
+.owlm-cryo-area-chip:hover {
+    background: rgba(42, 111, 168, 0.35);
+    border-color: var(--owlm-ice-deep);
+}
+
+/* Benefits list */
+.owlm-benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.owlm-benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.owlm-check {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    color: var(--owlm-ice-deep);
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 991.98px) {
+    .owlm-medical-left {
+        border-radius: 0;
+        padding: 32px 28px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .owlm-hero {
+        padding: 72px 0 50px;
+    }
+
+
+    .owlm-section-head {
+        padding: 52px 0 32px;
+    }
+
+    .owlm-medical-row {
+        margin-bottom: 48px;
+    }
+
+    .owlm-medical-item {
+        padding: 16px 20px;
+    }
+
+    .owlm-cryo-card {
+        padding: 28px 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .owlm-reveal,
+    .owlm-section-head,
+    .owlm-assess-card,
+    .owlm-women-card,
+    .owlm-cryo-card,
+    .owlm-medical-item {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

@@ -1,0 +1,458 @@
+/* =============================================
+   PelvicFloor.css — Sri Sai Subhramaniya Hospital
+   Brand: #D44E54 | Fraunces + Plus Jakarta Sans
+   ============================================= */
+
+/* ── Tokens ── */
+:root {
+    --pf-brand: #2563EB;
+    --pf-brand-dark: #b83d43;
+    --pf-brand-soft: rgba(212, 78, 84, 0.08);
+    --pf-bg: #fdfaf9;
+    --pf-surface: #fff;
+    --pf-ink: #1c1618;
+    --pf-muted: #6b5c5e;
+    --pf-border: rgba(212, 78, 84, 0.14);
+    --pf-radius: 18px;
+    --pf-shadow: 0 6px 32px rgba(212, 78, 84, 0.10);
+}
+
+/* ── Base ── */
+.pf-page {
+    color: var(--pf-ink);
+    background: var(--pf-bg);
+    overflow-x: hidden;
+}
+
+/* ── Scroll-reveal ── */
+.pf-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s ease calc(var(--delay, 0s)),
+        transform 0.55s ease calc(var(--delay, 0s));
+}
+
+.pf-revealed,
+.pf-hero__eyebrow,
+.pf-hero__title,
+.pf-hero__tagline,
+.pf-hero__desc {
+    opacity: 1;
+    transform: none;
+}
+
+/* hero elements animate on mount */
+.pf-hero__eyebrow {
+    animation: pfFadeUp 0.6s 0.1s both;
+}
+
+.pf-hero__title {
+    animation: pfFadeUp 0.6s 0.22s both;
+}
+
+.pf-hero__tagline {
+    animation: pfFadeUp 0.6s 0.34s both;
+}
+
+.pf-hero__desc {
+    animation: pfFadeUp 0.6s 0.44s both;
+}
+
+
+@keyframes pfFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .pf-reveal,
+    .pf-hero__eyebrow,
+    .pf-hero__title,
+    .pf-hero__tagline,
+    .pf-hero__desc{
+        animation: none;
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.pf-hero {
+    position: relative;
+    background: linear-gradient(140deg, #fff5f5 0%, #fff 55%, #fdf0f0 100%);
+    overflow: hidden;
+}
+
+/* decorative circles */
+.pf-hero__bg-circles {
+    pointer-events: none;
+}
+
+.pf-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--pf-brand);
+    opacity: 0.06;
+}
+
+.pf-circle--1 {
+    width: 520px;
+    height: 520px;
+    top: -180px;
+    right: -140px;
+}
+
+.pf-circle--2 {
+    width: 240px;
+    height: 240px;
+    bottom: 60px;
+    left: -80px;
+    opacity: 0.04;
+}
+
+.pf-circle--3 {
+    width: 100px;
+    height: 100px;
+    top: 60px;
+    left: 30%;
+    opacity: 0.08;
+}
+
+.pf-hero__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+}
+
+.pf-hero__title {
+    color: var(--pf-ink);
+    margin-bottom: 16px;
+}
+
+.pf-hero__title--accent {
+    color: var(--pf-brand);
+    font-style: italic;
+    font-weight: 600;
+}
+
+.pf-hero__tagline {
+    font-size: 1.15rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--pf-muted);
+    margin-bottom: 20px;
+}
+
+.pf-hero__desc {
+    color: var(--pf-muted);
+    margin-bottom: 36px;
+}
+
+/* wave divider */
+.pf-hero__wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+}
+
+.pf-hero__wave svg {
+    display: block;
+}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.pf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 100px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    cursor: pointer;
+}
+
+.pf-btn:hover {
+    transform: translateY(-2px);
+}
+
+.pf-btn--primary {
+    background: var(--pf-brand);
+    color: #fff;
+    border-color: var(--pf-brand);
+    box-shadow: 0 4px 18px rgba(212, 78, 84, 0.30);
+}
+
+.pf-btn--primary:hover {
+    background: var(--pf-brand-dark);
+    box-shadow: 0 8px 24px rgba(212, 78, 84, 0.38);
+}
+
+.pf-btn--ghost {
+    background: transparent;
+    color: var(--pf-brand);
+    border-color: var(--pf-brand);
+}
+
+.pf-btn--ghost:hover {
+    background: var(--pf-brand-soft);
+}
+
+.pf-btn--white {
+    background: #fff;
+    color: var(--pf-brand);
+    border-color: #fff;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.pf-btn--white:hover {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+
+/* ═══════════════════════════════════════
+   SECTION HEAD
+═══════════════════════════════════════ */
+.pf-section-head {
+    text-align: center;
+}
+
+
+.pf-section-head__title {
+
+    color: var(--pf-ink);
+    margin-bottom: 0;
+}
+
+.pf-section-head--light .pf-section-head__title {
+    color: #fff;
+}
+
+
+/* ═══════════════════════════════════════
+   CONDITIONS
+═══════════════════════════════════════ */
+.pf-card {
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius);
+    padding: 36px 30px 30px;
+    height: 100%;
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pf-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--pf-radius);
+    background: linear-gradient(135deg, var(--pf-brand-soft) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.28s;
+}
+
+.pf-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--pf-shadow);
+}
+
+.pf-card:hover::before {
+    opacity: 1;
+}
+
+.pf-card__icon {
+    width: 58px;
+    height: 58px;
+    color: var(--pf-brand);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.pf-card__icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.pf-card__title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--pf-ink);
+    margin-bottom: 16px;
+}
+
+.pf-card__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.pf-card__list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--pf-muted);
+    font-weight: 500;
+}
+
+.pf-card__dot {
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pf-brand);
+    opacity: 0.7;
+}
+
+.pf-card__note {
+    font-size: 0.85rem;
+    color: var(--pf-brand);
+    font-weight: 600;
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--pf-border);
+}
+
+/* ═══════════════════════════════════════
+   BENEFITS
+═══════════════════════════════════════ */
+.pf-benefits {
+    position: relative;
+    padding: 60px 0;
+     background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.pf-hero__img {
+    border-radius: 15px;
+}
+
+.pf-benefits::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+     background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+}
+
+.pf-benefits>* {
+    position: relative;
+    z-index: 1;
+}
+
+.pf-benefits__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+}
+
+.pf-benefit-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 100px;
+    padding: 13px 22px;
+    backdrop-filter: blur(6px);
+    transition: background 0.22s, transform 0.22s, box-shadow 0.22s;
+}
+
+.pf-benefit-pill:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.pf-benefit-pill__icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.pf-benefit-pill__label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════
+   CTA BANNER
+═══════════════════════════════════════ */
+.pf-cta-banner {
+    padding: 72px 0;
+    background: var(--pf-bg);
+}
+
+.pf-cta-banner__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius);
+    padding: 40px 48px;
+    box-shadow: var(--pf-shadow);
+    flex-wrap: wrap;
+}
+
+.pf-cta-banner__text h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--pf-ink);
+    margin-bottom: 6px;
+}
+
+.pf-cta-banner__text p {
+    font-size: 0.95rem;
+    color: var(--pf-muted);
+    margin: 0;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 767px) {
+
+    .pf-benefits {
+        padding: 64px 0;
+    }
+
+    .pf-cta-banner {
+        padding: 48px 0;
+    }
+
+    .pf-cta-banner__inner {
+        padding: 28px 22px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .pf-benefit-pill__label {
+        white-space: normal;
+    }
+}

@@ -1,0 +1,334 @@
+/*portfolio section*/
+
+.prt-featured-postbox.style1 .prt-featured-overly {
+    padding: 30px 30px 30px 30px;
+    background-color: var(--base-white);
+    border-radius: var(--base-border-radius-15);
+    margin: -50px 30px 0 30px;
+    z-index: 1;
+    position: relative;
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 25px 0px rgba(43, 52, 59, 0.10), 0 0 0 rgba(43, 52, 59, 0.10) inset;
+}
+
+.prt-featured-postbox.style1 .prt-featured-overly .prt-featured-title a h3,
+.prt-featured-postbox.style1 .prt-featured-category p {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.prt-featured-postbox.style1 .prt-featured-overly .prt-featured-title a:hover h3 {
+    color: var(--base-skin);
+}
+
+.prt-featured-postbox.style1 .prt-featured-category p {
+    padding-bottom: 4px;
+    font-size: 14px;
+    line-height: 24px;
+    color: var(--base-bodyfont-color);
+    margin-bottom: 0px;
+}
+
+.prt-featured-postbox.style1 .prt-featured-readmore-btn {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.prt-featured-postbox.style1 .prt-featured-readmore-btn a {
+    width: 50px;
+    height: 50px;
+    line-height: 58px;
+    display: inline-block;
+    vertical-align: top;
+    background-color: var(--base-skin);
+    color: var(--base-white);
+    border-radius: var(--base-border-radius-30);
+    font-size: 0;
+    text-align: center;
+    transition: all 0.8s ease;
+}
+
+.prt-featured-postbox.style1 .prt-featured-readmore-btn a i {
+    font-size: 30px;
+}
+
+.prt-featured-postbox.style1 .featured-thumbnail a img {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    border-radius: var(--base-border-radius-15);
+    width: 100%;
+}
+
+.prt-featured-postbox.style1 .featured-thumbnail:before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
+    transition: all 0.5s ease;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(0deg, transparent 0%, rgba(255, 255, 255, 0.4) 100%);
+    height: 0;
+}
+
+.prt-featured-postbox.style1:hover .prt-featured-readmore-btn a {
+    transform: rotateY(360deg);
+    transition: all 0.8s ease;
+}
+
+.prt-featured-postbox.style1:hover .featured-thumbnail:before {
+    opacity: 1;
+    height: 100%;
+}
+
+.prt-featured-postbox.style1 .prt-featured-overly .prt-featured-title a h3 {
+    margin-bottom: 0;
+    font-size: 22px;
+    line-height: 32px;
+    color: var(--base-headingfont-color);
+}
+
+.prt-featured-overly .prt-featured-title a:hover h3 {
+    color: var(--base-skin);
+}
+
+.prt-featured-postbox.style1 .featured-thumbnail {
+    overflow: hidden;
+    border-radius: 30px;
+}
+
+.prt-featured-postbox.style1 .featured-thumbnail a img {
+    transition: all .5s ease-in-out;
+}
+
+.prt-featured-postbox.style1:hover .featured-thumbnail a img {
+    -moz-transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    -ms-transform: scale(1.05);
+    transform: scale(1.05);
+    transition: all .5s ease-in-out;
+}
+
+.portfolio-readmore-btn a {
+    width: 50px;
+    height: 50px;
+    line-height: 58px;
+    display: inline-block;
+    vertical-align: top;
+    background: var(--base-skin);
+    color: var(--base-white);
+    border-radius: var(--base-border-radius-30);
+    font-size: 0;
+    text-align: center;
+    transition: all 0.8s ease;
+}
+
+
+/*blog section*/
+.prt-row.portfolio-section2 {
+    padding: 97px 0 0px;
+}
+
+.portfolio-2 {
+    margin-top: 15px;
+    padding: 0px 0px 0px 0px;
+    position: relative;
+    z-index: 999999;
+}
+
+
+.prt-featured-postbox.style2 {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--base-white);
+    border-radius: 15px;
+    padding: 30px 30px 25px;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.10);
+    margin-top: 10px;
+}
+
+.prt-featured-postbox.style2 .prt-featured-thumbnail {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.prt-featured-postbox.style2 .prt-featured-thumbnail img {
+    width: 100%;
+    /* height: 220px; */
+    max-width: none;
+    -webkit-transition: all .5s ease-in-out;
+    -o-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+    background-size: cover;
+    transition: all 1s ease;
+    overflow: hidden;
+    background-position: center;
+    position: relative;
+    transform: scale(1.05) rotate(.5deg);
+    transform-origin: 90% 50%;
+    border-radius: 10px;
+    transition: transform 1.2s cubic-bezier(.4, .01, .14, .99);
+}
+
+.prt-featured-postbox.style2:hover .prt-featured-thumbnail img {
+    transform: scale(1.001) rotate(0);
+}
+
+.prt-featured-postbox.style2 .prt-featured-overly .prt-featured-category p {
+    display: inline-block;
+    vertical-align: top;
+    background: var(--base-grey);
+    border: 1px solid rgba(0, 25, 76, 0.15);
+    border-radius: 30px;
+    padding: 4px 15px;
+    margin-bottom: 13px;
+    font-size: 14px;
+    display: inline;
+    -webkit-line-clamp: 1;
+    /* Show only 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.prt-featured-postbox.style2 .btn-overly a,
+.featured-imagebox-portfolio.style2 .btn-overly a,
+.featured-imagebox-blog.style2 .btn-overly a {
+    font-size: 0;
+    position: absolute;
+    top: 0;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    margin: auto;
+    background-color: var(--base-white);
+    border-radius: 50%;
+    transition: all 0.5s ease;
+    transform: scale(0);
+    overflow: hidden;
+}
+
+.prt-featured-postbox.style2:hover .btn-overly a,
+.featured-imagebox-portfolio.style2:hover .btn-overly a,
+.featured-imagebox-blog.style2:hover .btn-overly a {
+    transition: all 0.5s ease;
+    transform: scale(1.1);
+    color: var(--base-dark);
+}
+
+.prt-featured-postbox.style2 .btn-overly a:before,
+.prt-featured-postbox.style2 .btn-overly a:after,
+.featured-imagebox-portfolio.style2 .btn-overly a:before,
+.featured-imagebox-portfolio.style2 .btn-overly a:after,
+.featured-imagebox-blog.style2 .btn-overly a:before,
+.featured-imagebox-blog.style2 .btn-overly a:after {
+    content: "\f126";
+    font-family: 'flaticon_inqord';
+    font-size: 25px;
+    line-height: 50px;
+    transform: rotate(45deg);
+    display: block;
+    transition: transform 0.3s ease-out;
+}
+
+.prt-featured-postbox.style2 .btn-overly a:hover:before,
+.featured-imagebox-portfolio.style2 .btn-overly a:hover:before,
+.featured-imagebox-blog.style2 .btn-overly a:hover:before {
+    transform: translatex(150%) translatey(-150%) translatez(0);
+    transition: transform 0.3s ease-out;
+}
+
+.prt-featured-postbox.style2 .btn-overly a:after,
+.featured-imagebox-portfolio.style2 .btn-overly a:after,
+.featured-imagebox-blog.style2 .btn-overly a:after {
+    top: 0;
+    transform: translatex(-150%) translatey(150%) translatez(0) rotate(45deg);
+    transition: transform 0.3s ease-out;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.prt-featured-postbox.style2 .btn-overly a:hover:after,
+.featured-imagebox-portfolio.style2 .btn-overly a:hover:after,
+.featured-imagebox-blog.style2 .btn-overly a:hover:after {
+    transform: translatex(0) translatey(0) translatez(0) rotate(45deg);
+    transition: transform 0.3s ease-out;
+    transform: rotate(45deg);
+}
+
+.prt-featured-postbox.style2 .prt-featured-overly {
+    margin-top: 30px;
+}
+
+.prt-featured-postbox.style2 .prt-featured-overly .prt-featured-title h3 {
+    cursor: pointer;
+    margin-bottom: 0px;
+    color:#0F2239;
+    transition: all 0.5s linear;
+    font-size: 23px;
+    line-height: 32px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 15px;
+    text-align: center;
+
+}
+
+
+
+@media all and (max-width: 1024px) {
+	/*style-3*/
+	.portfolio-section2 .section-title-block .section-title h3.title br {
+		display: none;
+	}
+
+}
+
+
+
+@media (max-width: 991px) {
+	.section-title-block .section-title h3.title {
+		font-size: 40px;
+		line-height: 50px;
+	}
+
+	.prt-featured-postbox.style2 {
+		margin-bottom: 15px
+	}
+
+	.portfolio-2 {
+		margin-bottom: 0;
+	}
+
+	.prt-row.portfolio-section2 {
+		padding: 55px 0 45px
+	}
+
+	.prt-featured-postbox.style2 .prt-featured-thumbnail img {
+		height: 100%;
+	}
+
+}
+

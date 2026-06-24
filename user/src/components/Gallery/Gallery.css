@@ -1,0 +1,138 @@
+
+/*! theme */
+/*=================================
+Theme Style
+*/
+
+.project-sec2{
+padding-top: 100px;
+}
+
+.gallery-item .gallery-hover a {
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  border-radius: 30px;
+}
+
+
+.gallery-item .gallery-hover a {
+  height: 46px;
+  width: 46px;
+  text-align: center;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.gallery-item .gallery-hover a i {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.gallery-item .gallery-hover a {
+  width: 60px;
+  height: 60px;
+}
+
+.gallery-item .gallery-hover a {
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  border-radius: 30px;
+}
+
+
+/*! gallery */
+
+.gallery-grid .grid-sizer {
+  width: 33.3333%;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  /* margin-bottom: 20px; */
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  border-radius: 30px;
+}
+.gallery-item figure {
+  margin: 0;
+}
+.gallery-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.gallery-item .gallery-hover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  background: 0 0;
+  content: "";
+  -webkit-transition: -webkit-transform 0.4s ease;
+  transition: -webkit-transform 0.4s ease;
+  transition: transform 0.4s ease;
+  transition: transform 0.4s ease, -webkit-transform 0.4s ease;
+  -webkit-transform: scale(0, 1);
+  -ms-transform: scale(0, 1);
+  transform: scale(0, 1);
+  -webkit-transform-origin: right center;
+  -ms-transform-origin: right center;
+  transform-origin: right center;
+  overflow: hidden;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -ms-border-radius: 30px;
+  border-radius: 30px;
+}
+.gallery-item .gallery-hover::before {
+  position: absolute;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background: var(--color-primary);
+  background-blend-mode: multiply;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  filter: alpha(opacity=90);
+}
+.gallery-item .gallery-hover a {
+  position: absolute;
+  z-index: 3;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  background-color: #2563EB;
+  color: #fff;
+}
+.gallery-item:hover .gallery-hover {
+  -webkit-transform: scale(1, 1);
+  -ms-transform: scale(1, 1);
+  transform: scale(1, 1);
+  -webkit-transform-origin: left center;
+  -ms-transform-origin: left center;
+  transform-origin: left center;
+}
+
+.grid-sizer {
+  visibility: hidden;
+  height: 0;
+}
+

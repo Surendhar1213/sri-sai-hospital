@@ -1,0 +1,617 @@
+
+.image-anime {
+	position: relative;
+	overflow: hidden;
+}
+
+.image-anime:after {
+	content: "";
+	position: absolute;
+	width: 200%;
+	height: 0%;
+	left: 50%;
+	top: 50%;
+	background-color: rgba(255, 255, 255, .3);
+	transform: translate(-50%, -50%) rotate(-45deg);
+	z-index: 1;
+}
+
+.image-anime:hover:after {
+	height: 250%;
+	transition: all 600ms linear;
+	background-color: transparent;
+}
+
+
+
+.btn-default {
+	position: relative;
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1em;
+	text-transform: capitalize;
+	color: #FFFFFF;
+	background: #D44E54;
+	border-radius: 5px;
+	padding: 17px 55px 17px 24px;
+	border: none;
+	overflow: hidden;
+	transition: all 0.4s ease-in-out;
+	z-index: 1;
+}
+
+.btn-default::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	right: 5px;
+	width: 40px;
+	height: 40px;
+	background-color: #276BD4;
+	background-image: url('../../../assets/home/arrow-white.svg');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 14px auto;
+	border-radius: 5px;
+	transform: translateY(-50%);
+	transition: all 0.4s ease-in-out;
+}
+
+.btn-default:hover::before {
+	background-color: #D44E54;
+}
+
+.btn-default::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 0;
+	height: 100%;
+	background: #276BD4;
+	transition: all 0.4s ease-in-out;
+	z-index: -1;
+}
+
+.btn-default:hover::after {
+	right: auto;
+	left: 0;
+	width: 100%;
+}
+
+
+/************************************/
+/*** 	    04. Hero css	      ***/
+/************************************/
+
+.satisfy-client-images {
+	display: flex;
+	align-items: center;
+}
+
+.satisfy-client-image {
+	position: relative;
+	display: inline-block;
+	margin-left: -14px;
+	border: 1px solid #FFFFFF;
+	border-radius: 50%;
+	overflow: hidden;
+	z-index: 1;
+}
+
+.satisfy-client-image:first-child {
+	margin: 0;
+}
+
+.satisfy-client-image figure {
+	display: block;
+}
+
+.satisfy-client-image figure img {
+	width: 100%;
+	max-width: 40px;
+	border-radius: 50%;
+}
+
+.satisfy-client-image.add-more {
+	width: 42px;
+	height: 42px;
+	background-color: #D44E54;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.3s ease-in-out;
+}
+
+.satisfy-client-image.add-more i {
+	font-size: 20px;
+	color: #FFFFFF;
+}
+
+.hero-info-rating-star i {
+	color: #276BD4;
+	font-size: 16px;
+}
+
+/************************************/
+/*** 	  05.  About Us css 	  ***/
+/************************************/
+
+
+
+.about-us-image-box {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 30px;
+	margin-right: 15px;
+}
+
+.about-us-image-box-1 {
+	width: calc(44% - 15px);
+	display: flex;
+	flex-direction: column;
+}
+
+.about-us-image-box-2 {
+	width: calc(56% - 15px);
+}
+
+.happy-customer-review-box {
+	position: relative;
+	background: #FFF;
+	padding: 0 30px 30px 0;
+	border-radius: 20px 0 20px 0;
+	margin-right: -100px;
+	z-index: 2;
+}
+
+.happy-customer-review-box::before,
+.happy-customer-review-box::after {
+	content: '';
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	mask: url('../../../assets/home/about/image-corner-bg-shape.svg');
+	-webkit-mask: url('../../../assets/home/about/image-corner-bg-shape.svg');
+	background-color: #FFF;
+	mask-repeat: no-repeat;
+	mask-size: cover;
+	z-index: 1;
+}
+
+.happy-customer-review-box::before {
+	right: -20px;
+	left: auto;
+}
+
+.happy-customer-review-box::after {
+	left: auto;
+	right: 51px;
+	bottom: -20px;
+}
+
+.happy-customer-review-item {
+	background-color: #2563EB;
+	border-radius: 20px;
+	padding: 30px;
+}
+
+.happy-customer-review-item .hero-info-rating-star svg {
+	font-size: 20px;
+	color: #ffffff;
+}
+
+.happy-customer-review-content {
+	border-top: 1px solid #FFFFFF1A;
+	margin-top: 20px;
+	padding-top: 20px;
+}
+
+.happy-customer-review-content p {
+	color: #FFFFFF;
+	margin: 0;
+}
+
+.happy-customer-review-item .satisfy-client-images {
+	margin-top: 20px;
+}
+
+.happy-customer-review-item .satisfy-client-image {
+	border-color: #222222;
+}
+
+.happy-customer-review-item .satisfy-client-image.add-more {
+	background-color: #276BD4;
+}
+
+.happy-customer-review-item .satisfy-client-image.add-more svg {
+	color: #FFFFFF;
+}
+
+.about-us-image {
+	height: 100%;
+}
+
+.about-us-image figure {
+	display: block;
+	height: 100%;
+	border-radius: 20px;
+}
+
+.about-us-image img {
+	width: 100%;
+	height: 100%;
+	border-radius: 20px;
+	object-fit: cover;
+}
+
+.about-us-image-box-1 .about-us-image img {
+	aspect-ratio: 1 / 1.515;
+}
+
+.about-us-image-box-2 .about-us-image img {
+	aspect-ratio: 1 / 1.971;
+}
+
+.about-us-item-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 30px;
+}
+
+.about-us-item {
+	width: calc(50% - 15px);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15px;
+}
+
+.about-us-item .icon-box {
+	position: relative;
+	width: 50px;
+	height: 50px;
+	background: #2563EB;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+}
+
+.about-us-item .icon-box::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #276BD4;
+	border-radius: 50%;
+	transform: scale(0);
+	transition: all 0.4s ease-in-out;
+	z-index: 0;
+}
+
+.btn-default:hover a {
+	color: #FFFFFF;
+}
+
+.about-us-item:hover .icon-box::before {
+	transform: scale(1);
+}
+
+.about-us-item .icon-box img {
+	position: relative;
+	width: 100%;
+	max-width: 24px;
+	z-index: 1;
+}
+
+.about-us-item-content {
+	width: calc(100% - 65px);
+}
+
+.about-us-item-content h3 {
+	font-size: 20px;
+}
+
+.about-us-item-content p {
+	margin: 10px 0 0;
+}
+
+.about-us-body {
+	margin-top: 40px;
+}
+
+.about-us-body-item {
+	background-color: #FFFFFF;
+	border-left: 4px solid #2563EB;
+	border-radius: 20px;
+	margin-bottom: 30px;
+	padding: 30px;
+}
+
+.about-us-body-item:last-child {
+	margin-bottom: 0;
+}
+
+.about-us-body-item h3 {
+	font-size: 16px;
+	line-height: 1.6em;
+}
+
+.about-us-btn {
+	margin-top: 40px;
+}
+
+
+/************************************/
+/***      34. Responsive css      ***/
+/************************************/
+
+@media only screen and (max-width: 1024px) {
+
+	.about-us-image-box {
+		max-width: 740px;
+		margin: 0 auto 30px;
+	}
+
+	.about-us-image-box-2 .about-us-image img {
+		aspect-ratio: 1 / 1.8;
+	}
+}
+
+@media only screen and (max-width: 991px) {
+
+	.btn-default {
+		padding: 15px 50px 15px 15px;
+	}
+
+	.btn-default::before {
+		width: 36px;
+		height: 36px;
+		background-size: 12px auto;
+	}
+	.about-us {
+		padding: 60px 0;
+	}
+
+	.about-us-body,
+	.about-us-btn {
+		margin-top: 30px;
+	}
+
+	.about-us-body-item {
+		padding: 20px;
+	}
+}
+
+@media only screen and (max-width: 767px) {
+
+
+	.about-us-image-box {
+		gap: 15px;
+	}
+
+	.about-us-image-box-1 {
+		width: calc(44% - 7.5px);
+	}
+
+	.happy-customer-review-box {
+		padding: 0 15px 15px 0;
+		margin-right: -55px;
+	}
+
+	.happy-customer-review-box::after {
+		right: 20px;
+		bottom: -20px;
+	}
+
+	.happy-customer-review-item {
+		padding: 15px;
+	}
+
+	.happy-customer-review-item .hero-info-rating-star i {
+		font-size: 16px;
+	}
+
+	.happy-customer-review-content {
+		margin-top: 10px;
+		padding-top: 10px;
+	}
+
+	.happy-customer-review-content p {
+		font-size: 14px;
+	}
+
+	.happy-customer-review-item .satisfy-client-images {
+		margin-top: 10px;
+	}
+
+	.about-us-image-box-2 {
+		width: calc(56% - 7.5px);
+	}
+
+	.about-us-item-list {
+		gap: 20px;
+	}
+
+	.about-us-item {
+		width: 100%;
+	}
+
+	.about-us-item-content h3 {
+		font-size: 18px;
+	}
+
+	.about-us-body-item {
+		padding: 15px;
+	}
+}
+
+
+
+.about-us-image {
+	overflow: hidden;
+	border-radius: 12px;
+}
+
+.about-us-image figure {
+	overflow: hidden;
+	border-radius: inherit;
+}
+
+.about-us-image img {
+	transition: transform 0.6s ease;
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.satisfy-client-image {
+	transition: all 0.3s ease;
+}
+
+.satisfy-client-image:hover {
+	transform: scale(1.1) !important;
+	z-index: 10;
+}
+
+.happy-customer-review-box {
+	will-change: transform;
+	/* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
+}
+
+.hero-info-rating-star svg {
+	fill: #fbbf24;
+	color: #fbbf24;
+	width: 20px;
+	height: 20px;
+}
+
+/*----------------------------------------*/
+/*  25. breadcrumb
+/*----------------------------------------*/
+
+.thm-btn {
+	gap: 20px;
+	line-height: 1;
+	font-size: 18px;
+	overflow: hidden;
+	font-weight: 500;
+	position: relative;
+	align-items: center;
+	display: inline-flex;
+	padding: 0 5px 0 20px;
+	letter-spacing: -0.01em;
+	justify-content: center;
+	color: #ffffff;
+	-webkit-transition: 0.3s;
+	-o-transition: 0.3s;
+	transition: 0.3s;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-ms-border-radius: 5px;
+	-o-border-radius: 5px;
+	background: linear-gradient(259deg, #60355b 0%, #60355b 100%);
+}
+
+.thm-btn .btn_label {
+	position: relative;
+	display: inline-block;
+	padding: 20px 0px;
+	transition: transform 0.4s cubic-bezier(0.15, 0.85, 0.31, 1);
+}
+
+.thm-btn .btn_label::before {
+	top: 120%;
+	left: 50%;
+	width: 100%;
+	display: block;
+	position: absolute;
+	content: attr(data-text);
+	transform: translateX(-50%);
+}
+
+.thm-btn:hover {
+	color: #ffffff;
+}
+
+.thm-btn:hover .btn_label {
+	transform: translateY(-86%);
+}
+
+.consulting-btn {
+	gap: 15px;
+	color: #ffffff;
+	padding: 0 47px;
+	font-weight: 700;
+	font-size: 16px;
+	z-index: 1;
+	/* text-transform: uppercase; */
+	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	-ms-border-radius: 100px;
+	-o-border-radius: 100px;
+	background: linear-gradient(90deg,
+			#DA4D4F,
+			#2563EB)
+}
+
+.thm-btn .consulting-btn svg {
+	color: #fff;
+}
+
+.consulting-btn::before {
+	position: absolute;
+	content: '';
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	z-index: -1;
+	opacity: 0;
+	border-radius: inherit;
+	-webkit-transition: 0.4s;
+	-o-transition: 0.4s;
+	transition: 0.4s;
+	background: linear-gradient(90deg,
+			#EC4899,
+			#2563EB)
+}
+
+.consulting-btn .btn_label {
+	padding: 24px 0px;
+}
+
+.consulting-btn .xb-arrow {
+	-webkit-transition: 0.3s;
+	-o-transition: 0.3s;
+	transition: 0.3s;
+}
+
+.consulting-btn:hover {
+	color: #ffffff;
+}
+
+.consulting-btn:hover::before {
+	opacity: 1;
+}
+
+.consulting-btn:hover .btn_label {
+	transform: translateY(-84%);
+}
+
+.consulting-btn:hover .xb-arrow {
+	transform: rotate(40deg);
+}
+
+.consulting-btn svg{
+	filter: brightness(0) invert(1);
+}

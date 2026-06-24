@@ -1,0 +1,231 @@
+
+/* ─── Tokens ─── */
+:root {
+  --uro-brand: #2563EB;
+  --uro-brand-dark: #2563EB;
+  --uro-brand-light: #eaf4ff;
+  --uro-ink: #1a1a2e;
+  --uro-ink-soft: #3d3d5c;
+  --uro-muted: #6b7280;
+  --uro-divider: #e8e8f0;
+  --uro-surface: #fafafa;
+  --uro-white: #ffffff;
+  --uro-accent-blue: #1e6fa8;
+  --uro-accent-blue-light: #e8f3fb;
+  --uro-radius-sm: 8px;
+  --uro-radius-md: 16px;
+  --uro-radius-lg: 24px;
+  --uro-shadow-card: 0 4px 24px rgba(26, 26, 46, 0.08);
+  --uro-shadow-hover: 0 12px 40px rgba(26, 26, 46, 0.15);
+  --uro-transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Base ─── */
+.Urology-page {
+  color: var(--uro-ink);
+  overflow-x: hidden;
+}
+
+/* ─── Scroll Reveal ─── */
+.Urology-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.Urology-reveal.Urology-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.Urology-reveal-delay-1 {
+  transition-delay: 0.1s;
+}
+
+.Urology-reveal-delay-2 {
+  transition-delay: 0.2s;
+}
+
+.Urology-reveal-delay-3 {
+  transition-delay: 0.3s;
+}
+
+.Urology-reveal-delay-4 {
+  transition-delay: 0.4s;
+}
+
+.Urology-reveal-delay-5 {
+  transition-delay: 0.5s;
+}
+
+.Urology-reveal-delay-6 {
+  transition-delay: 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Urology-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ─── Hero ─── */
+.Urology-hero {
+  position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--uro-ink);
+}
+
+.Urology-hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.35;
+}
+
+.Urology-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: #2564eb3a;
+}
+
+.Urology-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+
+.Urology-hero-title {
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1.12;
+  color: var(--uro-white);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.Urology-hero-title em {
+  font-style: italic;
+  color: var(--uro-brand);
+}
+
+
+
+
+/* ─── Section Divider ─── */
+.Urology-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--uro-divider) 30%, var(--uro-divider) 70%, transparent);
+  margin: 0;
+  border: none;
+}
+
+/* ─── Intro Band ─── */
+.Urology-intro-band {
+  background: var(--uro-white);
+  padding: 72px 0;
+}
+
+
+/* ─── Conditions Section ─── */
+.Urology-conditions-section {
+  background: var(--uro-surface);
+}
+
+.Urology-conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.Urology-condition-card {
+  background: var(--uro-white);
+  border-radius: var(--uro-radius-md);
+  padding: 32px 28px;
+  box-shadow: var(--uro-shadow-card);
+  border: 1px solid var(--uro-divider);
+  transition: transform var(--uro-transition), box-shadow var(--uro-transition), border-color var(--uro-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.Urology-condition-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--uro-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--uro-transition);
+}
+
+.Urology-condition-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--uro-shadow-hover);
+  border-color: rgba(212, 78, 84, 0.2);
+}
+
+.Urology-condition-card:hover::before {
+  transform: scaleX(1);
+}
+
+.Urology-condition-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--uro-brand-light);
+  border-radius: var(--uro-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: background var(--uro-transition);
+}
+
+.Urology-condition-icon svg{
+ filter: brightness(0) saturate(100%) invert(35%) sepia(98%) saturate(2356%) hue-rotate(214deg) brightness(97%) contrast(94%);
+}
+
+.Urology-condition-card:hover .Urology-condition-icon {
+  background: var(--uro-brand);
+}
+
+.Urology-condition-card:hover .Urology-condition-icon svg path,
+.Urology-condition-card:hover .Urology-condition-icon svg circle,
+.Urology-condition-card:hover .Urology-condition-icon svg rect,
+.Urology-condition-card:hover .Urology-condition-icon svg ellipse {
+  stroke: var(--uro-white);
+}
+
+.Urology-condition-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--uro-ink);
+  line-height: 1.4;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 991px) {
+  .Urology-conditions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+
+}
+
+@media (max-width: 575px) {
+  .Urology-conditions-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+}

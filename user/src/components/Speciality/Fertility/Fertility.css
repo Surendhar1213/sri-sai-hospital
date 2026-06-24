@@ -1,0 +1,348 @@
+/* ==========================================================================
+   Fertility Section — design tokens
+   Brand red:      #D44E54
+   Female accent:  #B85C72  (rose-plum)   tint: #FBEFF1
+   Male accent:    #3A5A6D  (slate-teal)  tint: #EEF3F4
+   Ink:            #232323
+   Sub-ink:        #6B6B6B
+   Paper:          #FFFFFF
+   Cream:          #FAF6F1
+   Display font:   "Fraunces"
+   Body font:      "Plus Jakarta Sans"
+   ========================================================================== */
+
+.fertility-section {
+    --fertility-brand: #2563EB;
+    --fertility-female: #2563EB;
+    --fertility-female-tint: #eaf4ff;
+    --fertility-male: #2563EB;
+    --fertility-male-tint: #eaf4ff;
+    --fertility-ink: #232323;
+    --fertility-sub: #6B6B6B;
+    --fertility-paper: #FFFFFF;
+    --fertility-cream: #FAF6F1;
+    --fertility-line: rgba(35, 35, 35, 0.09);
+
+    background: var(--fertility-cream);
+    padding: 0 1.5rem;
+    color: var(--fertility-ink);
+    overflow: hidden;
+}
+.fertility-treatment-image{
+    margin-bottom: 20px;
+}
+.fertility-treatment-image img{
+    border-radius: 5px;
+}
+
+.fertility-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+/* ---------- Scroll reveal ---------- */
+.fertility-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fertility-reveal.fertility-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fertility-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ---------- Hero ---------- */
+.fertility-hero {
+    max-width: 760px;
+    /* margin: 0 auto 5rem; */
+}
+
+
+
+
+.fertility-hero-title {
+    margin: 0 0 1.25rem;
+    color: var(--fertility-ink);
+}
+
+.fertility-hero-title em {
+    font-style: italic;
+    color: var(--fertility-brand);
+}
+
+.fertility-hero-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--fertility-sub);
+    margin: 0 auto;
+    max-width: 620px;
+}
+
+/* ---------- Partner grid (Female / divider / Male) ---------- */
+.fertility-partner-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: 0;
+}
+
+.fertility-partner-card {
+    background: var(--fertility-paper);
+    border: 1px solid var(--fertility-line);
+    border-radius: 20px;
+    padding: 2.5rem 2.25rem;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.fertility-partner-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 40px -22px rgba(35, 35, 35, 0.18);
+}
+
+.fertility-partner-card--female {
+    border-top: 3px solid var(--fertility-female);
+}
+
+.fertility-partner-card--male {
+    border-top: 3px solid var(--fertility-male);
+}
+
+.fertility-partner-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.32rem 0.75rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+}
+
+.fertility-partner-card--female .fertility-partner-tag {
+    color: var(--fertility-female);
+    background: var(--fertility-female-tint);
+}
+
+.fertility-partner-card--male .fertility-partner-tag {
+    color: var(--fertility-male);
+    background: var(--fertility-male-tint);
+}
+
+.fertility-partner-title {
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem;
+    letter-spacing: -0.01em;
+}
+
+.fertility-service-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.fertility-service-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 0.25rem;
+    font-size: 0.97rem;
+    font-weight: 500;
+    border-bottom: 1px solid var(--fertility-line);
+    transition: padding-left 0.25s ease, color 0.25s ease;
+}
+
+.fertility-service-item:last-child {
+    border-bottom: none;
+}
+
+.fertility-service-item:hover {
+    padding-left: 0.5rem;
+}
+
+.fertility-partner-card--female .fertility-service-item:hover {
+    color: var(--fertility-female);
+}
+
+.fertility-partner-card--male .fertility-service-item:hover {
+    color: var(--fertility-male);
+}
+
+.fertility-service-item .fertility-icon {
+    flex-shrink: 0;
+    width: 19px;
+    height: 19px;
+}
+
+.fertility-partner-card--female .fertility-service-item .fertility-icon {
+    color: var(--fertility-female);
+}
+
+.fertility-partner-card--male .fertility-service-item .fertility-icon {
+    color: var(--fertility-male);
+}
+
+/* ---------- Divider between partner cards ---------- */
+.fertility-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 0 1.75rem;
+}
+
+.fertility-divider-line {
+    width: 1px;
+    flex: 1;
+    background: linear-gradient(to bottom, transparent, var(--fertility-line) 20%, var(--fertility-line) 80%, transparent);
+    min-height: 60px;
+}
+
+.fertility-divider-mark {
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--fertility-brand);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--fertility-line);
+    background: var(--fertility-paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ---------- Treatments ---------- */
+.fertility-treatments-head {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+
+.fertility-treatment-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.25rem;
+}
+
+.fertility-treatment-card {
+    background: var(--fertility-paper);
+    border: 1px solid var(--fertility-line);
+    border-radius: 18px;
+    /* padding: 2rem 1.5rem; */
+    padding: 10px 10px;
+    text-align: left;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.fertility-treatment-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 44px -24px rgba(212, 78, 84, 0.28);
+    border-color: var(--fertility-brand);
+}
+
+.fertility-treatment-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--fertility-female-tint);
+    color: var(--fertility-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.fertility-treatment-card:hover .fertility-treatment-icon {
+    background: var(--fertility-brand);
+    color: var(--fertility-paper);
+    transform: scale(1.07) rotate(-4deg);
+}
+
+.fertility-treatment-icon .fertility-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.fertility-treatment-title {
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.005em;
+    text-align: center;
+}
+
+.fertility-treatment-text {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--fertility-sub);
+    margin: 0;
+}
+
+.fertility-icon {
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .fertility-treatment-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 860px) {
+    .fertility-partner-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fertility-divider {
+        flex-direction: row;
+        padding: 1.5rem 0;
+    }
+
+    .fertility-divider-line {
+        height: 1px;
+        width: auto;
+        min-height: 0;
+        background: linear-gradient(to right, transparent, var(--fertility-line) 20%, var(--fertility-line) 80%, transparent);
+    }
+}
+
+@media (max-width: 640px) {
+    .fertility-section {
+        padding: 0 1.25rem;
+    }
+
+    .fertility-treatment-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .fertility-partner-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .fertility-treatment-grid {
+        grid-template-columns: 1fr;
+    }
+}

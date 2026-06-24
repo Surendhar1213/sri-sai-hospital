@@ -1,0 +1,251 @@
+/* ==========================================================================
+   Gynecology & Women's Health — section styles
+   Brand: #D44E54 | Display: Fraunces | Body/UI: Plus Jakarta Sans
+   ========================================================================== */
+
+
+.gyno {
+    --gyno-brand: #2563EB;
+    --gyno-brand-dark: #2563EB;
+    --gyno-ink: #2a1c1e;
+    --gyno-ink-soft: #6b5457;
+    --gyno-blush: #f5faff;
+    --gyno-blush-deep: #f8e3e1;
+    --gyno-card-bg: #ffffff;
+    --gyno-line: #2563EB;
+    --gyno-gold: #c79a5a;
+
+    position: relative;
+    background: var(--gyno-blush);
+    color: var(--gyno-ink);
+    overflow: hidden;
+}
+
+.gyno * {
+    box-sizing: border-box;
+}
+
+.gyno h1,
+.gyno h2,
+.gyno h3 {
+    margin: 0;
+}
+
+/* ---------- shared reveal transition ---------- */
+
+.gyno .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gyno .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gyno .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ---------- hero ---------- */
+
+
+
+.gyno-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+
+/* ---------- services heading ---------- */
+
+.gyno-services {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 1.5rem 6rem;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.gyno-services-heading {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.gyno-services-heading h2::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 3px;
+    margin: 0.9rem auto 0;
+    background: var(--gyno-brand);
+    border-radius: 3px;
+}
+
+/* ---------- bento grid ---------- */
+
+.gyno-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+}
+
+.gyno-card--menstrual {
+    grid-column: span 2;
+}
+
+.gyno-card--pcos {
+    grid-column: span 2;
+}
+
+.gyno-card--fibroids {
+    grid-column: span 2;
+}
+
+.gyno-card--menopause {
+    grid-column: 2 / span 2;
+}
+
+.gyno-card--adolescent {
+    grid-column: 4 / span 2;
+}
+
+@media (max-width: 980px) {
+    .gyno-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gyno-card--menstrual,
+    .gyno-card--pcos,
+    .gyno-card--fibroids,
+    .gyno-card--menopause,
+    .gyno-card--adolescent {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .gyno-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- card ---------- */
+
+.gyno-card {
+    background: var(--gyno-card-bg);
+    border: 1px solid var(--gyno-line);
+    border-radius: 18px;
+    padding: 2rem 1.85rem 2.1rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s ease;
+}
+
+.gyno-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px -24px rgba(37, 99, 235, 0.32);
+    border-color: var(--gyno-brand);
+}
+
+.gyno-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gyno-blush);
+    color: var(--gyno-brand);
+    margin-bottom: 1.3rem;
+    transition: background 0.4s ease, color 0.4s ease, transform 0.4s ease;
+}
+
+.gyno-card-icon svg {
+    width: 26px;
+    height: 26px;
+}
+
+.gyno-card:hover .gyno-card-icon {
+    background: var(--gyno-brand);
+    color: #fff;
+    transform: rotate(-6deg) scale(1.06);
+}
+
+.gyno-card-title {
+    font-size: 1.18rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--gyno-ink);
+    margin-bottom: 0.6rem;
+}
+
+.gyno-card-lead {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--gyno-brand-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.95rem;
+}
+
+.gyno-card-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.gyno-card-list li {
+    position: relative;
+    padding-left: 1.15rem;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: var(--gyno-ink-soft);
+}
+
+.gyno-card-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gyno-brand);
+    opacity: 0.7;
+}
+
+/* ---------- responsive: hero ---------- */
+
+@media (max-width: 640px) {
+    .gyno-hero {
+        padding: 4.5rem 1.25rem 3rem;
+    }
+
+    .gyno-services {
+        padding: 1rem 1.25rem 4rem;
+    }
+
+    .gyno-card {
+        padding: 1.7rem 1.4rem 1.85rem;
+    }
+}
+
+/* ---------- focus visibility ---------- */
+
+.gyno-card:focus-visible {
+    outline: 2px solid var(--gyno-brand);
+    outline-offset: 3px;
+}

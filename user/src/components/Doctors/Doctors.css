@@ -1,0 +1,406 @@
+/* ============================================================
+   Doctors.css — Premium Medical Specialists Section
+   ============================================================ */
+
+/* ── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --doctors-deep-navy:    #0B1D35;
+  --doctors-midnight:     #061228;
+  --doctors-teal:         #2563EB;
+  --doctors-teal-light:   #22909E;
+  --doctors-gold:         #6366F1;
+  --doctors-gold-light:   #DDB880;
+  --doctors-cream:        #eaf4ff;
+  --doctors-white:        #FFFFFF;
+  --doctors-text-dark:    #1C2B3A;
+  --doctors-text-mid:     #4A5E72;
+  --doctors-text-light:   #0B1D35;
+  --doctors-border:       rgba(196, 151, 90, 0.20);
+  --doctors-card-bg:      #FFFFFF;
+  --doctors-shadow-sm:    0 4px 20px rgba(11, 29, 53, 0.07);
+  --doctors-shadow-md:    0 12px 48px rgba(11, 29, 53, 0.13);
+  --doctors-shadow-lg:    0 24px 72px rgba(11, 29, 53, 0.18);
+  --doctors-radius:       16px;
+  --doctors-transition:   all 0.42s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ── Section Wrapper ────────────────────────────────────────── */
+.doctors-section {
+  background: var(--doctors-cream);
+  padding: 100px 0 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.doctors-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--doctors-teal), var(--doctors-gold), var(--doctors-teal));
+}
+
+/* ── Background Texture ─────────────────────────────────────── */
+.doctors-bg-texture {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(26, 110, 120, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(196, 151, 90, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.doctors-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Section Header ─────────────────────────────────────────── */
+.doctors-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+
+.doctors-heading {
+  margin-bottom: 20px;
+}
+
+.doctors-heading em {
+  font-style: italic;
+  color: var(--doctors-teal);
+}
+
+.doctors-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.doctors-divider-line {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--doctors-gold));
+}
+
+.doctors-divider-line:last-child {
+  background: linear-gradient(90deg, var(--doctors-gold), transparent);
+}
+
+.doctors-divider-diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--doctors-gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+/* ── Cards Grid ─────────────────────────────────────────────── */
+.doctors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 8px;
+}
+
+/* ── Individual Card ────────────────────────────────────────── */
+.doctors-card {
+  background: var(--doctors-card-bg);
+  border-radius: var(--doctors-radius);
+  box-shadow: var(--doctors-shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid rgba(196, 151, 90, 0.10);
+  transition: var(--doctors-transition);
+  position: relative;
+
+  /* scroll reveal */
+  opacity: 0;
+  transform: translateY(40px);
+  animation: doctors-reveal 0.7s ease forwards;
+}
+
+.doctors-card:nth-child(1) { animation-delay: 0.10s; }
+.doctors-card:nth-child(2) { animation-delay: 0.24s; }
+.doctors-card:nth-child(3) { animation-delay: 0.38s; }
+
+@keyframes doctors-reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.doctors-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--doctors-shadow-lg);
+  border-color: rgba(196, 151, 90, 0.28);
+}
+
+/* ── Card Top Accent Bar ────────────────────────────────────── */
+.doctors-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--doctors-teal), var(--doctors-gold));
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.doctors-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Photo Area ─────────────────────────────────────────────── */
+.doctors-photo-wrap {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--doctors-deep-navy) 0%, #0E2A4A 100%);
+  flex-shrink: 0;
+}
+
+.doctors-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.doctors-card:hover .doctors-photo {
+  transform: scale(1.06);
+}
+
+/* Overlay gradient on photo */
+.doctors-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 45%,
+    rgba(11, 29, 53, 0.60) 80%,
+    rgba(11, 29, 53, 0.88) 100%
+  );
+  z-index: 1;
+}
+
+/* Placeholder shown when no real image */
+.doctors-photo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+}
+
+.doctors-photo-initials {
+  font-size: 4rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.18);
+  letter-spacing: 0.06em;
+  user-select: none;
+}
+
+/* Centre badge on photo */
+.doctors-centre-badge {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 2;
+  background: rgba(196, 151, 90, 0.92);
+  backdrop-filter: blur(6px);
+  color: var(--doctors-white);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 30px;
+  white-space: nowrap;
+}
+
+/* ── Card Body ──────────────────────────────────────────────── */
+.doctors-card-body {
+  padding: 28px 28px 32px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Name & Credentials ─────────────────────────────────────── */
+.doctors-name {
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: var(--doctors-deep-navy);
+  line-height: 1.2;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.doctors-credentials {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--doctors-teal);
+  margin-bottom: 4px;
+}
+
+.doctors-role {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--doctors-text-mid);
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* ── Separator ──────────────────────────────────────────────── */
+.doctors-card-sep {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--doctors-gold), transparent);
+  margin: 20px 0;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.doctors-card:hover .doctors-card-sep {
+  width: 70px;
+}
+
+/* ── Expertise / Interests ──────────────────────────────────── */
+.doctors-expertise-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--doctors-text-light);
+  margin-bottom: 14px;
+}
+
+.doctors-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.doctors-tag {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--doctors-text-dark);
+  background: var(--doctors-cream);
+  border: 1px solid rgba(11, 29, 53, 0.09);
+  border-radius: 30px;
+  padding: 5px 13px;
+  line-height: 1.4;
+  transition: all 0.28s ease;
+  cursor: default;
+}
+
+.doctors-tag:hover {
+  background: var(--doctors-teal);
+  color: var(--doctors-white);
+  border-color: var(--doctors-teal);
+  transform: translateY(-1px);
+}
+
+/* ── Footer Strip on Card ───────────────────────────────────── */
+
+
+@keyframes doctors-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 200, 138, 0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(52, 200, 138, 0); }
+}
+
+.doctors-availability-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--doctors-text-mid);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .doctors-section {
+    padding: 72px 0 90px;
+  }
+
+  .doctors-grid {
+    gap: 24px;
+  }
+
+  .doctors-card {
+    max-width: 340px;
+  }
+}
+
+@media (max-width: 767px) {
+  .doctors-section {
+    padding: 56px 0 72px;
+  }
+
+  .doctors-header {
+    margin-bottom: 48px;
+  }
+
+  .doctors-grid {
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .doctors-card {
+    max-width: 100%;
+  }
+
+  .doctors-photo-wrap {
+    height: 260px;
+  }
+
+  .doctors-card-body {
+    padding: 22px 20px 26px;
+  }
+
+  .doctors-name {
+    font-size: 1.45rem;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .doctors-photo-wrap {
+    height: 230px;
+  }
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .doctors-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .doctors-card:hover {
+    transform: none;
+  }
+
+  .doctors-availability-dot {
+    animation: none;
+  }
+}

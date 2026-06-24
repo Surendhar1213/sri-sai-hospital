@@ -1,0 +1,573 @@
+/* ============================================
+   GeneralMedicine.css
+   Premium Medical-Professional Design System
+   ============================================ */
+
+/* ---- CSS Variables ---- */
+:root {
+  --gm-navy:        #0B2545;
+  --gm-teal:        #0D7377;
+  --gm-teal-light:  #14A09A;
+  --gm-sky:         #E8F4F8;
+  --gm-white:       #FFFFFF;
+  --gm-offwhite:    #F5F9FB;
+  --gm-text:        #1A2E3B;
+  --gm-muted:       #5C7282;
+  --gm-border:      #D6E8EF;
+  --gm-gold:        #C9A84C;
+  --gm-radius:      14px;
+  --gm-shadow-sm:   0 2px 12px rgba(11,37,69,0.08);
+  --gm-shadow-md:   0 8px 32px rgba(11,37,69,0.13);
+  --gm-shadow-lg:   0 20px 60px rgba(11,37,69,0.18);
+  --gm-transition:  all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- Reset & Base ---- */
+.GeneralMedicine-root {
+  color: var(--gm-text);
+  background-color: var(--gm-white);
+  overflow-x: hidden;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.GeneralMedicine-hero {
+  position: relative;
+  /* min-height: 92vh; */
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--gm-navy) 0%, #133a5e 55%, var(--gm-teal) 100%);
+  overflow: hidden;
+}
+
+.GeneralMedicine-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+}
+
+.GeneralMedicine-hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.GeneralMedicine-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+
+.GeneralMedicine-hero-title {
+  color: var(--gm-white);
+  margin-bottom: 24px;
+}
+
+.GeneralMedicine-hero-subtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.75;
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+
+/* Hero Image Panel */
+.GeneralMedicine-hero-image-wrap {
+  position: relative;
+  /* height: 540px; */
+}
+
+.GeneralMedicine-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px 24px 24px 80px;
+  box-shadow: var(--gm-shadow-lg);
+  position: relative;
+  z-index: 2;
+}
+
+.GeneralMedicine-hero-image-wrap::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  bottom: 16px;
+  left: 16px;
+  border: 2px solid rgba(201,168,76,0.35);
+  border-radius: 24px 24px 24px 80px;
+  z-index: 1;
+}
+
+
+
+
+/* ============================================
+   SECTION SHARED
+   ============================================ */
+.GeneralMedicine-section-alt {
+  background: var(--gm-offwhite);
+}
+
+/* .GeneralMedicine-section-label {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gm-teal);
+  margin-bottom: 14px;
+  padding: 6px 16px;
+  background: rgba(13,115,119,0.08);
+  border-radius: 50px;
+  border-left: 3px solid var(--gm-teal);
+  border-radius: 0 50px 50px 0;
+} */
+
+.GeneralMedicine-section-title {
+  color: var(--gm-navy);
+  margin-bottom: 16px;
+}
+
+.GeneralMedicine-section-desc {
+  font-size: 1.05rem;
+  color: var(--gm-muted);
+  line-height: 1.8;
+  max-width: 560px;
+}
+
+/* ============================================
+   INTRO / OVERVIEW SECTION
+   ============================================ */
+.GeneralMedicine-intro {
+  background: var(--gm-white);
+}
+
+.GeneralMedicine-intro-card {
+  background: linear-gradient(135deg, var(--gm-navy) 0%, #133a5e 100%);
+  border-radius: var(--gm-radius);
+  padding: 48px;
+  color: var(--gm-white);
+  position: relative;
+  overflow: hidden;
+}
+
+.GeneralMedicine-intro-card::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+
+.GeneralMedicine-intro-card-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gm-white);
+  margin-bottom: 16px;
+}
+
+.GeneralMedicine-intro-card-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.8);
+}
+
+.GeneralMedicine-stat-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.GeneralMedicine-stat {
+  text-align: center;
+}
+
+.GeneralMedicine-stat-num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gm-gold);
+}
+
+.GeneralMedicine-stat-label {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   SERVICES SECTION
+   ============================================ */
+.GeneralMedicine-services {
+  background: var(--gm-offwhite);
+}
+
+.GeneralMedicine-service-card {
+  background: var(--gm-white);
+  border-radius: var(--gm-radius);
+  padding: 36px 28px;
+  height: 100%;
+  box-shadow: var(--gm-shadow-sm);
+  border: 1px solid var(--gm-border);
+  transition: var(--gm-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.GeneralMedicine-service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+
+.GeneralMedicine-service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--gm-shadow-md);
+  border-color: transparent;
+}
+
+.GeneralMedicine-service-card:hover::before {
+  transform: scaleX(1);
+}
+
+.GeneralMedicine-service-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: var(--gm-sky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  transition: var(--gm-transition);
+}
+
+.GeneralMedicine-service-card:hover .GeneralMedicine-service-icon-wrap {
+  background: #2563EB;
+}
+
+.GeneralMedicine-service-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--gm-navy);
+  margin-bottom: 10px;
+}
+
+
+
+/* ============================================
+   SCROLL REVEAL ANIMATIONS (CSS only)
+   ============================================ */
+@keyframes GeneralMedicine-fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes GeneralMedicine-fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes GeneralMedicine-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.3); }
+}
+
+@keyframes GeneralMedicine-slideRight {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.GeneralMedicine-reveal {
+  animation: GeneralMedicine-fadeUp 0.7s ease both;
+}
+
+.GeneralMedicine-reveal-1 { animation-delay: 0.1s; }
+.GeneralMedicine-reveal-2 { animation-delay: 0.2s; }
+.GeneralMedicine-reveal-3 { animation-delay: 0.3s; }
+.GeneralMedicine-reveal-4 { animation-delay: 0.4s; }
+.GeneralMedicine-reveal-5 { animation-delay: 0.5s; }
+.GeneralMedicine-reveal-6 { animation-delay: 0.6s; }
+.GeneralMedicine-reveal-7 { animation-delay: 0.7s; }
+
+/* ============================================
+   IMAGE FEATURE SECTION
+   ============================================ */
+.GeneralMedicine-feature-img-wrap {
+  position: relative;
+  border-radius: var(--gm-radius);
+  overflow: hidden;
+  height: 460px;
+}
+
+.GeneralMedicine-feature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.GeneralMedicine-feature-img-wrap:hover .GeneralMedicine-feature-img {
+  transform: scale(1.04);
+}
+
+.GeneralMedicine-feature-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, transparent 40%, rgba(11,37,69,0.7) 100%);
+}
+
+.GeneralMedicine-feature-overlay-text {
+  position: absolute;
+  bottom: 28px;
+  left: 28px;
+  color: var(--gm-white);
+}
+
+.GeneralMedicine-feature-overlay-text p {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.GeneralMedicine-feature-overlay-text h4 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ============================================
+   WHY CHOOSE US / PILLARS
+   ============================================ */
+.GeneralMedicine-pillar {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 28px;
+  border-radius: var(--gm-radius);
+  border: 1px solid var(--gm-border);
+  background: var(--gm-white);
+  transition: var(--gm-transition);
+  margin-bottom: 20px;
+}
+
+.GeneralMedicine-pillar:hover {
+  border-color: var(--gm-teal);
+  box-shadow: var(--gm-shadow-sm);
+  transform: translateX(6px);
+}
+
+.GeneralMedicine-pillar-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--gm-sky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  transition: var(--gm-transition);
+}
+
+.GeneralMedicine-pillar:hover .GeneralMedicine-pillar-icon {
+  background: var(--gm-teal);
+}
+
+.GeneralMedicine-pillar-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--gm-navy);
+  margin-bottom: 6px;
+}
+
+.GeneralMedicine-pillar-text {
+  font-size: 0.9rem;
+  color: var(--gm-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ============================================
+   CTA BANNER
+   ============================================ */
+.GeneralMedicine-cta-banner {
+  background: linear-gradient(135deg, var(--gm-navy) 0%, var(--gm-teal) 100%);
+  border-radius: 24px;
+  padding: 72px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 0 16px;
+}
+
+.GeneralMedicine-cta-banner::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 280px;
+  height: 280px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+
+.GeneralMedicine-cta-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  right: -40px;
+  width: 320px;
+  height: 320px;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+
+.GeneralMedicine-cta-title {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  color: var(--gm-white);
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.GeneralMedicine-cta-desc {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 36px;
+  position: relative;
+  z-index: 2;
+}
+
+.GeneralMedicine-cta-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gm-white);
+  color: var(--gm-navy);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 16px 36px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: var(--gm-transition);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.GeneralMedicine-cta-btn-primary:hover {
+  background: var(--gm-gold);
+  color: var(--gm-white);
+  transform: translateY(-3px);
+  text-decoration: none;
+}
+
+/* ============================================
+   SECTION STRIPE DIVIDER
+   ============================================ */
+.GeneralMedicine-stripe {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gm-border), transparent);
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 991px) {
+  .GeneralMedicine-hero {
+    min-height: auto;
+    padding: 80px 0 60px;
+  }
+
+  .GeneralMedicine-hero-image-wrap {
+    height: 340px;
+    margin-top: 48px;
+  }
+
+  .GeneralMedicine-hero-badge {
+    left: 12px;
+    bottom: 20px;
+  }
+
+  .GeneralMedicine-intro-card {
+    padding: 32px 24px;
+  }
+
+  .GeneralMedicine-cta-banner {
+    padding: 52px 28px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .GeneralMedicine-hero-image-wrap {
+    height: 280px;
+  }
+
+  .GeneralMedicine-hero-badge {
+    display: none;
+  }
+
+  .GeneralMedicine-pillar {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .GeneralMedicine-stat-row {
+    gap: 24px;
+  }
+
+  .GeneralMedicine-feature-img-wrap {
+    height: 300px;
+    margin-bottom: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .GeneralMedicine-intro-card {
+    padding: 28px 20px;
+  }
+
+  .GeneralMedicine-service-card {
+    padding: 28px 20px;
+  }
+
+  .GeneralMedicine-cta-banner {
+    padding: 40px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .GeneralMedicine-reveal,
+  .GeneralMedicine-service-card,
+  .GeneralMedicine-pillar,
+  .GeneralMedicine-cta-btn-primary,
+  .GeneralMedicine-feature-img {
+    animation: none !important;
+    transition: none !important;
+  }
+}

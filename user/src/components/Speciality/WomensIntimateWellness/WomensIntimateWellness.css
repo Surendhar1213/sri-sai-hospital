@@ -1,0 +1,307 @@
+/* ================================================================
+   WomensIntimateWellness.css
+   All selectors: .woman-intimate prefix
+   Brand: #D44E54 | Fraunces + Plus Jakarta Sans
+   ================================================================ */
+
+
+.woman-intimate {
+  --wi-brand: #2563EB;
+  --wi-dark: #b83b41;
+  --wi-blush0: #fff8f8;
+  --wi-blush1: #eaf4ff;
+  --wi-blush2: #f8d0d2;
+  --wi-txt: #1c1017;
+  --wi-body: #4d3540;
+  --wi-muted: #9a727a;
+  --wi-white: #ffffff;
+  --wi-ease: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--wi-txt);
+  background: var(--wi-white);
+  overflow-x: hidden;
+}
+
+/* scroll reveal */
+.wi-fade {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.woman-intimate-bg{
+      background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%);
+}
+
+.wi-show {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ── HERO ─────────────────────────────────────── */
+.woman-intimate__hero {
+  position: relative;
+  /* background: linear-gradient(145deg, #fff5f5 0%, var(--wi-blush1) 55%, var(--wi-blush2) 100%); */
+  padding: 100px 0 84px;
+  overflow: hidden;
+}
+
+.woman-intimate__hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.wi-c1 {
+  width: 420px;
+  height: 420px;
+  right: -140px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: radial-gradient(circle, rgba(212, 78, 84, 0.10) 0%, transparent 70%);
+}
+
+.wi-c2 {
+  width: 200px;
+  height: 200px;
+  left: -60px;
+  bottom: -60px;
+  background: radial-gradient(circle, rgba(212, 78, 84, 0.07) 0%, transparent 70%);
+}
+
+.woman-intimate__tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--wi-brand);
+  border: 1px solid rgba(212, 78, 84, 0.28);
+  background: rgba(212, 78, 84, 0.06);
+  padding: 5px 16px;
+  border-radius: 100px;
+  margin-bottom: 22px;
+}
+
+.woman-intimate__h1 {
+  color: var(--wi-txt);
+  margin-bottom: 22px;
+}
+
+.woman-intimate__h1 em {
+  font-style: italic;
+  color: var(--wi-brand);
+}
+
+.woman-intimate__lead {
+  font-size: 18px;
+  /* line-height: 1.82; */
+  color: var(--wi-body);
+  /* max-width: 520px; */
+  margin: 0 auto;
+}
+
+/* ── CONDITIONS ──────────────────────────────── */
+
+.woman-intimate__sec-title {
+  font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.woman-intimate__sec-title--white {
+  color: var(--wi-white);
+}
+
+.woman-intimate__rule {
+  width: 44px;
+  height: 3px;
+  background: var(--wi-brand);
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+.woman-intimate__rule--white {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.woman-intimate__cond-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px 16px 26px;
+  border: 1px solid var(--wi-blush1);
+  border-radius: 18px;
+  height: 100%;
+  background: var(--wi-white);
+  transition: transform var(--wi-ease), box-shadow var(--wi-ease), border-color var(--wi-ease);
+  cursor: default;
+}
+
+.woman-intimate__cond-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 16px 40px rgba(212, 78, 84, 0.13);
+  border-color: var(--wi-blush2);
+}
+
+.woman-intimate__cond-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--wi-blush1);
+  color: var(--wi-brand);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px;
+  margin-bottom: 16px;
+  transition: background var(--wi-ease), transform var(--wi-ease);
+}
+
+.woman-intimate__cond-card:hover .woman-intimate__cond-icon {
+  background: rgba(212, 78, 84, 0.15);
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.woman-intimate__cond-label {
+  font-weight: 600;
+  color: #0F2239;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ── BENEFITS ────────────────────────────────── */
+.woman-intimate__ben-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.woman-intimate__ben-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.woman-intimate__ben-blob {
+  position: absolute;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  top: -160px;
+  right: -140px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.woman-intimate__ben-section>.container {
+  position: relative;
+  z-index: 1;
+}
+
+.woman-intimate__ben-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 22px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(37, 99, 235);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: background var(--wi-ease), transform var(--wi-ease);
+}
+
+.woman-intimate__ben-row:last-child {
+  margin-bottom: 0;
+}
+
+.woman-intimate__ben-row:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateX(6px);
+}
+
+.woman-intimate__ben-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0 2px 2px 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform var(--wi-ease);
+}
+
+.woman-intimate__ben-row:hover .woman-intimate__ben-bar {
+  transform: scaleY(1);
+}
+
+.woman-intimate__ben-check {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.2);
+  color: #2563EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--wi-ease);
+}
+
+.woman-intimate__ben-row:hover .woman-intimate__ben-check {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.woman-intimate__ben-text {
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: #0F2239;
+  flex: 1;
+}
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media (max-width: 991px) {
+  .woman-intimate__hero {
+    padding: 72px 0 58px;
+  }
+}
+
+@media (max-width: 767px) {
+  .woman-intimate__hero {
+    padding: 56px 0 44px;
+  }
+
+  .wi-c1 {
+    display: none;
+  }
+
+  .woman-intimate__lead {
+    font-size: 0.91rem;
+  }
+  .woman-intimate__ben-row {
+    padding: 13px 16px;
+  }
+
+  .woman-intimate__cond-card {
+    padding: 22px 12px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .wi-fade,
+  .woman-intimate__cond-card,
+  .woman-intimate__ben-row {
+    transition: none !important;
+    animation: none !important;
+  }
+}
