@@ -5,7 +5,7 @@ import Specialities from "./Specialities/Specialities";
 import Footer from "../Footer/Footer";
 import Gallery from "./Gallery/Gallery";
 import Navbar from "../Navbar/Navbar";
-import Heroslider from "./HeroSlider/Heroslider";
+import Heroslider from "./Heroslider/Heroslider";
 import Appointment from "./Appointment/Appointment";
 // import Whychooseus from "./whychooseus/whychooseus";
 import Special from "./Special/Special";

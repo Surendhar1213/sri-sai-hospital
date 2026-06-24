@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Endocrinology.css";
-import img1 from "../../../assets/speciality/Endocrinology.webp";
+import img1 from "../../../assets/speciality/endocrinology.webp";
 
 const Endocrinology = () => {
   const sectionRefs = useRef([]);
