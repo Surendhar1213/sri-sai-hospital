@@ -11,14 +11,9 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS — Admin frontend allow pannanum
-const allowedOrigins = [
-  "http://localhost:5174",
-  process.env.CORS_ORIGIN
-].filter(Boolean) as string[];
-
+// ✅ CORS — Allow all origins dynamically (makes Vercel deployment seamless)
 app.use(cors({
-  origin: allowedOrigins,
+  origin: true,
   credentials: true,
 }));
 
