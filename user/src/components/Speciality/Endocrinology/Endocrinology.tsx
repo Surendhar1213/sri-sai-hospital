@@ -3,10 +3,10 @@ import "./Endocrinology.css";
 import img1 from "../../../assets/speciality/endocrinology.webp";
 
 const Endocrinology = () => {
-  const sectionRefs = useRef([]);
+  const sectionRefs = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
-    const observers = [];
+    const observers: IntersectionObserver[] = [];
     sectionRefs.current.forEach((el) => {
       if (!el) return;
       const obs = new IntersectionObserver(
@@ -24,8 +24,10 @@ const Endocrinology = () => {
     return () => observers.forEach((o) => o.disconnect());
   }, []);
 
-  const addRef = (el) => {
-    if (el && !sectionRefs.current.includes(el)) sectionRefs.current.push(el);
+  const addRef = (el: HTMLElement | null) => {
+    if (el && !sectionRefs.current.includes(el)) {
+      sectionRefs.current.push(el);
+    }
   };
 
   const conditionGroups = [
