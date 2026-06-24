@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "https://sri-sai-hospital-admin.vercel.app/admin"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://sri-sai-hospital-admin.vercel.app/admin/:path*"
+    },
+    {
+      "source": "/((?!api|admin).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
