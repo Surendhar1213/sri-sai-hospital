@@ -12,7 +12,7 @@ import Endocrinology from "./components/Speciality/Endocrinology/Endocrinology";
 import ObesityandWeightLoss from "./components/Speciality/ObesityandWeightLoss/ObesityandWeightLoss";
 import Diabetology from "./components/Speciality/Diabetology/Diabetology";
 import Dermatology from "./components/Speciality/DermatologyandCosmetology/Dermatology";
-import HairandNail from "./components/Speciality/Hairandnail/HairandNail";
+import HairandNail from "./components/Speciality/Hairandnail/Hairandnail";
 import Urology from "./components/Speciality/Urology/Urology";
 import GeneralMedicine from "./components/Speciality/GeneralMedicin/GeneralMedicine";
 import Doctors from "./components/Doctors/Doctors";
