@@ -1,13 +1,17 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/admin",
-      "destination": "https://sri-sai-hospital-admin.vercel.app/admin"
+      "destination": "https://sri-sai-hospital-admin.vercel.app",
+      "permanent": false
     },
     {
       "source": "/admin/:path*",
-      "destination": "https://sri-sai-hospital-admin.vercel.app/admin/:path*"
-    },
+      "destination": "https://sri-sai-hospital-admin.vercel.app/:path*",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/((?!api|admin).*)",
       "destination": "/index.html"
