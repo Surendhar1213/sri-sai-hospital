@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaArrowRight,
   FaAngleDown,
@@ -14,6 +14,7 @@ import {
   FaUser,
   FaBars,
   FaTimes,
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 import { IoMdMail } from "react-icons/io";
@@ -23,7 +24,33 @@ import Logo from "../../assets/logo.svg";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
-  const [openSubMenus, setOpenSubMenus] = useState({});
+  const [openSubMenus, setOpenSubMenus] = useState<Record<string, boolean>>({});
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  const navigate = useNavigate();
+
+  // Check login state
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("userToken");
+      const userInfo = localStorage.getItem("userInfo");
+      if (token) {
+        setIsLoggedIn(true);
+        if (userInfo) {
+          const user = JSON.parse(userInfo);
+          setUserName(user.name?.split(" ")[0] || "User");
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserName("");
+      }
+    };
+    checkAuth();
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
+  }, []);
 
   // Handle scroll for sticky header
   useEffect(() => {
@@ -39,19 +66,37 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Book Appointment click handler
+  const handleBookAppointment = () => {
+    if (isLoggedIn) {
+      navigate("/book-appointment");
+    } else {
+      navigate("/login", { state: { from: "/book-appointment" } });
+    }
+  };
+
+  // Logout
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userInfo");
+    setIsLoggedIn(false);
+    setUserName("");
+    navigate("/");
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setOpenSubMenus({}); // Reset all submenus when closing mobile menu
   };
 
-  const toggleSubMenu = (menuKey) => {
+  const toggleSubMenu = (menuKey: string) => {
     setOpenSubMenus((prev) => ({
       ...prev,
       [menuKey]: !prev[menuKey],
     }));
   };
 
-  const SubMenuToggle = ({ onClick }) => (
+  const SubMenuToggle = ({ onClick }: { onClick: () => void }) => (
     <span className="th-mean-expand" onClick={onClick}>
       <FaAngleDown />
     </span>
@@ -69,7 +114,7 @@ const Navbar = () => {
           </button>
           <div className="mobile-logo">
             <a href="#">
-              <img src={Logo} style={{ Width: "200px" }} alt="Logo" />
+              <img src={Logo} style={{ width: "200px" }} alt="Logo" />
             </a>
           </div>
           <div className="th-mobile-menu">
@@ -167,7 +212,7 @@ const Navbar = () => {
                 <div className="col-auto">
                   <div className="header-logo">
                     <a href="#">
-                      <img src={Logo} style={{ Width: "200px" }} alt="Logo" />
+                      <img src={Logo} style={{ width: "200px" }} alt="Logo" />
                     </a>
                   </div>
                 </div>
@@ -285,23 +330,73 @@ const Navbar = () => {
                       </button>
                     </div>
                     <div className="col-auto d-none d-xl-block">
-                      <div className="header-button hero-section-four ">
-                        <div className="  hero-button hero-btn">
-                          <a
-                            href="/about"
-                            style={{
-                              padding: "8px 12px 10px 25px",
-                              marginBottom: "0px",
-                            }}
-                          >
-                            Book Appointment
-                            <span className="hero-icon">
-                              <FaArrowRight />
-                            </span>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
+                       <div className="header-button hero-section-four">
+                         <div className="hero-button hero-btn" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                           <button
+                             onClick={handleBookAppointment}
+                             style={{
+                               padding: "8px 12px 10px 25px",
+                               marginBottom: "0px",
+                               background: "linear-gradient(90deg, #3F58FF 0%, #31B0FF 100%)",
+                               color: "#fff",
+                               border: "none",
+                               borderRadius: "50px",
+                               fontSize: "15px",
+                               fontWeight: "600",
+                               cursor: "pointer",
+                               display: "inline-flex",
+                               alignItems: "center",
+                               gap: "8px",
+                               fontFamily: "inherit",
+                               transition: "opacity 0.2s, transform 0.2s",
+                             }}
+                           >
+                             Book Appointment
+                             <span className="hero-icon">
+                               <FaArrowRight />
+                             </span>
+                           </button>
+                           {/* User info / logout */}
+                           {isLoggedIn && (
+                             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                               <span style={{
+                                 background: "rgba(63,89,255,0.1)",
+                                 color: "#3F59FF",
+                                 borderRadius: "50px",
+                                 padding: "6px 14px",
+                                 fontSize: "13px",
+                                 fontWeight: "600",
+                                 display: "flex",
+                                 alignItems: "center",
+                                 gap: "6px",
+                               }}>
+                                 <FaUser size={11} /> {userName}
+                               </span>
+                               <button
+                                 onClick={handleLogout}
+                                 title="Logout"
+                                 style={{
+                                   background: "rgba(239,68,68,0.1)",
+                                   color: "#ef4444",
+                                   border: "none",
+                                   borderRadius: "50%",
+                                   width: "34px",
+                                   height: "34px",
+                                   display: "flex",
+                                   alignItems: "center",
+                                   justifyContent: "center",
+                                   cursor: "pointer",
+                                   fontSize: "13px",
+                                   transition: "background 0.2s",
+                                 }}
+                               >
+                                 <FaSignOutAlt />
+                               </button>
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                     </div>
                   </div>
                 </div>
               </div>

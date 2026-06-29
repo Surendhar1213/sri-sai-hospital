@@ -70,9 +70,9 @@ const Facilities = () => {
     // Animation for section title
     gsap.fromTo(
       titleRef.current,
-      { 
-        y: 50, 
-        opacity: 0 
+      {
+        y: 50,
+        opacity: 0
       },
       {
         y: 0,
@@ -90,9 +90,9 @@ const Facilities = () => {
     // Animation for paragraph
     gsap.fromTo(
       paragraphRef.current,
-      { 
-        y: 40, 
-        opacity: 0 
+      {
+        y: 40,
+        opacity: 0
       },
       {
         y: 0,
@@ -111,9 +111,9 @@ const Facilities = () => {
     // Animation for button
     gsap.fromTo(
       buttonRef.current,
-      { 
-        x: 30, 
-        opacity: 0 
+      {
+        x: 30,
+        opacity: 0
       },
       {
         x: 0,
@@ -133,8 +133,8 @@ const Facilities = () => {
     facilitiesRef.current.forEach((item, index) => {
       gsap.fromTo(
         item,
-        { 
-          scale: 0.8, 
+        {
+          scale: 0.8,
           opacity: 0,
           y: 50
         },
@@ -173,7 +173,7 @@ const Facilities = () => {
   };
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="services-two team-section-eleven section-space pb-100 section"
     >
@@ -198,7 +198,7 @@ const Facilities = () => {
         <div className="services-two__inner">
           <ul className="services-two__services-list list-unstyled">
             {facilities.map((facility, index) => (
-              <li 
+              <li
                 ref={el => facilitiesRef.current[index] = el}
                 className={`hover-item ${activeIndex === index ? 'active' : ''}`}
                 key={index}

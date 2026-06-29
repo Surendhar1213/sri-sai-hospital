@@ -1,5 +1,6 @@
 import React from "react";
 import "./Facilities.css"; // optional, for custom styles
+import PageBanner from "../PageBanner/PageBanner";
 
 import fecility1 from "../../assets/home/facilities/1.jpg";
 import fecility2 from "../../assets/home/facilities/2.jpg";
@@ -62,6 +63,8 @@ const Facilities = () => {
 
 
   return (
+    <>
+      <PageBanner title="Our Facilities" />
     <section className="   section-space">
       <div className="container">
         <div className="row">
@@ -108,6 +111,7 @@ const Facilities = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

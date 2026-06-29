@@ -26,6 +26,7 @@ import {
   MdStar,
 } from "react-icons/md";
 import "./Contactus.css";
+import PageBanner from "../PageBanner/PageBanner";
 
 /* ── Scroll Reveal Hook ─────────────────────────────────── */
 function useScrollReveal() {
@@ -146,6 +147,7 @@ export default function Contactus() {
 
   return (
     <div className="contact-page">
+      <PageBanner title="Contact Us" />
       {/* ── SECTION 1 · Hero ──────────────────────────────── */}
       <section className="contact-emergency" ref={sectionRef5}>
         <div className="container">

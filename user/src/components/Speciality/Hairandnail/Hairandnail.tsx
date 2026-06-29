@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Hairandnail.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 import img from "../../../assets/speciality/hairandnail.png";
 
@@ -57,77 +58,178 @@ const HairandNail = () => {
   const r7 = useScrollReveal();
 
   return (
-    <div className="hairandnail-page">
-      {/* ── HERO ── */}
-      <section className="hairandnail-hero section-space">
-        <div className="hairandnail-hero-overlay" />
+    <>
+      <PageBanner title="Hair & Nail Clinic" />
+      <div className="hairandnail-page">
+        {/* ── HERO ── */}
+        <section className="hairandnail-hero section-space">
+          <div className="hairandnail-hero-overlay" />
 
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <div className="hairandnail-hero-content hairandnail-reveal hairandnail-visible">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="hairandnail-hero-content hairandnail-reveal hairandnail-visible">
+                  <div className="section-title">
+                    <h2 className="hairandnail-hero-title">
+                      Specialized Hair &amp; Nail Care Centre
+                    </h2>
+                    <h4 style={{ marginTop: "10px" }}>
+                      Comprehensive Diagnosis & Treatment
+                    </h4>
+                    <p className="hairandnail-hero-subtitle">
+                      Healthy hair and nails are important indicators of overall
+                      health. Our specialists provide expert care for various hair
+                      and nail conditions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <img src={img} style={{ borderRadius: "10px" }} alt="" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── HAIR CLINIC SERVICES ── */}
+        <section className="hairandnail-section section-space">
+          <div className="container">
+            {/* Section Header */}
+            <div className="row">
+              <div className="col-md-12 hairandnail-reveal" ref={r2}>
                 <div className="section-title">
-                  <h2 className="hairandnail-hero-title">
-                    Specialized Hair &amp; Nail Care Centre
+                  <h2 className="hairandnail-section-title">
+                    Hair Clinic Services
                   </h2>
-                  <h4 style={{ marginTop: "10px" }}>
-                    Comprehensive Diagnosis & Treatment
-                  </h4>
-                  <p className="hairandnail-hero-subtitle">
-                    Healthy hair and nails are important indicators of overall
-                    health. Our specialists provide expert care for various hair
-                    and nail conditions.
+                </div>
+                {/* <div className="hairandnail-section-divider" /> */}
+              </div>
+            </div>
+
+            {/* Cards Row */}
+            <div className="row g-4">
+              {/* Hair Loss Treatment */}
+              <div
+                className="col-md-6 col-lg-4 hairandnail-reveal hairandnail-reveal-delay-1"
+                ref={r3}
+              >
+                <div className="hairandnail-card">
+                  <div className="hairandnail-card-img-wrap">
+                    {/* <img src={hairLossImg} alt="Hair Loss Treatment" /> */}
+                    <div className="hairandnail-card-icon">
+                      <IconHair />
+                    </div>
+                  </div>
+                  <div className="hairandnail-card-body">
+                    <div className="hairandnail-card-subtitle">
+                      Hair Loss Treatment
+                    </div>
+                    <h3 className="hairandnail-card-title">Management of:</h3>
+                    <ul className="hairandnail-list">
+                      {[
+                        "Male Pattern Baldness",
+                        "Female Pattern Hair Loss",
+                        "Postpartum Hair Fall",
+                        "Stress-Related Hair Loss",
+                      ].map((item) => (
+                        <li key={item}>
+                          <span className="hairandnail-list-dot" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scalp Treatments */}
+              <div
+                className="col-md-6 col-lg-4 hairandnail-reveal hairandnail-reveal-delay-2"
+                ref={r4}
+              >
+                <div className="hairandnail-card">
+                  <div className="hairandnail-card-img-wrap">
+                    {/* <img src={scalpImg} alt="Scalp Treatments" /> */}
+                    <div className="hairandnail-card-icon">
+                      <IconScalp />
+                    </div>
+                  </div>
+                  <div className="hairandnail-card-body">
+                    <div className="hairandnail-card-subtitle">
+                      Scalp Treatments
+                    </div>
+                    <h3 className="hairandnail-card-title">Treatment for:</h3>
+                    <ul className="hairandnail-list">
+                      {[
+                        "Dandruff",
+                        "Scalp Infections",
+                        "Scalp Psoriasis",
+                        "Itchy Scalp Conditions",
+                      ].map((item) => (
+                        <li key={item}>
+                          <span className="hairandnail-list-dot" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hair Growth Programs */}
+              <div
+                className="col-md-12 col-lg-4 hairandnail-reveal hairandnail-reveal-delay-3"
+                ref={r5}
+              >
+                <div className="hairandnail-program-card">
+                  <div className="hairandnail-program-label">
+                    Hair Growth Programs
+                  </div>
+                  <h3 className="hairandnail-program-title">
+                    Hair Growth Programs
+                  </h3>
+                  <p className="hairandnail-program-desc">
+                    Customized treatment plans designed to improve scalp health
+                    and support healthy hair growth.
                   </p>
                 </div>
               </div>
             </div>
-            <div className="col-md-6">
-              <img src={img} style={{ borderRadius: "10px" }} alt="" />
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── HAIR CLINIC SERVICES ── */}
-      <section className="hairandnail-section section-space">
-        <div className="container">
-          {/* Section Header */}
-          <div className="row">
-            <div className="col-md-12 hairandnail-reveal" ref={r2}>
-              <div className="section-title">
+        <hr className="hairandnail-hr" />
+
+        {/* ── NAIL CLINIC SERVICES ── */}
+        <section className="hairandnail-section hairandnail-section-alt">
+          <div className="container">
+            {/* Section Header */}
+            <div className="row mb-5">
+              <div className="col-lg-5 hairandnail-reveal" ref={r6}>
                 <h2 className="hairandnail-section-title">
-                  Hair Clinic Services
+                  Nail Clinic Services
                 </h2>
+                <div className="hairandnail-section-divider" />
               </div>
-              {/* <div className="hairandnail-section-divider" /> */}
             </div>
-          </div>
 
-          {/* Cards Row */}
-          <div className="row g-4">
-            {/* Hair Loss Treatment */}
-            <div
-              className="col-md-6 col-lg-4 hairandnail-reveal hairandnail-reveal-delay-1"
-              ref={r3}
-            >
-              <div className="hairandnail-card">
-                <div className="hairandnail-card-img-wrap">
-                  {/* <img src={hairLossImg} alt="Hair Loss Treatment" /> */}
-                  <div className="hairandnail-card-icon">
-                    <IconHair />
+            {/* Nail Cards */}
+            <div className="row g-4" ref={r7}>
+              {/* Nail Disorders */}
+              <div className="col-md-6">
+                <div className="hairandnail-disorder-card">
+                  <div className="hairandnail-disorder-icon">
+                    <IconNail />
                   </div>
-                </div>
-                <div className="hairandnail-card-body">
-                  <div className="hairandnail-card-subtitle">
-                    Hair Loss Treatment
-                  </div>
-                  <h3 className="hairandnail-card-title">Management of:</h3>
+                  <div className="hairandnail-disorder-sub">Nail Disorders</div>
+                  <h3 className="hairandnail-disorder-title">Treatment for:</h3>
                   <ul className="hairandnail-list">
                     {[
-                      "Male Pattern Baldness",
-                      "Female Pattern Hair Loss",
-                      "Postpartum Hair Fall",
-                      "Stress-Related Hair Loss",
+                      "Nail Fungus",
+                      "Brittle Nails",
+                      "Nail Discoloration",
+                      "Nail Deformities",
+                      "Ingrown Nails",
                     ].map((item) => (
                       <li key={item}>
                         <span className="hairandnail-list-dot" />
@@ -137,135 +239,37 @@ const HairandNail = () => {
                   </ul>
                 </div>
               </div>
-            </div>
 
-            {/* Scalp Treatments */}
-            <div
-              className="col-md-6 col-lg-4 hairandnail-reveal hairandnail-reveal-delay-2"
-              ref={r4}
-            >
-              <div className="hairandnail-card">
-                <div className="hairandnail-card-img-wrap">
-                  {/* <img src={scalpImg} alt="Scalp Treatments" /> */}
-                  <div className="hairandnail-card-icon">
-                    <IconScalp />
+              {/* Nail Health Assessment */}
+              <div className="col-md-6 hairandnail-reveal hairandnail-reveal-delay-2">
+                <div className="hairandnail-assess-card">
+                  <div className="hairandnail-disorder-icon">
+                    <IconAssess />
+                  </div>
+                  <div className="hairandnail-disorder-sub">
+                    Nail Health Assessment
+                  </div>
+                  <h3 className="hairandnail-assess-title">
+                    Nail Health Assessment
+                  </h3>
+                  <p className="hairandnail-assess-desc">
+                    Evaluation of nutritional, hormonal, and dermatological
+                    factors affecting nail health.
+                  </p>
+                  <div className="hairandnail-assess-factors">
+                    <span className="hairandnail-factor-pill">Nutritional</span>
+                    <span className="hairandnail-factor-pill">Hormonal</span>
+                    <span className="hairandnail-factor-pill">
+                      Dermatological
+                    </span>
                   </div>
                 </div>
-                <div className="hairandnail-card-body">
-                  <div className="hairandnail-card-subtitle">
-                    Scalp Treatments
-                  </div>
-                  <h3 className="hairandnail-card-title">Treatment for:</h3>
-                  <ul className="hairandnail-list">
-                    {[
-                      "Dandruff",
-                      "Scalp Infections",
-                      "Scalp Psoriasis",
-                      "Itchy Scalp Conditions",
-                    ].map((item) => (
-                      <li key={item}>
-                        <span className="hairandnail-list-dot" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Hair Growth Programs */}
-            <div
-              className="col-md-12 col-lg-4 hairandnail-reveal hairandnail-reveal-delay-3"
-              ref={r5}
-            >
-              <div className="hairandnail-program-card">
-                <div className="hairandnail-program-label">
-                  Hair Growth Programs
-                </div>
-                <h3 className="hairandnail-program-title">
-                  Hair Growth Programs
-                </h3>
-                <p className="hairandnail-program-desc">
-                  Customized treatment plans designed to improve scalp health
-                  and support healthy hair growth.
-                </p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <hr className="hairandnail-hr" />
-
-      {/* ── NAIL CLINIC SERVICES ── */}
-      <section className="hairandnail-section hairandnail-section-alt">
-        <div className="container">
-          {/* Section Header */}
-          <div className="row mb-5">
-            <div className="col-lg-5 hairandnail-reveal" ref={r6}>
-              <h2 className="hairandnail-section-title">
-                Nail Clinic Services
-              </h2>
-              <div className="hairandnail-section-divider" />
-            </div>
-          </div>
-
-          {/* Nail Cards */}
-          <div className="row g-4" ref={r7}>
-            {/* Nail Disorders */}
-            <div className="col-md-6">
-              <div className="hairandnail-disorder-card">
-                <div className="hairandnail-disorder-icon">
-                  <IconNail />
-                </div>
-                <div className="hairandnail-disorder-sub">Nail Disorders</div>
-                <h3 className="hairandnail-disorder-title">Treatment for:</h3>
-                <ul className="hairandnail-list">
-                  {[
-                    "Nail Fungus",
-                    "Brittle Nails",
-                    "Nail Discoloration",
-                    "Nail Deformities",
-                    "Ingrown Nails",
-                  ].map((item) => (
-                    <li key={item}>
-                      <span className="hairandnail-list-dot" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Nail Health Assessment */}
-            <div className="col-md-6 hairandnail-reveal hairandnail-reveal-delay-2">
-              <div className="hairandnail-assess-card">
-                <div className="hairandnail-disorder-icon">
-                  <IconAssess />
-                </div>
-                <div className="hairandnail-disorder-sub">
-                  Nail Health Assessment
-                </div>
-                <h3 className="hairandnail-assess-title">
-                  Nail Health Assessment
-                </h3>
-                <p className="hairandnail-assess-desc">
-                  Evaluation of nutritional, hormonal, and dermatological
-                  factors affecting nail health.
-                </p>
-                <div className="hairandnail-assess-factors">
-                  <span className="hairandnail-factor-pill">Nutritional</span>
-                  <span className="hairandnail-factor-pill">Hormonal</span>
-                  <span className="hairandnail-factor-pill">
-                    Dermatological
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 };
 

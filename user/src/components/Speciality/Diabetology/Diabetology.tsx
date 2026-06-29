@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Diabetology.css";
-
+import PageBanner from "../../PageBanner/PageBanner";
 import img from "../../../assets/speciality/obstetricsandmaternity.png";
 
 const diabetesServices = [
@@ -86,9 +86,8 @@ function ServiceCard({ title, description, index }) {
     <div className="col-12 col-sm-6 col-lg-3">
       <article
         ref={ref}
-        className={`diabetology-service-card ${
-          inView ? "diabetology-service-card--visible" : ""
-        }`}
+        className={`diabetology-service-card ${inView ? "diabetology-service-card--visible" : ""
+          }`}
         style={{ transitionDelay: `${index * 90}ms` }}
       >
         <div className="diabetology-service-card__mark" aria-hidden="true" />
@@ -105,9 +104,8 @@ function ChecklistItem({ label, index }) {
   return (
     <li
       ref={ref}
-      className={`diabetology-checklist__item ${
-        inView ? "diabetology-checklist__item--visible" : ""
-      }`}
+      className={`diabetology-checklist__item ${inView ? "diabetology-checklist__item--visible" : ""
+        }`}
       style={{ transitionDelay: `${index * 60}ms` }}
     >
       <span className="diabetology-checklist__icon" aria-hidden="true">
@@ -129,69 +127,72 @@ function ChecklistItem({ label, index }) {
 
 export default function Diabetology() {
   return (
-    <div className="diabetology">
-      {/* Hero */}
-      <section className="diabetology-hero">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-12 col-lg-7">
-              {/* <p className="diabetology-hero__eyebrow">
+    <>
+      <PageBanner title="Diabetology" />
+      <div className="diabetology">
+        {/* Hero */}
+        <section className="diabetology-hero">
+          <div className="container">
+            <div className="row align-items-center">
+              <div className="col-12 col-lg-7">
+                {/* <p className="diabetology-hero__eyebrow">
                 Diabetology Department
               </p> */}
-              <div className="section-title">
-              <h2 className="">
-                Comprehensive Diabetes Care Centre
-              </h2>
+                <div className="section-title">
+                  <h2 className="">
+                    Comprehensive Diabetes Care Centre
+                  </h2>
+                </div>
+                <p className="diabetology-hero__subtitle">
+                  Effective Diabetes Management for a Healthier Future
+                </p>
+                <p className="diabetology-hero__lede">
+                  Our diabetology department helps patients manage blood sugar
+                  levels, reduce complications, and improve quality of life
+                  through individualized treatment plans.
+                </p>
               </div>
-              <p className="diabetology-hero__subtitle">
-                Effective Diabetes Management for a Healthier Future
-              </p>
-              <p className="diabetology-hero__lede">
-                Our diabetology department helps patients manage blood sugar
-                levels, reduce complications, and improve quality of life
-                through individualized treatment plans.
-              </p>
-            </div>
-            <div className="col-12 col-lg-5">
-            <img src={img} style={{ borderRadius: "10px" }} alt="" />
+              <div className="col-12 col-lg-5">
+                <img src={img} style={{ borderRadius: "10px" }} alt="" />
 
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Diabetes Services */}
-      <section className="diabetology-section diabetology-section--services">
-        <div className="container">
-          <h2 className="diabetology-section__title">Diabetes Services</h2>
-          <div className="row g-4" style={{     "paddingTop": "30px"}}>
-            {diabetesServices.map((service, index) => (
-              <ServiceCard
-                key={service.title}
-                title={service.title}
-                description={service.description}
-                index={index}
-              />
-            ))}
+        {/* Diabetes Services */}
+        <section className="diabetology-section diabetology-section--services">
+          <div className="container">
+            <h2 className="diabetology-section__title">Diabetes Services</h2>
+            <div className="row g-4" style={{ "paddingTop": "30px" }}>
+              {diabetesServices.map((service, index) => (
+                <ServiceCard
+                  key={service.title}
+                  title={service.title}
+                  description={service.description}
+                  index={index}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Monitoring & Prevention */}
-      <section className="diabetology-section diabetology-section--monitoring">
-        <div className="container">
-          <h2 className="diabetology-section__title">
-            Monitoring &amp; Prevention
-          </h2>
-          <ul className="diabetology-checklist row g-3 list-unstyled">
-            {monitoringAndPrevention.map((label, index) => (
-              <div className="col-12 col-md-6" key={label}>
-                <ChecklistItem label={label} index={index} />
-              </div>
-            ))}
-          </ul>
-        </div>
-      </section>
-    </div>
+        {/* Monitoring & Prevention */}
+        <section className="diabetology-section diabetology-section--monitoring">
+          <div className="container">
+            <h2 className="diabetology-section__title">
+              Monitoring &amp; Prevention
+            </h2>
+            <ul className="diabetology-checklist row g-3 list-unstyled">
+              {monitoringAndPrevention.map((label, index) => (
+                <div className="col-12 col-md-6" key={label}>
+                  <ChecklistItem label={label} index={index} />
+                </div>
+              ))}
+            </ul>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }

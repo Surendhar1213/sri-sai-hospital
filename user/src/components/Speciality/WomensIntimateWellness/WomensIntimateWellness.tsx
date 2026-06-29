@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./WomensIntimateWellness.css";
+import PageBanner from "../../PageBanner/PageBanner";
 import img1 from "../../../assets/speciality/womensIntimatewellness-1.png";
 import img2 from "../../../assets/speciality/womensIntimatewellness-2.png";
 
@@ -173,119 +174,122 @@ export default function WomensIntimateWellness() {
   };
 
   return (
-    <section className="woman-intimate">
-      {/* HERO */}
-      <div className="woman-intimate__hero">
-        <div className="woman-intimate__hero-circle wi-c1" aria-hidden="true" />
-        <div className="woman-intimate__hero-circle wi-c2" aria-hidden="true" />
-        <div className="container position-relative">
-          <div className="row justify-content-center align-items-center">
-            <div className="col-xl-5 col-md-5">
-              <img className="pf-hero__img" src={img1} alt="Pelvic Floor" />
-            </div>
-            <div className="col-xl-6 col-md-6">
-              {/* <span className="woman-intimate__tag">
+    <>
+      <PageBanner title="Women's Intimate Wellness" />
+      <section className="woman-intimate">
+        {/* HERO */}
+        <div className="woman-intimate__hero">
+          <div className="woman-intimate__hero-circle wi-c1" aria-hidden="true" />
+          <div className="woman-intimate__hero-circle wi-c2" aria-hidden="true" />
+          <div className="container position-relative">
+            <div className="row justify-content-center align-items-center">
+              <div className="col-xl-5 col-md-5">
+                <img className="pf-hero__img" src={img1} alt="Pelvic Floor" />
+              </div>
+              <div className="col-xl-6 col-md-6">
+                {/* <span className="woman-intimate__tag">
                 Women's Intimate Wellness
               </span> */}
-              <div className="section-title">
-                <h2 className="woman-intimate__h1">
-                  Advanced Vaginal
-                  <em>Wellness Solutions</em>
-                </h2>
-              </div>
-              <p className="woman-intimate__lead" style={{marginBottom:"10px"}}>
-                Women's intimate health may be affected by childbirth, hormonal fluctuations, menopause, and aging.
-              </p>
-              <p className="woman-intimate__lead">Our advanced wellness treatments help support vaginal health, pelvic strength, and overall feminine wellness.
-</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CONDITIONS */}
-      <div className="woman-intimate__ben-section ">
-        <div className="woman-intimate__ben-blob" aria-hidden="true" />
-
-        <div className="container-fluid">
-          <div
-            className="woman-intimate-bg section-space"
-            style={{
-              borderRadius: "15px",
-              paddingLeft: "20px",
-              paddingRight: "20px",
-            }}
-          >
-            <div className="row justify-content-center mb-4">
-              <div className="col-auto text-center" ref={ref}>
-                <h2 className="woman-intimate__sec-title">
-                  Conditions Addressed
-                </h2>
-                <div className="woman-intimate__rule" />
-              </div>
-            </div>
-            <div className="row g-3 justify-content-center">
-              {conditions.map((c, i) => (
-                <div
-                  key={i}
-                  className="col-6 col-sm-4 col-md wi-fade"
-                  ref={ref}
-                  style={{ transitionDelay: `${i * 75}ms` }}
-                >
-                  <div className="woman-intimate__cond-card">
-                    <div className="woman-intimate__cond-icon">{c.icon}</div>
-                    <p className="woman-intimate__cond-label">{c.label}</p>
-                  </div>
+                <div className="section-title">
+                  <h2 className="woman-intimate__h1">
+                    Advanced Vaginal
+                    <em>Wellness Solutions</em>
+                  </h2>
                 </div>
-              ))}
+                <p className="woman-intimate__lead" style={{ marginBottom: "10px" }}>
+                  Women's intimate health may be affected by childbirth, hormonal fluctuations, menopause, and aging.
+                </p>
+                <p className="woman-intimate__lead">Our advanced wellness treatments help support vaginal health, pelvic strength, and overall feminine wellness.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* BENEFITS */}
-      <div className="section-space">
-        <div className="container position-relative">
-          <div className="row justify-content-center">
-            <div className="col-md-6">
-              <img className="pf-hero__img" src={img2} alt="Pelvic Floor" />
-            </div>
-            <div className="col-lg-6 col-md-9">
-              <div className="section-title text-center">
-                <h2>Benefits</h2>
+        {/* CONDITIONS */}
+        <div className="woman-intimate__ben-section ">
+          <div className="woman-intimate__ben-blob" aria-hidden="true" />
+
+          <div className="container-fluid">
+            <div
+              className="woman-intimate-bg section-space"
+              style={{
+                borderRadius: "15px",
+                paddingLeft: "20px",
+                paddingRight: "20px",
+              }}
+            >
+              <div className="row justify-content-center mb-4">
+                <div className="col-auto text-center" ref={ref}>
+                  <h2 className="woman-intimate__sec-title">
+                    Conditions Addressed
+                  </h2>
+                  <div className="woman-intimate__rule" />
+                </div>
               </div>
-              {benefits.map((b, i) => (
-                <div
-                  key={i}
-                  className="woman-intimate__ben-row wi-fade"
-                  ref={ref}
-                  style={{ transitionDelay: `${i * 80}ms` }}
-                >
-                  <span
-                    className="woman-intimate__ben-check"
-                    aria-hidden="true"
+              <div className="row g-3 justify-content-center">
+                {conditions.map((c, i) => (
+                  <div
+                    key={i}
+                    className="col-6 col-sm-4 col-md wi-fade"
+                    ref={ref}
+                    style={{ transitionDelay: `${i * 75}ms` }}
                   >
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <path
-                        d="M2 6.5l3.5 3.5 5.5-6.5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <span className="woman-intimate__ben-text">{b}</span>
-                  <span
-                    className="woman-intimate__ben-bar"
-                    aria-hidden="true"
-                  />
-                </div>
-              ))}
+                    <div className="woman-intimate__cond-card">
+                      <div className="woman-intimate__cond-icon">{c.icon}</div>
+                      <p className="woman-intimate__cond-label">{c.label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+
+        {/* BENEFITS */}
+        <div className="section-space">
+          <div className="container position-relative">
+            <div className="row justify-content-center">
+              <div className="col-md-6">
+                <img className="pf-hero__img" src={img2} alt="Pelvic Floor" />
+              </div>
+              <div className="col-lg-6 col-md-9">
+                <div className="section-title text-center">
+                  <h2>Benefits</h2>
+                </div>
+                {benefits.map((b, i) => (
+                  <div
+                    key={i}
+                    className="woman-intimate__ben-row wi-fade"
+                    ref={ref}
+                    style={{ transitionDelay: `${i * 80}ms` }}
+                  >
+                    <span
+                      className="woman-intimate__ben-check"
+                      aria-hidden="true"
+                    >
+                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                        <path
+                          d="M2 6.5l3.5 3.5 5.5-6.5"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <span className="woman-intimate__ben-text">{b}</span>
+                    <span
+                      className="woman-intimate__ben-bar"
+                      aria-hidden="true"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

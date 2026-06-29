@@ -3,6 +3,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { FaEye } from 'react-icons/fa';
 import './Gallery.css';
+import PageBanner from '../PageBanner/PageBanner';
 
 // Import images (adjust paths as needed)
 import gal1 from '../../assets/gallery/gal1.jpg';
@@ -42,6 +43,8 @@ const Gallery = () => {
   ];
 
   return (
+    <>
+      <PageBanner title="Gallery" />
     <section className="project-sec2 project-masionary py-5">
       <div className="container">
         <div className="row gallery-grid" id="gallery-container">
@@ -65,6 +68,7 @@ const Gallery = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

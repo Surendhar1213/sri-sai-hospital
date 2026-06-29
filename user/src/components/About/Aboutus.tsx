@@ -17,8 +17,7 @@ import {
 import AboutImage from "../../assets/about/about.png";
 import Abb from "../../assets/about/why-choose-us.jpg";
 
-import urologyHeroImg from "../../assets/speciality/obstetricsandmaternity.png";
-
+import PageBanner from "../PageBanner/PageBanner";
 
 import "./Aboutus.css";
 
@@ -68,25 +67,7 @@ const Aboutus = () => {
 
   return (
     <>
-      <section className="pages-hero">
-        <img
-          src={urologyHeroImg}
-          alt="Urology department"
-          className="pages-hero-image"
-        />
-        <div className="pages-hero-overlay" />
-
-        <div className="container">
-          <div className="row align-items-center">
-            {/* Left: text */}
-            <div className="col-lg-12">
-              <div className="pages-hero-content">
-                <h1 className="pages-hero-title"> About us </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageBanner title="About Us" />
 
       {/* About Section */}
       <section className="about-section  section-space" id="about">

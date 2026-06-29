@@ -9,12 +9,15 @@ import {
   CheckCircle,
 } from "lucide-react";
 import "./Dermatology.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 import img from "../../../assets/speciality/cosmetology.png";
 
 
 const Dermatology = () => {
   return (
+    <>
+      <PageBanner title="Dermatology & Cosmetology" />
     <div className="DermatologyandCosmetology-container min-vh-100">
       {/* HEADER SECTION */}
       <section className="DermatologyandCosmetology-header text-white">
@@ -259,6 +262,7 @@ const Dermatology = () => {
         </section>
       </main>
     </div>
+    </>
   );
 };
 

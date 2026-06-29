@@ -1,6 +1,7 @@
 // GeneralMedicine.jsx
 
 import "./GeneralMedicine.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 import img1 from "../../../assets/speciality/general-medicine.png";
 
@@ -24,6 +25,8 @@ const SERVICES = [
 // ── Component ──
 export default function GeneralMedicine() {
   return (
+    <>
+      <PageBanner title="General Medicine" />
     <div className="GeneralMedicine-root">
       {/* =============================================
           HERO SECTION
@@ -189,5 +192,6 @@ export default function GeneralMedicine() {
         </div>
       </section> */}
     </div>
+    </>
   );
 }

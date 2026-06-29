@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Urology.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 // ── Placeholder image imports (replace paths as needed) ──
 import urologyHeroImg from "../../../assets/speciality/obstetricsandmaternity.png";
@@ -221,6 +222,8 @@ export default function Urology() {
   useScrollReveal();
 
   return (
+    <>
+      <PageBanner title="Urology" />
     <div className="Urology-page">
       {/* ══ HERO ══ */}
       <section className="Urology-hero" aria-label="Urology Hero">
@@ -304,5 +307,6 @@ export default function Urology() {
         </div>
       </section>
     </div>
+    </>
   );
 }

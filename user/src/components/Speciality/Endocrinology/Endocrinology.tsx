@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Endocrinology.css";
+import PageBanner from "../../PageBanner/PageBanner";
 import img1 from "../../../assets/speciality/endocrinology.webp";
 
 const Endocrinology = () => {
@@ -200,6 +201,8 @@ const Endocrinology = () => {
   ];
 
   return (
+    <>
+      <PageBanner title="Endocrinology" />
     <section className="endo-page">
       {/* ── HERO ── */}
       <div className="endo-hero">
@@ -258,7 +261,7 @@ const Endocrinology = () => {
                 <div
                   className="endo-card endo-reveal"
                   ref={addRef}
-                  style={{ "--delay": `${i * 0.1}s` }}
+                  style={{ "--delay": `${i * 0.1}s` } as React.CSSProperties}
                 >
                   <div className="endo-card__header">
                     <div className="endo-card__icon">{group.icon}</div>
@@ -278,7 +281,8 @@ const Endocrinology = () => {
           </div>
         </div>
       </div>
-    </section>
+    </section>     
+    </>
   );
 };
 

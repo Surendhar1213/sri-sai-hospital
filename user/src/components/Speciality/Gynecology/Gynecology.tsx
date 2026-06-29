@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Gynecology.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 import img from "../../../assets/speciality/gynecology.png";
 
@@ -217,60 +218,63 @@ export default function Gynecology() {
   }, []);
 
   return (
-    <section className="gyno" aria-labelledby="gyno-hero-title">
-      {/* ---------- Hero ---------- */}
-      <div className="section-space">
-        <div className="container">
-          <div
-            className="row"
-            style={{ justifyContent: "center", alignItems: "center" }}
-          >
-            <div className="col-md-5">
-              <img src={img} style={{ borderRadius: "10px" }} alt="" />
-            </div>
-            <div className="col-md-5">
-              <div className="gyno-hero-inner section-title" ref={heroRef}>
-                <h2 id="gyno-hero-title" className="gyno-hero-title">
-                  Comprehensive Women&rsquo;s Healthcare
-                </h2>
-                <p>
-                  Women&rsquo;s healthcare needs evolve through adolescence,
-                  reproductive years, pregnancy, menopause, and beyond. Our
-                  gynecology department provides complete diagnostic,
-                  preventive, and treatment solutions tailored to every stage of
-                  life.
-                </p>
+    <>
+      <PageBanner title="Gynecology & Women's Health" />
+      <section className="gyno" aria-labelledby="gyno-hero-title">
+        {/* ---------- Hero ---------- */}
+        <div className="section-space">
+          <div className="container">
+            <div
+              className="row"
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
+              <div className="col-md-5">
+                <img src={img} style={{ borderRadius: "10px" }} alt="" />
+              </div>
+              <div className="col-md-5">
+                <div className="gyno-hero-inner section-title" ref={heroRef}>
+                  <h2 id="gyno-hero-title" className="gyno-hero-title">
+                    Comprehensive Women&rsquo;s Healthcare
+                  </h2>
+                  <p>
+                    Women&rsquo;s healthcare needs evolve through adolescence,
+                    reproductive years, pregnancy, menopause, and beyond. Our
+                    gynecology department provides complete diagnostic,
+                    preventive, and treatment solutions tailored to every stage of
+                    life.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ---------- Services ---------- */}
-      <div className="gyno-services section-space">
-        <div className="gyno-services-heading section-title" ref={headingRef}>
-          <h2>Our Gynecology Services</h2>
-        </div>
+        {/* ---------- Services ---------- */}
+        <div className="gyno-services section-space">
+          <div className="gyno-services-heading section-title" ref={headingRef}>
+            <h2>Our Gynecology Services</h2>
+          </div>
 
-        <div className="gyno-grid">
-          {SERVICES.map((service, i) => (
-            <article
-              className={`gyno-card gyno-card--${service.id} `}
-              key={service.id}
-              ref={cardRefs.current[i]}
-            >
-              <div className="gyno-card-icon">{service.icon}</div>
-              <h3 className="gyno-card-title">{service.title}</h3>
-              <p className="gyno-card-lead">{service.lead}</p>
-              <ul className="gyno-card-list">
-                {service.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
+          <div className="gyno-grid">
+            {SERVICES.map((service, i) => (
+              <article
+                className={`gyno-card gyno-card--${service.id} `}
+                key={service.id}
+                ref={cardRefs.current[i]}
+              >
+                <div className="gyno-card-icon">{service.icon}</div>
+                <h3 className="gyno-card-title">{service.title}</h3>
+                <p className="gyno-card-lead">{service.lead}</p>
+                <ul className="gyno-card-list">
+                  {service.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

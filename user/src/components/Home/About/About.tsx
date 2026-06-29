@@ -391,7 +391,7 @@ const About = () => {
                     data-cursor="-opaque"
                     ref={headingRef}
                   >
-                   Excellence in Women's Health & Multi-Speciality Care
+                    Excellence in Women's Health & Multi-Speciality Care
                   </h2>
                 </div>
 

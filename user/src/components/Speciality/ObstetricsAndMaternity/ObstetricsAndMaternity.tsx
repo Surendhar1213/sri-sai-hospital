@@ -11,9 +11,12 @@ import {
 import img from "../../../assets/speciality/obstetricsandmaternity.png";
 
 import "./ObstetricsAndMaternity.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 const ObstetricsAndMaternity = () => {
   return (
+    <>
+      <PageBanner title="Obstetrics & Maternity" />
     <section className="obstetrics-maternity-section py-5">
       <div className="container">
         {/* Header */}
@@ -129,6 +132,7 @@ const ObstetricsAndMaternity = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

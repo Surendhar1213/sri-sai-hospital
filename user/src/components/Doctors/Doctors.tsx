@@ -1,6 +1,7 @@
 
 import React from 'react';
 import './Doctors.css';
+import PageBanner from '../PageBanner/PageBanner';
 
 // ── Placeholder image imports (replace with real paths) ──────
 import drAnuradhaImg    from '../../assets/Doctors/Doctors.png';
@@ -120,6 +121,8 @@ function DoctorCard({ doctor, index }) {
 
 export default function Doctors() {
   return (
+    <>
+      <PageBanner title="Doctors" />
     <section className="doctors-section" aria-labelledby="doctors-heading">
       {/* Ambient background */}
       <div className="doctors-bg-texture" aria-hidden="true" />
@@ -150,5 +153,6 @@ export default function Doctors() {
 
       </div>
     </section>
+    </>
   );
 }

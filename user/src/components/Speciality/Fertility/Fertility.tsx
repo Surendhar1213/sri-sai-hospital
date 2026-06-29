@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Fertility.css";
+import PageBanner from "../../PageBanner/PageBanner";
 
 import img from "../../../assets/speciality/fertility/main.png";
 
@@ -215,113 +216,116 @@ const Fertility = () => {
   }, []);
 
   return (
-    <section className="fertility-section" ref={rootRef}>
-      <div className="container">
-        {/* Hero */}
-        <div className="fertility-hero-divider section-space">
-          <div className="row justify-content-center align-items-center">
-            <div className="col-md-5">
-              <img src={img} alt="" style={{ borderRadius: "10px" }} />
-            </div>
-            <div className="col-md-6">
-              <div className="fertility-hero fertility-reveal">
-                <div className="section-title">
-                  <h2 className="fertility-hero-title ">
-                    Helping You <em>Build</em> Your Family
-                  </h2>
+    <>
+      <PageBanner title="Infertility & Fertility" />
+      <section className="fertility-section" ref={rootRef}>
+        <div className="container">
+          {/* Hero */}
+          <div className="fertility-hero-divider section-space">
+            <div className="row justify-content-center align-items-center">
+              <div className="col-md-5">
+                <img src={img} alt="" style={{ borderRadius: "10px" }} />
+              </div>
+              <div className="col-md-6">
+                <div className="fertility-hero fertility-reveal">
+                  <div className="section-title">
+                    <h2 className="fertility-hero-title ">
+                      Helping You <em>Build</em> Your Family
+                    </h2>
+                  </div>
+                  <p className="fertility-hero-text">
+                    Infertility affects many couples and can result from various
+                    medical conditions affecting either partner. Our fertility
+                    specialists provide personalized evaluation and treatment
+                    plans to maximize the chances of conception.
+                  </p>
                 </div>
-                <p className="fertility-hero-text">
-                  Infertility affects many couples and can result from various
-                  medical conditions affecting either partner. Our fertility
-                  specialists provide personalized evaluation and treatment
-                  plans to maximize the chances of conception.
-                </p>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Partner journey: female + male, side by side */}
-        <div className="fertility-partner-grid section-space">
-          <article
-            className="fertility-partner-card fertility-partner-card--female fertility-reveal"
-            data-delay="0"
-          >
-            <span className="fertility-partner-tag">For Her</span>
-            <h2 className="fertility-partner-title">
-              Female Fertility Services
-            </h2>
-            <ul className="fertility-service-list">
-              {femaleServices.map((item, i) => (
-                <li
-                  className="fertility-service-item fertility-reveal"
-                  data-delay={120 + i * 70}
-                  key={item.key}
-                >
-                  <Icon path={icons[item.key]} />
-                  <span>{item.label}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
+          {/* Partner journey: female + male, side by side */}
+          <div className="fertility-partner-grid section-space">
+            <article
+              className="fertility-partner-card fertility-partner-card--female fertility-reveal"
+              data-delay="0"
+            >
+              <span className="fertility-partner-tag">For Her</span>
+              <h2 className="fertility-partner-title">
+                Female Fertility Services
+              </h2>
+              <ul className="fertility-service-list">
+                {femaleServices.map((item, i) => (
+                  <li
+                    className="fertility-service-item fertility-reveal"
+                    data-delay={120 + i * 70}
+                    key={item.key}
+                  >
+                    <Icon path={icons[item.key]} />
+                    <span>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
 
-          <div
-            className="fertility-divider fertility-reveal"
-            data-delay="150"
-            aria-hidden="true"
-          >
-            <span className="fertility-divider-line" />
-            <span className="fertility-divider-mark">&amp;</span>
-            <span className="fertility-divider-line" />
+            <div
+              className="fertility-divider fertility-reveal"
+              data-delay="150"
+              aria-hidden="true"
+            >
+              <span className="fertility-divider-line" />
+              <span className="fertility-divider-mark">&amp;</span>
+              <span className="fertility-divider-line" />
+            </div>
+
+            <article
+              className="fertility-partner-card fertility-partner-card--male fertility-reveal"
+              data-delay="100"
+            >
+              <span className="fertility-partner-tag">For Him</span>
+              <h2 className="fertility-partner-title">
+                Male Fertility Evaluation
+              </h2>
+              <ul className="fertility-service-list">
+                {maleServices.map((item, i) => (
+                  <li
+                    className="fertility-service-item fertility-reveal"
+                    data-delay={220 + i * 70}
+                    key={item.key}
+                  >
+                    <Icon path={icons[item.key]} />
+                    <span>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
           </div>
 
-          <article
-            className="fertility-partner-card fertility-partner-card--male fertility-reveal"
-            data-delay="100"
-          >
-            <span className="fertility-partner-tag">For Him</span>
-            <h2 className="fertility-partner-title">
-              Male Fertility Evaluation
-            </h2>
-            <ul className="fertility-service-list">
-              {maleServices.map((item, i) => (
-                <li
-                  className="fertility-service-item fertility-reveal"
-                  data-delay={220 + i * 70}
+          {/* Treatments: the converged, shared path forward */}
+          <div className="fertility-treatments section-space">
+            <div className="section-title  text-center">
+              <h2>Fertility Treatments</h2>
+            </div>
+
+            <div className="fertility-treatment-grid">
+              {treatments.map((item, i) => (
+                <div
+                  className="fertility-treatment-card fertility-reveal"
+                  data-delay={i * 90}
                   key={item.key}
                 >
-                  <Icon path={icons[item.key]} />
-                  <span>{item.label}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-        </div>
-
-        {/* Treatments: the converged, shared path forward */}
-        <div className="fertility-treatments section-space">
-          <div className="section-title  text-center">
-            <h2>Fertility Treatments</h2>
-          </div>
-
-          <div className="fertility-treatment-grid">
-            {treatments.map((item, i) => (
-              <div
-                className="fertility-treatment-card fertility-reveal"
-                data-delay={i * 90}
-                key={item.key}
-              >
-                <div className="fertility-treatment-image">
-                  <img src={item.image} alt="" />
+                  <div className="fertility-treatment-image">
+                    <img src={item.image} alt="" />
+                  </div>
+                  <h3 className="fertility-treatment-title">{item.label}</h3>
+                  {/* <p className="fertility-treatment-text">{item.text}</p> */}
                 </div>
-                <h3 className="fertility-treatment-title">{item.label}</h3>
-                {/* <p className="fertility-treatment-text">{item.text}</p> */}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

@@ -20,6 +20,10 @@ import Gallery from "./components/Gallery/Gallery";
 import Contactus from "./components/Contactus/Contactus";
 import Facilities from "./components/Facilities/Facilities";
 
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import BookAppointment from "./pages/BookAppointment";
+
 function App() {
   return (
     <BrowserRouter>
@@ -58,6 +62,13 @@ function App() {
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contactus" element={<Contactus />} />
+
+          {/* ✅ Auth Pages — Login & Register */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* ✅ Book Appointment */}
+          <Route path="/book-appointment" element={<BookAppointment />} />
         </Route>
       </Routes>
     </BrowserRouter>
