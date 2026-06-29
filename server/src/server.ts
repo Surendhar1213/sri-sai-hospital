@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import dns from "node:dns";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";   // ← ADD THIS LINE
+
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
@@ -22,6 +24,9 @@ app.use(express.json());
 
 // ✅ Admin Auth Routes register pannanum
 app.use("/api/admin", authRoutes);
+
+// ✅ User Auth Routes register pannanum
+app.use("/api/user", userRoutes);
 
 // Health check
 app.get("/", (req, res) => {
