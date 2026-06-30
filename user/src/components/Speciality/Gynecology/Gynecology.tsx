@@ -6,14 +6,6 @@ import img from "../../../assets/speciality/gynecology.png";
 
 /* ---------- content (kept verbatim to the brief) ---------- */
 
-const LIFE_STAGES = [
-  "Adolescence",
-  "Reproductive Years",
-  "Pregnancy",
-  "Menopause",
-  "Beyond",
-];
-
 const SERVICES = [
   {
     id: "menstrual",
@@ -166,8 +158,8 @@ const SERVICES = [
 
 /* ---------- scroll-reveal hook (matches existing project pattern) ---------- */
 
-function useReveal() {
-  const ref = useRef(null);
+function useReveal<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
 
   useEffect(() => {
     const node = ref.current;
@@ -193,25 +185,25 @@ function useReveal() {
 /* ---------- component ---------- */
 
 export default function Gynecology() {
-  const heroRef = useReveal();
-  const ribbonRef = useReveal();
-  const headingRef = useReveal();
-  const cardRefs = useRef(SERVICES.map(() => React.createRef()));
+  const heroRef = useReveal<HTMLDivElement>();
+  const headingRef = useReveal<HTMLDivElement>();
+  const cardRefs = useRef(SERVICES.map(() => React.createRef<HTMLElement>()));
 
   useEffect(() => {
     const observers = cardRefs.current.map((ref, i) => {
-      if (!ref.current) return null;
+      const node = ref.current;
+      if (!node) return null;
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            ref.current.style.transitionDelay = `${i * 90}ms`;
-            ref.current.classList.add("is-visible");
-            observer.unobserve(ref.current);
+            node.style.transitionDelay = `${i * 90}ms`;
+            node.classList.add("is-visible");
+            observer.unobserve(node);
           }
         },
         { threshold: 0.15, rootMargin: "0px 0px -60px 0px" },
       );
-      observer.observe(ref.current);
+      observer.observe(node);
       return observer;
     });
     return () => observers.forEach((o) => o && o.disconnect());

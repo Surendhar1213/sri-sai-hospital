@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   FaTimes,
   FaEnvelope,
@@ -44,8 +43,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
     gender: "",
     bloodGroup: "Unknown",
   });
-
-  const navigate = useNavigate();
 
   // Reset on tab switch
   useEffect(() => {

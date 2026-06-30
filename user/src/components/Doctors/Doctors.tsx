@@ -1,5 +1,3 @@
-
-import React from 'react';
 import './Doctors.css';
 import PageBanner from '../PageBanner/PageBanner';
 
@@ -8,8 +6,19 @@ import drAnuradhaImg    from '../../assets/Doctors/Doctors.png';
 import drJayashreeImg   from '../../assets/Doctors/Doctors.png';
 import drArunkarthickImg from '../../assets/Doctors/Doctors.png';
 
+interface Doctor {
+  id: number;
+  name: string;
+  credentials: string | null;
+  role: string;
+  centre: string | null;
+  expertiseLabel: string;
+  expertise: string[];
+  image: string;
+}
+
 // ── Data ─────────────────────────────────────────────────────
-const specialists = [
+const specialists: Doctor[] = [
   {
     id: 1,
     name: 'Dr. R. Anuradha',
@@ -63,7 +72,12 @@ const specialists = [
 
 // ── Sub-components ────────────────────────────────────────────
 
-function DoctorCard({ doctor, index }) {
+interface DoctorCardProps {
+  doctor: Doctor;
+  index: number;
+}
+
+function DoctorCard({ doctor, index }: DoctorCardProps) {
   return (
     <div
       className="doctors-card"

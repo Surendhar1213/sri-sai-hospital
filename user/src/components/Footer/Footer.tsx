@@ -1,4 +1,3 @@
-import React from "react";
 import "./Footer.css";
 import {
   FaPhone,
@@ -10,7 +9,6 @@ import {
 
 import {
   FaXTwitter,
-  FaArrowRight,
   FaArrowUpRightFromSquare,
 } from "react-icons/fa6";
 
@@ -65,7 +63,9 @@ const Footer = () => {
                       </li>
                       <li>
                         <span>Call Us:</span>
-                        <h5 className="title">+91 44-26378138</h5>
+                        <h5 className="title"> +91 44 42061148,</h5>
+                        <h5 className="title"> +91 44 35512486,</h5>
+                        <h5 className="title"> +91 94444 79090,</h5>
                       </li>
                     </ul>
                   </div>

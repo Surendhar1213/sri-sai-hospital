@@ -29,6 +29,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     // 4. New user DB-ல save பண்ணு
     const newUser = await User.create({
       name,
+      
       email,
       password: hashedPassword,
       phone,

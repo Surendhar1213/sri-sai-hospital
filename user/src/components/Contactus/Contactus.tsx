@@ -1,36 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   FiPhone,
   FiMail,
-  FiMapPin,
-  FiClock,
   FiCalendar,
   FiUser,
   FiMessageSquare,
-  FiChevronRight,
-  FiNavigation,
-  FiMap,
-  FiAlertCircle,
-  FiActivity,
 } from "react-icons/fi";
-import {
-  MdLocalHospital,
-  MdVerified,
-  MdScience,
-  MdFavorite,
-  MdAccessTime,
-  MdHealthAndSafety,
-  MdGroups,
-  MdMedicalServices,
-  MdPersonSearch,
-  MdStar,
-} from "react-icons/md";
 import "./Contactus.css";
 import PageBanner from "../PageBanner/PageBanner";
 
 /* ── Scroll Reveal Hook ─────────────────────────────────── */
-function useScrollReveal() {
-  const ref = useRef(null);
+function useScrollReveal<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -45,105 +26,16 @@ function useScrollReveal() {
       },
       { threshold: 0.12 },
     );
-    targets.forEach((t) => observer.observe(t));
+    targets.forEach((t: Element) => observer.observe(t));
     return () => observer.disconnect();
   }, []);
   return ref;
 }
 
-const CONTACT_CARDS = [
-  {
-    icon: <FiPhone />,
-    iconClass: "contact-icon-brand",
-    label: "Phone",
-    title: "Call Us",
-    value: "+91 XXXXX XXXXX",
-    secondary: "Mon – Sat, 8 AM – 8 PM",
-  },
-  {
-    icon: <FiAlertCircle />,
-    iconClass: "contact-icon-green",
-    label: "Emergency",
-    title: "24/7 Emergency",
-    value: "+91 XXXXX XXXXX",
-    secondary: "Always available for urgent care",
-  },
-  {
-    icon: <FiMail />,
-    iconClass: "contact-icon-accent",
-    label: "Email",
-    title: "General Enquiry",
-    value: "info@srisaisubramaniyahospital.com",
-    secondary: "We reply within 24 hours",
-  },
-  {
-    icon: <FiCalendar />,
-    iconClass: "contact-icon-blue",
-    label: "Appointments",
-    title: "Book via Email",
-    value: "appointments@srisaisubramaniyahospital.com",
-    secondary: "Preferred for scheduled visits",
-  },
-  {
-    icon: <FiClock />,
-    iconClass: "contact-icon-brand",
-    label: "Working Hours",
-    title: "OPD Timings",
-    value: "Monday – Saturday: 8:00 AM – 8:00 PM",
-    secondary: "Sunday: Emergency Services Only",
-  },
-];
-
-const WHY_FEATURES = [
-  {
-    icon: <MdPersonSearch />,
-    title: "Experienced Specialists",
-    desc: "Senior consultants with decades of clinical expertise.",
-  },
-  {
-    icon: <MdScience />,
-    title: "Advanced Diagnostics",
-    desc: "State-of-the-art lab and imaging infrastructure.",
-  },
-  {
-    icon: <MdHealthAndSafety />,
-    title: "Personalized Treatment",
-    desc: "Care plans tailored to every patient's unique needs.",
-  },
-  {
-    icon: <MdLocalHospital />,
-    title: "Modern Infrastructure",
-    desc: "Contemporary OT, ICU, and recovery facilities.",
-  },
-  {
-    icon: <MdStar />,
-    title: "Affordable Healthcare",
-    desc: "Premium care at transparent, fair pricing.",
-  },
-  {
-    icon: <MdFavorite />,
-    title: "Compassionate Care",
-    desc: "A warm, supportive environment for every visit.",
-  },
-  {
-    icon: <MdMedicalServices />,
-    title: "Multi-Speciality Services",
-    desc: "All major specialties under one roof.",
-  },
-  {
-    icon: <MdGroups />,
-    title: "Patient-Centred Approach",
-    desc: "Your comfort and recovery are our top priority.",
-  },
-];
-
 /* ── Component ──────────────────────────────────────────── */
 export default function Contactus() {
-  const sectionRef1 = useScrollReveal();
-  const sectionRef2 = useScrollReveal();
-  const sectionRef3 = useScrollReveal();
-  const sectionRef4 = useScrollReveal();
-  const sectionRef5 = useScrollReveal();
+  const sectionRef1 = useScrollReveal<HTMLElement>();
+  const sectionRef5 = useScrollReveal<HTMLElement>();
 
   return (
     <div className="contact-page">
@@ -155,7 +47,7 @@ export default function Contactus() {
             <div className="col-lg-7">
               <div className="section-title">
                 <div className="contact-hero-eyebrow contact-anim-1">
-                  <span /> Srisai Subramaniya Hospital
+                  <span /> Srisai Subhramaniya Hospitals
                 </div>
                 <h2 className="contact-hero-title contact-anim-2">
                   Book Your Appointment
@@ -183,11 +75,11 @@ export default function Contactus() {
             </div>
             <div className="col-lg-5">
               <div className="contact-emergency-actions contact-reveal contact-reveal-delay-3">
-                <a href="tel:+91XXXXXXXXXX" className="contact-btn-emergency">
+                {/* <a href="tel:+91XXXXXXXXXX" className="contact-btn-emergency">
                   <FiAlertCircle /> Call Emergency
-                </a>
+                </a> */}
                 <a href="#contact-appointment" className="contact-btn-consult">
-                  <FiCalendar /> Book Consultation
+                  <FiCalendar /> Book Appoitment
                 </a>
               </div>
             </div>
@@ -350,7 +242,7 @@ export default function Contactus() {
         <div className="container">
           <div className="contact-map-wrap">
             <iframe
-              title="Srisai Subramaniya Hospital Location"
+              title="Srisai Subhramaniya Hospital Location"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3885.376948740821!2d80.1308094101588!3d13.138606611142404!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5262e7cab5395f%3A0x9a5529709b71de32!2sSriSai%20Subhramaniya%20Hospital!5e0!3m2!1sen!2sin!4v1782211297729!5m2!1sen!2sin"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

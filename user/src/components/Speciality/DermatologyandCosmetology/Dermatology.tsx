@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Stethoscope,
   Activity,
@@ -6,7 +5,6 @@ import {
   Zap,
   MapPin,
   User,
-  CheckCircle,
 } from "lucide-react";
 import "./Dermatology.css";
 import PageBanner from "../../PageBanner/PageBanner";

@@ -1,15 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./Specialities.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import speciality1 from "../../../assets/home/specialities/service-1.png";
-import speciality2 from "../../../assets/home/specialities/service-2.png";
-import speciality3 from "../../../assets/home/specialities/service-3.png";
 import speciality4 from "../../../assets/home/specialities/service-4.png";
-import speciality5 from "../../../assets/home/specialities/service-5.png";
-import speciality6 from "../../../assets/home/specialities/service-6.png";
-import speciality7 from "../../../assets/home/specialities/service-7.png";
 import speciality8 from "../../../assets/home/specialities/service-8.png";
 import speciality9 from "../../../assets/home/specialities/service-9.png";
 import speciality10 from "../../../assets/home/specialities/service-10.png";
@@ -18,7 +12,7 @@ import speciality10 from "../../../assets/home/specialities/service-10.png";
 gsap.registerPlugin(ScrollTrigger);
 
 const Specialities = () => {
-  const imgRefs = useRef([]);
+  const imgRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     // Small delay to ensure DOM is fully rendered

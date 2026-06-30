@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Diabetology.css";
 import PageBanner from "../../PageBanner/PageBanner";
 import img from "../../../assets/speciality/obstetricsandmaternity.png";
@@ -35,8 +35,8 @@ const monitoringAndPrevention = [
   "Cardiovascular Risk Assessment",
 ];
 
-function useInView(options) {
-  const ref = useRef(null);
+function useInView<T extends HTMLElement>(options?: IntersectionObserverInit): [React.RefObject<T | null>, boolean] {
+  const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
@@ -57,30 +57,14 @@ function useInView(options) {
   return [ref, inView];
 }
 
-function GlucoseTrendLine() {
-  return (
-    <svg
-      className="diabetology-hero__trend"
-      viewBox="0 0 600 160"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        className="diabetology-hero__trend-path diabetology-hero__trend-path--ghost"
-        d="M0,110 C40,60 70,140 110,90 C150,40 180,130 220,80 C260,30 290,100 330,70 C370,40 410,95 450,65 C490,35 520,80 560,60 L600,60"
-      />
-      <path
-        className="diabetology-hero__trend-path diabetology-hero__trend-path--live"
-        d="M0,95 C40,85 70,100 110,88 C150,76 180,92 220,82 C260,72 290,84 330,76 C370,68 410,78 450,72 C490,66 520,74 560,70 L600,70"
-      />
-      <circle className="diabetology-hero__trend-dot" r="5" cx="600" cy="70" />
-    </svg>
-  );
+interface ServiceCardProps {
+  title: string;
+  description: string;
+  index: number;
 }
 
-function ServiceCard({ title, description, index }) {
-  const [ref, inView] = useInView({ threshold: 0.2 });
+function ServiceCard({ title, description, index }: ServiceCardProps) {
+  const [ref, inView] = useInView<HTMLElement>({ threshold: 0.2 });
 
   return (
     <div className="col-12 col-sm-6 col-lg-3">
@@ -98,8 +82,13 @@ function ServiceCard({ title, description, index }) {
   );
 }
 
-function ChecklistItem({ label, index }) {
-  const [ref, inView] = useInView({ threshold: 0.2 });
+interface ChecklistItemProps {
+  label: string;
+  index: number;
+}
+
+function ChecklistItem({ label, index }: ChecklistItemProps) {
+  const [ref, inView] = useInView<HTMLLIElement>({ threshold: 0.2 });
 
   return (
     <li

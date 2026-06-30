@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FaEye, FaBullseye, FaAward, FaPlus } from "react-icons/fa";
+import { FaAward } from "react-icons/fa";
 
 import {
   FaUserMd,
@@ -10,6 +9,7 @@ import {
   FaBaby,
   FaHeartbeat,
   FaSpa,
+  
   FaHandsHelping,
   FaHandHoldingMedical,
 } from "react-icons/fa";
@@ -92,7 +92,7 @@ const Aboutus = () => {
                 <div className="about-image-frame">
                   <img
                     src={AboutImage}
-                    alt="Srisai Subramaniya Hospital"
+                    alt="Srisai Subhramaniya Hospital"
                     className="about-image"
                   />
                 </div>
@@ -125,7 +125,7 @@ const Aboutus = () => {
                 </div>
 
                 <p className="about-description">
-                  Srisai Subramaniya Hospital is a modern multi-speciality
+                  Srisai Subhramaniya Hospitals is a modern multi-speciality
                   healthcare institution dedicated to delivering excellence in
                   medical care through innovation, compassion, and expertise.
                 </p>

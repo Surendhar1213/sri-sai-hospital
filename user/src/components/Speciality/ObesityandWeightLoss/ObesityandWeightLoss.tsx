@@ -5,7 +5,7 @@ import PageBanner from "../../PageBanner/PageBanner";
 import img from "../../../assets/speciality/weightloss.png";
 
 const ObesityandWeightLoss = () => {
-  const revealRefs = useRef([]);
+  const revealRefs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -22,7 +22,7 @@ const ObesityandWeightLoss = () => {
     return () => observer.disconnect();
   }, []);
 
-  const addRef = (el) => {
+  const addRef = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el);
   };
 
@@ -254,7 +254,7 @@ const ObesityandWeightLoss = () => {
                     <div
                       className="owlm-medical-item"
                       key={i}
-                      style={{ "--delay": `${p.delay}ms` }}
+                      style={{ "--delay": `${p.delay}ms` } as React.CSSProperties}
                     >
                       <span className="owlm-medical-num">
                         {String(i + 1).padStart(2, "0")}

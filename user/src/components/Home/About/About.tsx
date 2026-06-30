@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FaStar, FaPlus } from "react-icons/fa";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,19 +14,17 @@ import Aboutauthor3 from "../../../assets/home/about/author-3.jpg";
 gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
-  const sectionRef = useRef(null);
-  const imageBoxRef = useRef(null);
-  // const image1Ref = useRef(null);
-  const image2Ref = useRef(null);
-  const reviewBoxRef = useRef(null);
-  const contentRef = useRef(null);
-  const titleRef = useRef(null);
-  const subtitleRef = useRef(null);
-  const headingRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const bodyRef = useRef(null);
-  const buttonRef = useRef(null);
-  const clientImagesRef = useRef(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const imageBoxRef = useRef<HTMLDivElement>(null);
+  const image2Ref = useRef<HTMLImageElement>(null);
+  const reviewBoxRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const clientImagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -385,7 +383,7 @@ const About = () => {
               {/* Section Title Start */}
               <div className="section-title">
                 <div className="section-title">
-                  <h3 className="wow fadeInUp">Welcome to Srisai Subramaniya Hospital</h3>
+                  <h3 className="wow fadeInUp">Welcome to Srisai Subhramaniya Hospitals</h3>
                   <h2
                     className="text-anime-style-3"
                     data-cursor="-opaque"
@@ -400,7 +398,7 @@ const About = () => {
                   data-wow-delay="0.2s"
                   ref={descriptionRef}
                 >
-                  Srisai Subramaniya Hospital is a trusted healthcare
+                  Srisai Subhramaniya Hospitals is a trusted healthcare
                   destination in Chennai, dedicated to providing comprehensive
                   medical care with a strong focus on women's health. Our
                   experienced specialists offer advanced treatment solutions for

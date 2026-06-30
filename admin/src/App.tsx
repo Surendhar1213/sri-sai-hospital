@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+// react toastify
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -13,21 +17,31 @@ function App() {
     }
   }, []);
 
-  const handleLoginSuccess = (newToken: string) => {
+   const handleLoginSuccess = (newToken: string) => {
     setToken(newToken);
+    toast.success("🔐 Login Successful! Welcome Back Admin.");
   };
 
-  const handleLogout = () => {
+
+    const handleLogout = () => {
     localStorage.removeItem("adminToken");
     setToken(null);
+    toast.info("🚪 Logged Out Successfully!");
   };
 
-  // Token illana Login page show aagum, irundha Dashboard show aagum
-  if (!token) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
 
-  return <Dashboard onLogout={handleLogout} />;
+
+   return (
+    <>
+      {!token ? (
+        <Login onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <Dashboard onLogout={handleLogout} />
+      )}
+      {/* Toast Notifications Provider Container */}
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+    </>
+  );
 }
 
 export default App;

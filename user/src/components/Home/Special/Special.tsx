@@ -1,11 +1,9 @@
-// Special.jsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   HeartPulse,
   Flower2,
   Baby,
   Activity,
-  ArrowUpRight,
 } from "lucide-react";
 import "./Special.css";
 
@@ -18,7 +16,16 @@ import img4 from "../../../assets/home/new/img4.jpg";
 import img5 from "../../../assets/home/new/5.png";
 import img6 from "../../../assets/home/new/img6.jpg";
 
-const SPECIALTIES = [
+interface SpecialtyItem {
+  icon: React.ElementType;
+  title: string;
+  blurb: string;
+  points: string[];
+  image: string;
+  alt: string;
+}
+
+const SPECIALTIES: SpecialtyItem[] = [
   {
     icon: HeartPulse,
     title: "Gynecology & Women's Health",
@@ -45,68 +52,68 @@ const SPECIALTIES = [
       "Fertility counselling & preconception planning",
     ],
     image: img2,
-    alt: "Fertility consultation and counseling",
+    alt: "Fertility treatment and planning at Sri Sai Subhramaniya Hospitals",
   },
   {
     icon: Baby,
     title: "Obstetrics & Maternity",
     blurb:
-      "Expert support through pregnancy, delivery, and the early days of motherhood.",
+      "Expert prenatal, labor, and postnatal care to support you and your baby's journey.",
     points: [
-      "Antenatal & high-risk pregnancy care",
-      "Normal, assisted & cesarean delivery",
-      "Gestational diabetes & hypertension management",
-      "Postnatal care for mother & newborn",
+      "High-risk pregnancy management",
+      "Painless labor options",
+      "Comprehensive postnatal support",
+      "State-of-the-art labor rooms",
     ],
     image: img3,
-    alt: "Maternity and pregnancy care",
-  },
-  {
-    icon: Baby,
-    title: "Endocrinology",
-    blurb:
-      "Comprehensive diagnosis and treatment of hormonal disorders affecting metabolism, fertility, thyroid health, and overall wellness.",
-    points: [
-      "Thyroid disorder management",
-      "PCOS & hormonal imbalance treatment",
-      "Menopause & fertility-related hormone care",
-      "Metabolic syndrome & endocrine disorder management",
-    ],
-    image: img4,
-    alt: "Endocrinology and hormonal wellness consultation",
-  },
-  {
-    icon: Baby,
-    title: "Obesity & Weight Loss Management",
-    blurb:
-      "Personalized medical weight loss programs designed to improve health, confidence, and long-term wellness.",
-    points: [
-      "BMI & body composition assessment",
-      "Personalized diet and lifestyle planning",
-      "PCOS, postpartum & menopause weight management",
-      "Cryolipolysis (fat freezing) body contouring",
-    ],
-    image: img5,
-    alt: "Medical weight loss and obesity management consultation",
+    alt: "Newborn baby care at Sri Sai Subhramaniya Hospitals",
   },
   {
     icon: Activity,
-    title: "Diabetology",
+    title: "Hormonal & Metabolic Health",
     blurb:
-      "Individualised plans to manage blood sugar and prevent long-term complications.",
+      "Comprehensive care for endocrine disorders, thyroid conditions, and weight management.",
     points: [
-      "Type 1, Type 2 & gestational diabetes care",
-      "Blood sugar & HbA1c monitoring",
-      "Diet & lifestyle counselling",
-      "Kidney, eye & cardiovascular screening",
+      "Thyroid disorder management",
+      "Comprehensive diabetes care Centre",
+      "PCOS hormonal therapies",
+      "Metabolic health screenings",
+    ],
+    image: img4,
+    alt: "Hormonal and metabolic health screening at Sri Sai Subhramaniya Hospitals",
+  },
+  {
+    icon: Activity,
+    title: "Dermatology & Aesthetic Solutions",
+    blurb:
+      "Advanced skin, hair, and nail treatments to address clinical and cosmetic concerns.",
+    points: [
+      "Clinical dermatology & skin care",
+      "Specialised hair & nail clinic",
+      "Cosmetology & aesthetic therapies",
+      "Laser skin treatments",
+    ],
+    image: img5,
+    alt: "Dermatology treatment room at Sri Sai Subhramaniya Hospitals",
+  },
+  {
+    icon: Activity,
+    title: "Compassionate Multi-Specialty Care",
+    blurb:
+      "Expert consultations across general medicine, surgery, and key specialties.",
+    points: [
+      "General medicine & wellness OPD",
+      "Urology & key surgical specialties",
+      "Preventive health check-ups",
+      "24/7 emergency medical services",
     ],
     image: img6,
-    alt: "Diabetology consultation and monitoring",
+    alt: "Specialist consultation room at Sri Sai Subhramaniya Hospitals",
   },
 ];
 
-function useReveal(threshold = 0.3) {
-  const ref = useRef(null);
+function useReveal<T extends HTMLElement>(threshold = 0.3): [React.RefObject<T | null>, boolean] {
+  const ref = useRef<T>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -130,8 +137,14 @@ function useReveal(threshold = 0.3) {
   return [ref, visible];
 }
 
-function SpecialtyCard({ data, index, onReveal }) {
-  const [ref, visible] = useReveal(0.35);
+interface SpecialtyCardProps {
+  data: SpecialtyItem;
+  index: number;
+  onReveal: (index: number) => void;
+}
+
+function SpecialtyCard({ data, index, onReveal }: SpecialtyCardProps) {
+  const [ref, visible] = useReveal<HTMLDivElement>(0.35);
   const Icon = data.icon;
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -166,7 +179,7 @@ function SpecialtyCard({ data, index, onReveal }) {
           <h3>{data.title}</h3>
           <p className="spec-blurb">{data.blurb}</p>
           <ul>
-            {data.points.map((point) => (
+            {data.points.map((point: string) => (
               <li key={point}>{point}</li>
             ))}
           </ul>
@@ -178,9 +191,9 @@ function SpecialtyCard({ data, index, onReveal }) {
 
 export default function Special() {
   const [revealedCount, setRevealedCount] = useState(0);
-  const [imgRef, imgVisible] = useReveal(0.2);
+  const [imgRef, imgVisible] = useReveal<HTMLDivElement>(0.2);
 
-  const handleReveal = useCallback((index) => {
+  const handleReveal = useCallback((index: number) => {
     setRevealedCount((prev) => Math.max(prev, index + 1));
   }, []);
 

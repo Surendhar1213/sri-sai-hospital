@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import img1 from "../../../assets/home/whychooseus/feat-lg11.png";
 import img2 from "../../../assets/home/whychooseus/feat-lg2.jpg";
 
@@ -26,7 +26,7 @@ const features = [
 ];
 
 const Whychooseus = () => {
-  const listRef = useRef(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const items = listRef.current?.querySelectorAll(".wcu-item");
@@ -35,8 +35,9 @@ const Whychooseus = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const idx = entry.target.getAttribute("data-idx");
-            entry.target.style.animationDelay = `${idx * 0.08}s`;
+            const idxStr = entry.target.getAttribute("data-idx");
+            const idx = idxStr ? parseInt(idxStr, 10) : 0;
+            (entry.target as HTMLElement).style.animationDelay = `${idx * 0.08}s`;
             entry.target.classList.add("wcu-item--visible");
             observer.unobserve(entry.target);
           }

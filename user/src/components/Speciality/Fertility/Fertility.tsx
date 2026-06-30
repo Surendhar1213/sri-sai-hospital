@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./Fertility.css";
 import PageBanner from "../../PageBanner/PageBanner";
 
@@ -10,8 +10,13 @@ import img3 from "../../../assets/speciality/fertility/3.png";
 import img4 from "../../../assets/speciality/fertility/4.png";
 import img5 from "../../../assets/speciality/fertility/5.png";
 
+interface IconProps {
+  path: React.ReactNode;
+  viewBox?: string;
+}
+
 /* ---------- Inline icon set (stroke-based, single weight, no external deps) ---------- */
-const Icon = ({ path, viewBox = "0 0 24 24" }) => (
+const Icon = ({ path, viewBox = "0 0 24 24" }: IconProps) => (
   <svg
     className="fertility-icon"
     viewBox={viewBox}
@@ -22,7 +27,7 @@ const Icon = ({ path, viewBox = "0 0 24 24" }) => (
   </svg>
 );
 
-const icons = {
+const icons: Record<string, React.ReactNode> = {
   ovulation: (
     <>
       <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.6" />
@@ -192,17 +197,20 @@ const treatments = [
 
 /* ---------- Component ---------- */
 const Fertility = () => {
-  const rootRef = useRef(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!rootRef.current) return;
     const elements = rootRef.current.querySelectorAll(".fertility-reveal");
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry, i) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const delay = entry.target.dataset.delay || 0;
+            const targetEl = entry.target as HTMLElement;
+            const delayStr = targetEl.dataset.delay;
+            const delay = delayStr ? parseInt(delayStr, 10) : 0;
             setTimeout(
-              () => entry.target.classList.add("fertility-revealed"),
+              () => targetEl.classList.add("fertility-revealed"),
               delay,
             );
             observer.unobserve(entry.target);

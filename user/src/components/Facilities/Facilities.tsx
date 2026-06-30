@@ -1,4 +1,3 @@
-import React from "react";
 import "./Facilities.css"; // optional, for custom styles
 import PageBanner from "../PageBanner/PageBanner";
 

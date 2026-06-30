@@ -1,9 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import "./Urology.css";
 import PageBanner from "../../PageBanner/PageBanner";
-
-// ── Placeholder image imports (replace paths as needed) ──
-import urologyHeroImg from "../../../assets/speciality/obstetricsandmaternity.png";
 
 import img from "../../../assets/speciality/urology.png";
 
@@ -225,30 +222,7 @@ export default function Urology() {
     <>
       <PageBanner title="Urology" />
     <div className="Urology-page">
-      {/* ══ HERO ══ */}
-      <section className="Urology-hero" aria-label="Urology Hero">
-        <img
-          src={urologyHeroImg}
-          alt="Urology department"
-          className="Urology-hero-image"
-        />
-        <div className="Urology-hero-overlay" aria-hidden="true" />
 
-        <div className="container">
-          <div className="row align-items-center">
-            {/* Left: text */}
-            <div className="col-lg-12">
-              <div className="Urology-hero-content">
-                <h1 className="Urology-hero-title Urology-reveal Urology-reveal-delay-1">
-                  Urology
-                </h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <hr className="Urology-divider" />
 
       <section className="section-space">
         <div className="container">

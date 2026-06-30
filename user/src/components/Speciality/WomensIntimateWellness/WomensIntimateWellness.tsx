@@ -152,7 +152,7 @@ const benefits = [
 ];
 
 export default function WomensIntimateWellness() {
-  const refs = useRef([]);
+  const refs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -169,7 +169,7 @@ export default function WomensIntimateWellness() {
     return () => io.disconnect();
   }, []);
 
-  const ref = (el) => {
+  const ref = (el: HTMLElement | null) => {
     if (el && !refs.current.includes(el)) refs.current.push(el);
   };
 

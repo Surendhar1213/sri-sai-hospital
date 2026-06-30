@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import "./Appointment.css"; // We'll create this CSS file for styles
 
 import image1 from "../../../assets/home/appointment/proj-1.jpg";
@@ -26,7 +26,7 @@ const Appointment = () => {
     "Dr. Aunt Arlene",
   ];
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -34,7 +34,7 @@ const Appointment = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -125,7 +125,7 @@ const Appointment = () => {
             <div className="appointment-form-container">
               <div className="appointment-form-inner">
                 <div className="appointment-form-content">
-                  <form className="appointment-form" noValidate>
+                  <form className="appointment-form" noValidate onSubmit={handleSubmit}>
                     <div className="form-row">
                       <div className="form-group col-md-6 col-lg-6">
                         <div className="input-wrapper">

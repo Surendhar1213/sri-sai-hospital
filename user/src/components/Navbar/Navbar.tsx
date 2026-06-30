@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -161,7 +161,7 @@ const Navbar = () => {
                   <ul>
                     <li>
                       <FaPhoneAlt />
-                      <a href="tel:+914426378138">+91 44-26378138</a>
+                      <a href="tel:+914426378138">+91 94444 79090</a>
                     </li>
                     <li className="d-none d-xl-inline-block">
                       <IoMdMail />
@@ -208,7 +208,7 @@ const Navbar = () => {
         <div className={`sticky-wrapper ${isSticky ? "sticky" : ""}`}>
           <div className="menu-area">
             <div className="container">
-              <div className="row align-items-center justify-content-between">
+              <div className="row align-items-center justify-content-between flex-nowrap">
                 <div className="col-auto">
                   <div className="header-logo">
                     <a href="#">
@@ -217,7 +217,7 @@ const Navbar = () => {
                   </div>
                 </div>
                 <div className="col-auto">
-                  <div className="row">
+                  <div className="row align-items-center flex-nowrap">
                     <div className="col-auto">
                       <nav className="main-menu d-none d-lg-inline-block">
                         <ul>
@@ -330,73 +330,73 @@ const Navbar = () => {
                       </button>
                     </div>
                     <div className="col-auto d-none d-xl-block">
-                       <div className="header-button hero-section-four">
-                         <div className="hero-button hero-btn" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                           <button
-                             onClick={handleBookAppointment}
-                             style={{
-                               padding: "8px 12px 10px 25px",
-                               marginBottom: "0px",
-                               background: "linear-gradient(90deg, #3F58FF 0%, #31B0FF 100%)",
-                               color: "#fff",
-                               border: "none",
-                               borderRadius: "50px",
-                               fontSize: "15px",
-                               fontWeight: "600",
-                               cursor: "pointer",
-                               display: "inline-flex",
-                               alignItems: "center",
-                               gap: "8px",
-                               fontFamily: "inherit",
-                               transition: "opacity 0.2s, transform 0.2s",
-                             }}
-                           >
-                             Book Appointment
-                             <span className="hero-icon">
-                               <FaArrowRight />
-                             </span>
-                           </button>
-                           {/* User info / logout */}
-                           {isLoggedIn && (
-                             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                               <span style={{
-                                 background: "rgba(63,89,255,0.1)",
-                                 color: "#3F59FF",
-                                 borderRadius: "50px",
-                                 padding: "6px 14px",
-                                 fontSize: "13px",
-                                 fontWeight: "600",
-                                 display: "flex",
-                                 alignItems: "center",
-                                 gap: "6px",
-                               }}>
-                                 <FaUser size={11} /> {userName}
-                               </span>
-                               <button
-                                 onClick={handleLogout}
-                                 title="Logout"
-                                 style={{
-                                   background: "rgba(239,68,68,0.1)",
-                                   color: "#ef4444",
-                                   border: "none",
-                                   borderRadius: "50%",
-                                   width: "34px",
-                                   height: "34px",
-                                   display: "flex",
-                                   alignItems: "center",
-                                   justifyContent: "center",
-                                   cursor: "pointer",
-                                   fontSize: "13px",
-                                   transition: "background 0.2s",
-                                 }}
-                               >
-                                 <FaSignOutAlt />
-                               </button>
-                             </div>
-                           )}
-                         </div>
-                       </div>
-                     </div>
+                      <div className="header-button hero-section-four">
+                        <div className="hero-button hero-btn" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <button
+                            onClick={handleBookAppointment}
+                            style={{
+                              padding: "8px 12px 10px 25px",
+                              marginBottom: "0px",
+                              background: "linear-gradient(90deg, #3F58FF 0%, #31B0FF 100%)",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "50px",
+                              fontSize: "15px",
+                              fontWeight: "600",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              fontFamily: "inherit",
+                              transition: "opacity 0.2s, transform 0.2s",
+                            }}
+                          >
+                            Book Appointment
+                            <span className="hero-icon">
+                              <FaArrowRight />
+                            </span>
+                          </button>
+                          {/* User info / logout */}
+                          {isLoggedIn && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                              <span style={{
+                                background: "rgba(63,89,255,0.1)",
+                                color: "#3F59FF",
+                                borderRadius: "50px",
+                                padding: "6px 14px",
+                                fontSize: "13px",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                              }}>
+                                <FaUser size={11} /> {userName}
+                              </span>
+                              <button
+                                onClick={handleLogout}
+                                title="Logout"
+                                style={{
+                                  background: "rgba(239,68,68,0.1)",
+                                  color: "#ef4444",
+                                  border: "none",
+                                  borderRadius: "50%",
+                                  width: "34px",
+                                  height: "34px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  fontSize: "13px",
+                                  transition: "background 0.2s",
+                                }}
+                              >
+                                <FaSignOutAlt />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

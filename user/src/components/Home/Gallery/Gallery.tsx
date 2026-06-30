@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import "./Gallery.css";
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -14,7 +14,7 @@ import Gallery6 from "../../../assets/home/gallery/s-6.png";
 gsap.registerPlugin(ScrollTrigger);
 
 const Gallery = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Only run if the container element exists
@@ -24,13 +24,13 @@ const Gallery = () => {
 
       pw.add("(min-width: 1200px)", () => {
         // Find all .design-choose-item-wrap within this component
-        const wraps = containerRef.current.querySelectorAll(".design-choose-item-wrap");
+        const wraps = containerRef.current!.querySelectorAll(".design-choose-item-wrap");
         
-        wraps.forEach((wrap) => {
+        wraps.forEach((wrap: Element) => {
           const items1 = wrap.querySelectorAll(".design-choose-item-1");
           const items2 = wrap.querySelectorAll(".design-choose-item-2");
 
-          items1.forEach((item1, i) => {
+          items1.forEach((item1: Element, i: number) => {
             const item2 = items2[i];
 
             if (item1 && item2) {

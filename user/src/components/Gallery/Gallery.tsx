@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import { FaEye } from 'react-icons/fa';
@@ -24,7 +24,7 @@ const Gallery = () => {
       Toolbar: {
         display: ["close"],
       },
-    });
+    } as any);
 
     // Cleanup on unmount
     return () => {

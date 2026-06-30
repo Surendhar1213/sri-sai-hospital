@@ -24,6 +24,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import BookAppointment from "./pages/BookAppointment";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -71,8 +75,10 @@ function App() {
           <Route path="/book-appointment" element={<BookAppointment />} />
         </Route>
       </Routes>
+    <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </BrowserRouter>
   );
+
 }
 
 export default App;

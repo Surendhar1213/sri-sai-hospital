@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Facilities.css";
-import { FaPlus, FaArrowRight } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -58,13 +58,12 @@ const facilities = [
 ];
 
 const Facilities = () => {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const paragraphRef = useRef(null);
-  const buttonRef = useRef(null);
-  const facilitiesRef = useRef([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const facilitiesRef = useRef<(HTMLLIElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0); // First item active by default
-  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   useEffect(() => {
     // Animation for section title
@@ -72,17 +71,16 @@ const Facilities = () => {
       titleRef.current,
       {
         y: 50,
-        opacity: 0
+        opacity: 0,
       },
       {
         y: 0,
         opacity: 1,
-        duration: 1,
+        duration: 0.8,
         ease: "power3.out",
         scrollTrigger: {
-          trigger: titleRef.current,
+          trigger: sectionRef.current,
           start: "top 80%",
-          toggleActions: "play none none reverse",
         },
       }
     );
@@ -91,19 +89,17 @@ const Facilities = () => {
     gsap.fromTo(
       paragraphRef.current,
       {
-        y: 40,
-        opacity: 0
+        y: 30,
+        opacity: 0,
       },
       {
         y: 0,
         opacity: 1,
-        duration: 1,
-        delay: 0.3,
+        duration: 0.8,
         ease: "power3.out",
         scrollTrigger: {
-          trigger: paragraphRef.current,
+          trigger: sectionRef.current,
           start: "top 80%",
-          toggleActions: "play none none reverse",
         },
       }
     );
@@ -112,39 +108,35 @@ const Facilities = () => {
     gsap.fromTo(
       buttonRef.current,
       {
-        x: 30,
-        opacity: 0
+        scale: 0.8,
+        opacity: 0,
       },
       {
-        x: 0,
+        scale: 1,
         opacity: 1,
         duration: 0.8,
-        delay: 0.5,
-        ease: "power2.out",
+        ease: "back.out(1.7)",
         scrollTrigger: {
-          trigger: buttonRef.current,
+          trigger: sectionRef.current,
           start: "top 80%",
-          toggleActions: "play none none reverse",
         },
       }
     );
 
-    // Staggered animation for facility items
-    facilitiesRef.current.forEach((item, index) => {
+    // Stagger animation for facilities list items
+    facilitiesRef.current.forEach((item) => {
+      if (!item) return;
       gsap.fromTo(
         item,
         {
-          scale: 0.8,
+          x: -50,
           opacity: 0,
-          y: 50
         },
         {
-          scale: 1,
+          x: 0,
           opacity: 1,
-          y: 0,
           duration: 0.6,
-          delay: index * 0.1,
-          ease: "back.out(1.7)",
+          ease: "power3.out",
           scrollTrigger: {
             trigger: item,
             start: "top 85%",
@@ -161,13 +153,11 @@ const Facilities = () => {
   }, []);
 
   // Handle hover events
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
+  const handleMouseEnter = (index: number) => {
     setActiveIndex(index);
   };
 
   const handleMouseLeave = () => {
-    setHoveredIndex(null);
     // Optionally reset to first item or keep the last hovered
     // setActiveIndex(0); // Uncomment if you want to reset to first
   };
@@ -199,7 +189,7 @@ const Facilities = () => {
           <ul className="services-two__services-list list-unstyled">
             {facilities.map((facility, index) => (
               <li
-                ref={el => facilitiesRef.current[index] = el}
+                ref={el => { facilitiesRef.current[index] = el; }}
                 className={`hover-item ${activeIndex === index ? 'active' : ''}`}
                 key={index}
                 onMouseEnter={() => handleMouseEnter(index)}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FaUser,
@@ -42,13 +43,19 @@ const Register: React.FC = () => {
 
     // Password match check
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      const msg = "Passwords do not match";
+      setError(msg);
+      // ⚠️ WARNING TOAST (Color: Orange/Yellow)
+      toast.warning("⚠️ " + msg);
       return;
     }
 
     // Password length check
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
+      const msg = "Password must be at least 6 characters";
+      setError(msg);
+      // ⚠️ WARNING TOAST
+      toast.warning("⚠️ " + msg);
       return;
     }
 
@@ -78,11 +85,17 @@ const Register: React.FC = () => {
 
       setSuccess("Account created successfully! Redirecting to login...");
 
-      // 2 seconds wait பண்ணி login page-க்கு போ with redirect state
+      // 🎉 REGISTER SUCCESS TOAST (Color: Green)
+      toast.success("🎉 Account created successfully! Please login to continue.");
+
       setTimeout(() => navigate("/login", { state: { from } }), 2000);
 
+
     } catch (err: any) {
-      setError(err.message || "Connection error. Please try again.");
+      const errMsg = err.message || "Connection error. Please try again.";
+      setError(errMsg);
+      // ❌ ERROR TOAST
+      toast.error("❌ " + errMsg);
     } finally {
       setIsLoading(false);
     }

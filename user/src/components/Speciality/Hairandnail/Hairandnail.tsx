@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./Hairandnail.css";
 import PageBanner from "../../PageBanner/PageBanner";
 
 import img from "../../../assets/speciality/hairandnail.png";
 
 /* Scroll-reveal hook */
-function useScrollReveal() {
-  const ref = useRef(null);
+function useScrollReveal<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -49,13 +49,12 @@ const IconAssess = () => (
 
 const HairandNail = () => {
   // Refs for scroll reveal sections
-  const r1 = useScrollReveal();
-  const r2 = useScrollReveal();
-  const r3 = useScrollReveal();
-  const r4 = useScrollReveal();
-  const r5 = useScrollReveal();
-  const r6 = useScrollReveal();
-  const r7 = useScrollReveal();
+  const r2 = useScrollReveal<HTMLDivElement>();
+  const r3 = useScrollReveal<HTMLDivElement>();
+  const r4 = useScrollReveal<HTMLDivElement>();
+  const r5 = useScrollReveal<HTMLDivElement>();
+  const r6 = useScrollReveal<HTMLDivElement>();
+  const r7 = useScrollReveal<HTMLDivElement>();
 
   return (
     <>
