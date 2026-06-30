@@ -5,6 +5,7 @@ import cors from "cors";
 import dns from "node:dns";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";   // ← ADD THIS LINE
+import doctorRoutes from "./routes/doctorRoutes.js";
 
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -27,6 +28,9 @@ app.use("/api/admin", authRoutes);
 
 // ✅ User Auth Routes register pannanum
 app.use("/api/user", userRoutes);
+
+app.use("/api/doctor", doctorRoutes);
+
 
 // Health check
 app.get("/", (req, res) => {

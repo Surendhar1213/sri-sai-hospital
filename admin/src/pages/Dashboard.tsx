@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell } from "lucide-react";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -37,9 +38,22 @@ const SPECIALITIES = [
   "General Medicine",
 ];
 
+const TIMINGS = [
+  "09:00 AM - 01:00 PM",
+  "01:00 PM - 05:00 PM",
+  "05:00 PM - 09:00 PM",
+  "09:00 AM - 05:00 PM",
+  "10:00 AM - 02:00 PM",
+  "02:00 PM - 06:00 PM",
+  "06:00 PM - 10:00 PM",
+];
+
+
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [isLoadingDoctors, setIsLoadingDoctors] = useState(false);
   const [isLoadingPatients, setIsLoadingPatients] = useState(false);
   const [patientsError, setPatientsError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,8 +65,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     email: "",
     phone: "",
     experience: "",
-    timing: "",
+    timing: TIMINGS[0], // Set default value
   });
+
 
   // Settings Configuration State
   const [settingsForm, setSettingsForm] = useState({
@@ -84,12 +99,36 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         return "Doctors Directory";
       case "patients":
         return "Patients Registry";
+      case "appointments":
+        return "Appointments & Bookings";
       case "settings":
         return "Admin Settings";
       default:
         return "Hospital Overview";
     }
   };
+
+    // 2. Fetch registered doctors from database endpoint
+  const fetchDoctors = async () => {
+    setIsLoadingDoctors(true);
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${backendUrl}/api/doctor/all`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch doctors");
+      }
+      
+      // State value update panrom
+      setDoctors(data.doctors || []);
+    } catch (err: any) {
+      triggerToast(`❌ Error fetching doctors: ${err.message}`);
+    } finally {
+      setIsLoadingDoctors(false);
+    }
+  };
+
 
   // Fetch registered patients from MongoDB (real action)
   const fetchPatients = async () => {
@@ -113,16 +152,74 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
 
-  useEffect(() => {
+    useEffect(() => {
     if (activeTab === "patients") {
       fetchPatients();
+    } else if (activeTab === "doctors") {
+      fetchDoctors(); // Run dynamic call
     }
   }, [activeTab]);
 
-  const handleAddDoctorSubmit = (e: React.FormEvent) => {
+
+    const handleAddDoctorSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    triggerToast("Doctor database API configuration coming in next step!");
+
+    try {
+      // 1. LocalStorage la save aagi irukura adminToken value-ah edukurom
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        triggerToast("❌ Session expired! Please login again.");
+        return;
+      }
+
+      // 2. Localhost or Vercel server dynamic base URL selection
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+      // 3. API request call using POST method
+      const response = await fetch(`${backendUrl}/api/doctor/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Admin Security verification token
+        },
+        body: JSON.stringify({
+          name: doctorForm.name,
+          speciality: doctorForm.speciality,
+          email: doctorForm.email,
+          experience: Number(doctorForm.experience), // Number format update
+          timing: doctorForm.timing,
+        }),
+      });
+
+            const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add doctor");
+      }
+
+      // 4. Success Toast display setup
+      triggerToast(`✅ ${data.message || "Doctor registered successfully!"}`);
+
+      // ADD IT HERE ⬇️ (Success path-la fetchDoctors call panrom)
+      fetchDoctors();
+
+      // 5. Input fields auto-clear pannanum, register success aana pinbu!
+      setDoctorForm({
+        name: "",
+        speciality: SPECIALITIES[0],
+        email: "",
+        phone: "",
+        experience: "",
+        timing: TIMINGS[0],
+      });
+
+
+    } catch (err: any) {
+      console.error(err);
+      triggerToast(`❌ Error: ${err.message || "Failed to register doctor"}`);
+    }
   };
+
 
   const handleSaveSettingsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,6 +284,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           justifyContent: "space-between",
           padding: "32px 24px",
           borderRight: "1px solid rgba(255, 255, 255, 0.05)",
+          overflowY: "auto",
         }}
       >
         <div>
@@ -227,53 +325,98 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {[
-              { id: "dashboard", label: "Overview", icon: "📊" },
-              { id: "doctors", label: "Doctors Directory", icon: "🩺" },
-              { id: "patients", label: "Patients Registry", icon: "👥" },
-              { id: "settings", label: "Setup Settings", icon: "⚙️" },
-            ].map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setSearchTerm("");
-                  }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "14px",
-                    width: "100%",
-                    padding: "14px 18px",
-                    backgroundColor: isActive ? "#3F59FF" : "transparent",
-                    color: isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.65)",
-                    border: "none",
-                    borderRadius: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                    fontWeight: "600",
-                    fontSize: "14.5px",
-                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                    boxShadow: isActive ? "0 4px 14px rgba(63, 89, 255, 0.3)" : "none",
-                  }}
-                >
-                  <span style={{ fontSize: "17px" }}>{tab.icon}</span>
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+          {/* Core Modules Section */}
+          <div style={{ marginBottom: "28px" }}>
+            <span style={{ display: "block", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px", color: "rgba(255,255,255,0.4)", fontWeight: "700", marginBottom: "14px", paddingLeft: "12px" }}>
+              Core Systems
+            </span>
+            <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {[
+                { id: "dashboard", label: "Overview", icon: <LayoutDashboard size={18} /> },
+                { id: "doctors", label: "Doctors Directory", icon: <Stethoscope size={18} /> },
+                { id: "patients", label: "Patients Registry", icon: <Users size={18} /> },
+                { id: "appointments", label: "Appointments", icon: <Calendar size={18} /> },
+              ].map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setSearchTerm("");
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "14px",
+                      width: "100%",
+                      padding: "12px 18px",
+                      backgroundColor: isActive ? "#3F59FF" : "transparent",
+                      color: isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.65)",
+                      border: "none",
+                      borderRadius: "12px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                      fontSize: "14px",
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow: isActive ? "0 4px 14px rgba(63, 89, 255, 0.3)" : "none",
+                    }}
+                    onMouseOver={(e) => {
+                      if (!isActive) e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
+                    }}
+                    onMouseOut={(e) => {
+                      if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                  >
+                    <span style={{ display: "flex", alignItems: "center" }}>{tab.icon}</span>
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </div>
 
-        {/* Sidebar Footer Profile */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        {/* Sidebar Footer Profile & Actions */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {/* Settings Tab relocated here */}
+          <button
+            onClick={() => {
+              setActiveTab("settings");
+              setSearchTerm("");
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+              width: "100%",
+              padding: "12px 18px",
+              backgroundColor: activeTab === "settings" ? "#3F59FF" : "transparent",
+              color: activeTab === "settings" ? "#FFFFFF" : "rgba(255, 255, 255, 0.65)",
+              border: "none",
+              borderRadius: "12px",
+              textAlign: "left",
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: "14px",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              boxShadow: activeTab === "settings" ? "0 4px 14px rgba(63, 89, 255, 0.3)" : "none",
+            }}
+            onMouseOver={(e) => {
+              if (activeTab !== "settings") e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
+            }}
+            onMouseOut={(e) => {
+              if (activeTab !== "settings") e.currentTarget.style.backgroundColor = "transparent";
+            }}
+          >
+            <span style={{ display: "flex", alignItems: "center" }}><Settings size={18} /></span>
+            <span>Setup Settings</span>
+          </button>
+
           <div
             style={{
-              padding: "16px",
+              padding: "14px 16px",
               backgroundColor: "rgba(255, 255, 255, 0.04)",
               borderRadius: "14px",
               border: "1px solid rgba(255, 255, 255, 0.06)",
@@ -315,11 +458,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               fontWeight: "600",
               fontSize: "13.5px",
               transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
             }}
             onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)")}
             onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
           >
-            🔒 Sign Out
+            <LogOut size={16} />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
@@ -360,13 +508,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px",
               transition: "all 0.2s",
             }}
             onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
             onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            🔔
+            <Bell size={20} color="#3F59FF" />
           </button>
         </header>
 
@@ -410,11 +557,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "20px",
                         color: card.color,
                       }}
                     >
-                      {i === 0 ? "📅" : i === 1 ? "🩺" : "👥"}
+                      {i === 0 ? <Calendar size={22} color={card.color} /> : i === 1 ? <Stethoscope size={22} color={card.color} /> : <Users size={22} color={card.color} />}
                     </div>
                   </div>
                 ))}
@@ -444,11 +590,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "36px",
                     marginBottom: "20px",
                   }}
                 >
-                  🗓️
+                  <Calendar size={36} color="#3F59FF" />
                 </div>
                 <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#060F2D" }}>
                   Appointment Registry Log
@@ -595,10 +740,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                       <label style={{ fontSize: "13px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
                         Session Timings
                       </label>
-                      <input
-                        type="text"
-                        placeholder="09:00 AM - 01:00 PM"
-                        required
+                      <select
                         value={doctorForm.timing}
                         onChange={(e) => setDoctorForm({ ...doctorForm, timing: e.target.value })}
                         style={{
@@ -607,9 +749,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                           borderRadius: "10px",
                           border: "1.5px solid #cbd5e1",
                           fontSize: "14px",
+                          backgroundColor: "#fff",
                           outline: "none",
                         }}
-                      />
+                      >
+                        {TIMINGS.map((t) => (
+                          <option key={t} value={t}>
+                            {t}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
@@ -637,42 +786,91 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </div>
 
               {/* Doctors Registry List Placeholder */}
+                            {/* Doctors Registry List */}
               <div
                 style={{
                   backgroundColor: "#FFFFFF",
-                  padding: "40px",
+                  padding: "32px",
                   borderRadius: "20px",
                   boxShadow: "0 10px 30px rgba(6, 15, 45, 0.02)",
-                  border: "1px dashed rgba(6, 15, 45, 0.12)",
+                  border: "1px solid rgba(6, 15, 45, 0.04)",
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textAlign: "center",
+                  gap: "20px",
+                  overflowY: "auto",
+                  maxHeight: "650px"
                 }}
               >
-                <div
-                  style={{
-                    width: "70px",
-                    height: "70px",
-                    borderRadius: "50%",
-                    backgroundColor: "rgba(49, 176, 255, 0.08)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "30px",
-                    marginBottom: "16px",
-                  }}
-                >
-                  🩺
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1.5px solid #F2F3FE", paddingBottom: "16px" }}>
+                  <h3 style={{ fontSize: "17px", fontWeight: "800", color: "#060F2D" }}>
+                    Registered Specialists ({doctors.length})
+                  </h3>
                 </div>
-                <h3 style={{ fontSize: "17px", fontWeight: "800", color: "#060F2D" }}>
-                  Registered Doctors Directory
-                </h3>
-                <p style={{ fontSize: "14px", color: "#616161", marginTop: "8px", maxWidth: "320px", lineHeight: "1.5" }}>
-                  Registered specialists, duty roster hours and department availability settings will listing display dynamically once database schemas are configured.
-                </p>
+
+                {isLoadingDoctors ? (
+                  <div style={{ textAlign: "center", padding: "40px" }}>
+                    <span style={{ fontSize: "14px", color: "#616161" }}>Fetching doctor roster...</span>
+                  </div>
+                ) : doctors.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "40px", color: "#616161" }}>
+                    <Stethoscope size={32} color="#cbd5e1" style={{ marginBottom: "12px" }} />
+                    <p style={{ fontSize: "14px", fontWeight: "600" }}>No doctors registered yet.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    {doctors.map((doc) => (
+                      <div
+                        key={doc._id}
+                        style={{
+                          padding: "20px",
+                          borderRadius: "14px",
+                          border: "1px solid #F2F3FE",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          backgroundColor: doc.isAvailable ? "#FFFFFF" : "#F9FAFB",
+                          opacity: doc.isAvailable ? 1 : 0.8,
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        <div>
+                          <h4 style={{ fontSize: "15.5px", fontWeight: "700", color: "#060F2D" }}>
+                            {doc.name}
+                          </h4>
+                          <span style={{ fontSize: "12px", color: "#3F59FF", fontWeight: "600", display: "block", marginTop: "2px" }}>
+                            {doc.speciality}
+                          </span>
+                          
+                          <div style={{ display: "flex", gap: "16px", marginTop: "12px", fontSize: "12.5px", color: "#616161" }}>
+                            <span>💼 {doc.experience} Years Exp</span>
+                            <span>⏰ {doc.timing}</span>
+                          </div>
+                          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginTop: "6px" }}>
+                            📧 {doc.email}
+                          </span>
+                        </div>
+
+                        {/* Right side availability indicator status */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span
+                            style={{
+                              padding: "6px 12px",
+                              borderRadius: "20px",
+                              fontSize: "11px",
+                              fontWeight: "700",
+                              backgroundColor: doc.isAvailable ? "#D1FAE5" : "#FEE2E2",
+                              color: doc.isAvailable ? "#065F46" : "#991B1B",
+                            }}
+                          >
+                            {doc.isAvailable ? "● Active Roster" : "○ Inactive"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+
             </div>
           )}
 
@@ -752,7 +950,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 </div>
               ) : filteredPatients.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "60px", color: "#616161" }}>
-                  <div style={{ fontSize: "40px", marginBottom: "12px" }}>👥</div>
+                  <Users size={40} color="#3F59FF" style={{ marginBottom: "12px" }} />
                   <p style={{ fontWeight: "600", color: "#060F2D" }}>No registered patient accounts found.</p>
                   <span style={{ fontSize: "13px", color: "#cbd5e1" }}>Sign-ups from client applications will map here.</span>
                 </div>
@@ -819,9 +1017,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                                   color: "#EF4444",
                                   fontSize: "12px",
                                   fontWeight: "700",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
                                 }}
                               >
-                                🩸 {patient.bloodGroup || "Unknown"}
+                                <span style={{ width: "6px", height: "6px", backgroundColor: "#EF4444", borderRadius: "50%" }}></span>
+                                {patient.bloodGroup || "Unknown"}
                               </span>
                             </td>
                             <td style={{ padding: "18px 12px", color: "#616161" }}>{formattedDate}</td>
@@ -832,6 +1034,147 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   </table>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ───────────────── TAB 4: APPOINTMENTS REGISTRY ───────────────── */}
+          {activeTab === "appointments" && (
+            <div
+              style={{
+                backgroundColor: "#FFFFFF",
+                borderRadius: "20px",
+                boxShadow: "0 10px 30px rgba(6, 15, 45, 0.02)",
+                border: "1px solid rgba(6, 15, 45, 0.04)",
+                padding: "32px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "32px",
+                  flexWrap: "wrap",
+                  gap: "16px",
+                }}
+              >
+                <div>
+                  <h3 style={{ fontSize: "19px", fontWeight: "800", color: "#060F2D" }}>
+                    Appointment Bookings Log
+                  </h3>
+                  <span style={{ fontSize: "12px", color: "#616161", display: "block", marginTop: "2px" }}>
+                    Manage doctor check-ups, consult scheduling, and patient visits.
+                  </span>
+                </div>
+                <div>
+                  <button
+                    onClick={() => triggerToast("New appointment scheduling panel coming in Phase 2!")}
+                    style={{
+                      backgroundColor: "#3F59FF",
+                      color: "#FFFFFF",
+                      border: "none",
+                      padding: "12px 24px",
+                      borderRadius: "10px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      fontSize: "13.5px",
+                      boxShadow: "0 4px 12px rgba(63, 89, 255, 0.2)",
+                    }}
+                  >
+                    + Create Booking
+                  </button>
+                </div>
+              </div>
+
+              {/* Mock/Demo Appointments for visualization */}
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid #F2F3FE", color: "#616161", fontSize: "13px", fontWeight: "700" }}>
+                      <th style={{ padding: "16px 12px" }}>Patient Profile</th>
+                      <th style={{ padding: "16px 12px" }}>Assigned Specialist</th>
+                      <th style={{ padding: "16px 12px" }}>Slot Date & Time</th>
+                      <th style={{ padding: "16px 12px" }}>Consultation Status</th>
+                      <th style={{ padding: "16px 12px" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { patient: "Surendhar", doctor: "Dr. Raman Srinivasan (Diabetology)", date: "Jun 30, 2026 - 10:30 AM", status: "Approved", color: "#10B981", bg: "rgba(16, 185, 129, 0.08)" },
+                      { patient: "Test User", doctor: "Dr. Anjali Sen (Gynecology)", date: "Jul 01, 2026 - 02:00 PM", status: "Pending", color: "#F59E0B", bg: "rgba(245, 158, 11, 0.08)" },
+                      { patient: "Verification User", doctor: "Dr. Raman Srinivasan (Diabetology)", date: "Jul 02, 2026 - 11:15 AM", status: "Approved", color: "#10B981", bg: "rgba(16, 185, 129, 0.08)" }
+                    ].map((app, idx) => (
+                      <tr
+                        key={idx}
+                        style={{
+                          borderBottom: "1px solid #F2F3FE",
+                          fontSize: "14px",
+                          color: "#060F2D",
+                        }}
+                      >
+                        <td style={{ padding: "18px 12px", fontWeight: "700" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <div
+                              style={{
+                                width: "32px",
+                                height: "32px",
+                                borderRadius: "50%",
+                                backgroundColor: "rgba(63, 89, 255, 0.06)",
+                                color: "#3F59FF",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontWeight: "800",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {app.patient.charAt(0).toUpperCase()}
+                            </div>
+                            <span>{app.patient}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: "18px 12px", fontWeight: "500" }}>{app.doctor}</td>
+                        <td style={{ padding: "18px 12px", color: "#616161" }}>{app.date}</td>
+                        <td style={{ padding: "18px 12px" }}>
+                          <span
+                            style={{
+                              padding: "6px 12px",
+                              borderRadius: "20px",
+                              backgroundColor: app.bg,
+                              color: app.color,
+                              fontSize: "12px",
+                              fontWeight: "700",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
+                            <span style={{ width: "6px", height: "6px", backgroundColor: app.color, borderRadius: "50%" }}></span>
+                            {app.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: "18px 12px" }}>
+                          <button
+                            onClick={() => triggerToast("Appointment action features (Approve/Cancel) will connect to the DB API in Phase 2!")}
+                            style={{
+                              padding: "6px 12px",
+                              backgroundColor: "transparent",
+                              border: "1.5px solid #cbd5e1",
+                              borderRadius: "8px",
+                              fontSize: "12px",
+                              fontWeight: "600",
+                              color: "#616161",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Manage
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 

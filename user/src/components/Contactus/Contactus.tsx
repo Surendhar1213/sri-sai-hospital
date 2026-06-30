@@ -213,10 +213,18 @@ export default function Contactus() {
             <div className="col-lg-4">
               <div className="contact-form-sidebar">
                 <div className="contact-form-tips contact-reveal contact-reveal-delay-3">
-                  <h6>Address</h6>
+                  <h6>Chennai </h6>
                   <p>
                     # 35,36, Masilamaneeswarar Nagar, Thirumullaivoyal,
                     Chennai-600062
+                  </p>
+                </div>
+                <div className="contact-form-tips contact-reveal contact-reveal-delay-3">
+                  <h6>Coimbatore </h6>
+                  <p>
+                    Srisai Subhramaniya Hospitals,
+                    <br />
+                    43, P & T Colony, Ganapathy, Coimbatore - 641006
                   </p>
                 </div>
                 <div className="contact-form-tips contact-reveal contact-reveal-delay-3">
@@ -227,8 +235,16 @@ export default function Contactus() {
                 <div className="contact-form-tips contact-reveal contact-reveal-delay-3">
                   <h6>Phone</h6>
                   <p>
-                    (+91)-44-26378138 , (+91)-44-26367405, (+91)-9840030402 ,
+                    <strong>Chennai:</strong>
+                    <br />
+                    (+91)-44-26378138, (+91)-44-26367405, (+91)-9840030402,
                     (+91)-9444479090
+                    <br />
+                    <strong style={{ display: "inline-block", marginTop: "8px" }}>
+                      Coimbatore:
+                    </strong>
+                    <br />
+                    (+91)-9952424135
                   </p>
                 </div>
               </div>

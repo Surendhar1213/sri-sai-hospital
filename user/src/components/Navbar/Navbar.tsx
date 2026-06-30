@@ -69,9 +69,16 @@ const Navbar = () => {
   // Book Appointment click handler
   const handleBookAppointment = () => {
     if (isLoggedIn) {
-      navigate("/book-appointment");
+      navigate("/#appointment-section");
+      const element = document.getElementById("pasentname") || document.getElementById("appointment-section");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (element.tagName === "INPUT") {
+          (element as HTMLInputElement).focus();
+        }
+      }
     } else {
-      navigate("/login", { state: { from: "/book-appointment" } });
+      navigate("/login", { state: { from: "/#appointment-section" } });
     }
   };
 

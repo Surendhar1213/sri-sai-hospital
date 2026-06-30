@@ -22,7 +22,6 @@ import Facilities from "./components/Facilities/Facilities";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import BookAppointment from "./pages/BookAppointment";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -70,9 +69,6 @@ function App() {
           {/* ✅ Auth Pages — Login & Register */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* ✅ Book Appointment */}
-          <Route path="/book-appointment" element={<BookAppointment />} />
         </Route>
       </Routes>
     <ToastContainer position="top-right" autoClose={3000} theme="colored" />
