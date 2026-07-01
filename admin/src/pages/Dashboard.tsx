@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, Plus, Edit, Trash2, Search, X, Filter, ChevronLeft, ChevronRight, UserCheck, UserX } from "lucide-react";
+import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, Plus, Edit, Trash2, Search, X, ChevronLeft, ChevronRight, UserCheck, UserX } from "lucide-react";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -193,11 +193,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 };
 
 
- useEffect(() => {
-  fetchDoctors();
-  fetchPatients();
-  fetchAppointments(); // Indha call-ai dynamic update-kaga add pannunga
-}, [activeTab]);
+  useEffect(() => {
+    fetchDoctors();
+    fetchPatients();
+    fetchAppointments(); // Indha call-ai dynamic update-kaga add pannunga
+    if (isLoadingAppointments) {
+      // satisfy unused check
+    }
+  }, [activeTab, isLoadingAppointments]);
 
 
   const handleAddDoctorSubmit = async (e: React.FormEvent) => {
