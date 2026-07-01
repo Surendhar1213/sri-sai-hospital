@@ -54,3 +54,50 @@ export const getAllDoctors = async (req: Request, res: Response): Promise<void> 
   }
 };
 
+// Update Doctor Controller (Status toggle and Details edit)
+export const updateDoctor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    
+    // Request parameters matching database edit check
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      id,
+      { $set: req.body }, // Body dynamic variables (Name, Speciality, Experience, Timing, isAvailable etc.)
+      { new: true } // Latest updated state output return
+    );
+
+    if (!updatedDoctor) {
+      res.status(404).json({ message: "Doctor profile not found" });
+      return;
+    }
+
+    res.status(200).json({ 
+      message: "Doctor details updated successfully", 
+      doctor: updatedDoctor 
+    });
+  } catch (error: any) {
+    console.error("Update Doctor Error:", error);
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+
+// Delete Doctor Profile
+export const deleteDoctor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const deletedDoctor = await Doctor.findByIdAndDelete(id);
+
+    if (!deletedDoctor) {
+      res.status(404).json({ message: "Doctor profile not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "Doctor profile removed successfully from database" });
+  } catch (error: any) {
+    console.error("Delete Doctor Error:", error);
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+

@@ -682,7 +682,7 @@ select.form-control option {
 
 /* Select default text color */
 select.form-control {
-  color: #ffffff;
+  color: #1a1a2e;
 }
 
 /* First option (placeholder) color */
@@ -692,12 +692,12 @@ select.form-control option[value=""] {
 
 /* Date input text color */
 input[type="datetime-local"] {
-  color: #0f172ac4;
+  color: #1a1a2e;
 }
 
 /* Date picker icon color */
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+  filter: none;
 }
 
 /* Change color on hover */

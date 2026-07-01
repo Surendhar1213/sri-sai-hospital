@@ -13,15 +13,22 @@ const Home = () => {
 
   useEffect(() => {
     if (location.hash === "#appointment-section") {
-      const element = document.getElementById("pasentname") || document.getElementById("appointment-section");
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth", block: "center" });
-          if (element.tagName === "INPUT") {
-            (element as HTMLInputElement).focus();
+      setTimeout(() => {
+        const element = document.getElementById("appointment-form-wrapper") || document.getElementById("appointment-section");
+        if (element) {
+          const headerHeight = 90; // Offset for sticky navbar
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({
+            top: elementPosition - headerHeight - 20,
+            behavior: "smooth",
+          });
+          // Focus the name input field inside the wrapper if it exists
+          const nameInput = document.getElementById("pasentname");
+          if (nameInput) {
+            (nameInput as HTMLInputElement).focus();
           }
-        }, 100);
-      }
+        }
+      }, 200);
     }
   }, [location]);
 

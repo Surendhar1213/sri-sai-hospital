@@ -70,11 +70,17 @@ const Navbar = () => {
   const handleBookAppointment = () => {
     if (isLoggedIn) {
       navigate("/#appointment-section");
-      const element = document.getElementById("pasentname") || document.getElementById("appointment-section");
+      const element = document.getElementById("appointment-form-wrapper") || document.getElementById("appointment-section");
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        if (element.tagName === "INPUT") {
-          (element as HTMLInputElement).focus();
+        const headerHeight = 90; // Offset for sticky navbar
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: elementPosition - headerHeight - 20,
+          behavior: "smooth",
+        });
+        const nameInput = document.getElementById("pasentname");
+        if (nameInput) {
+          (nameInput as HTMLInputElement).focus();
         }
       }
     } else {

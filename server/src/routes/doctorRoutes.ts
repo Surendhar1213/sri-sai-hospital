@@ -1,13 +1,15 @@
 import { Router } from "express";
-import { addDoctor, getAllDoctors } from "../controllers/doctorController.js";
+import { addDoctor, getAllDoctors, updateDoctor, deleteDoctor } from "../controllers/doctorController.js";
 import { verifyAdminToken } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-// Public route to view doctors (no login required for patient side to view)
 router.get("/all", getAllDoctors);
-
-// Secure routes (requires admin token to add)
 router.post("/add", verifyAdminToken as any, addDoctor);
+
+// Secure router update details
+router.put("/update/:id", verifyAdminToken as any, updateDoctor as any);
+router.delete("/delete/:id", verifyAdminToken as any, deleteDoctor as any);
+
 
 export default router;

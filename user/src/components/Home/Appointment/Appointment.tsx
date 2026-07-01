@@ -27,31 +27,84 @@ const Appointment = () => {
     pasentname: "",
     pasentmail: "",
     pasentnumber: "",
-    subject: "",
     appointmenttime: "",
     speciality: "",
-    doctor: "",
+    subject: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availableDoctors, setAvailableDoctors] = useState<string[]>([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedSlot, setSelectedSlot] = useState("");
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
-  // When speciality changes, update the available doctors dropdown list
-  useEffect(() => {
-    if (formData.speciality && SPECIALITY_DOCTORS[formData.speciality]) {
-      setAvailableDoctors(SPECIALITY_DOCTORS[formData.speciality]);
-      setFormData((prev) => ({
-        ...prev,
-        doctor: SPECIALITY_DOCTORS[formData.speciality][0] || "",
-      }));
-    } else {
-      setAvailableDoctors([]);
-      setFormData((prev) => ({
-        ...prev,
-        doctor: "",
-      }));
+  const TIME_SLOTS = [
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "01:00 PM",
+    "02:00 PM",
+    "03:00 PM",
+    "04:00 PM",
+    "05:00 PM",
+    "06:00 PM"
+  ];
+
+  const combineDateAndTime = (dateStr: string, slotStr: string): Date => {
+    const [time, modifier] = slotStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+    if (modifier === "PM" && hours < 12) {
+      hours += 12;
     }
-  }, [formData.speciality]);
+    if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+    const dateObj = new Date(dateStr);
+    dateObj.setHours(hours, minutes, 0, 0);
+    return dateObj;
+  };
+
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!selectedDate || !formData.speciality) {
+        setBookedSlots([]);
+        return;
+      }
+      try {
+        const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(
+          `${backendUrl}/api/appointments/booked-slots?date=${selectedDate}&speciality=${encodeURIComponent(formData.speciality)}`
+        );
+        const slots = await response.json();
+        if (response.ok) {
+          setBookedSlots(slots || []);
+        }
+      } catch (err) {
+        console.error("Error fetching booked slots:", err);
+      }
+    };
+    fetchBookedSlots();
+  }, [selectedDate, formData.speciality]);
+
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const dateVal = e.target.value;
+    setSelectedDate(dateVal);
+    setSelectedSlot("");
+    setFormData((prev) => ({
+      ...prev,
+      appointmenttime: "",
+    }));
+  };
+
+  const checkIsSlotBooked = (slot: string): boolean => {
+    if (!selectedDate) return false;
+    const combinedISO = combineDateAndTime(selectedDate, slot).toISOString();
+    return bookedSlots.some(
+      (bookedTime) => new Date(bookedTime).getTime() === new Date(combinedISO).getTime()
+    );
+  };
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -61,26 +114,46 @@ const Appointment = () => {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+      const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setIsSubmitting(true); // <--- Inga `isSubmitting` iruku
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Form submitted data:", formData);
-      setIsSubmitting(false);
-      // Reset form
-      setFormData({
-        pasentname: "",
-        pasentmail: "",
-        pasentnumber: "",
-        subject: "",
-        appointmenttime: "",
-        speciality: "",
-        doctor: "",
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      
+      const response = await fetch(`${backendUrl}/api/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData), // Inga formData direct-a backend schema fields oda matching
       });
-    }, 1500);
+
+      const data = await response.json();
+
+            if (response.ok) {
+        setShowSuccess(true); // <--- Pop-up active aagum
+        // Form field-la time, speciality and subject-ai reset panrom
+        setFormData((prev) => ({
+          ...prev,
+          appointmenttime: "",
+          speciality: "",
+          subject: "",
+        }));
+      } else {
+        alert("Booking failed: " + data.message);
+      }
+
+    } catch (error) {
+      console.error("Error submitting appointment:", error);
+      alert("Something went wrong. Please check your connection.");
+    } finally {
+      setIsSubmitting(false); // <--- Inga `isSubmitting`
+    }
   };
+
+
+
 
   return (
     <div className="my-bd" id="appointment-section">
@@ -127,7 +200,7 @@ const Appointment = () => {
             </div>
           </div>
 
-          <div className="appointment-form-wrapper">
+          <div className="appointment-form-wrapper" id="appointment-form-wrapper">
             <div className="appointment-form-container">
               <div className="appointment-form-inner">
                 <div className="appointment-form-content">
@@ -144,6 +217,7 @@ const Appointment = () => {
                             placeholder="Your Name*"
                             value={formData.pasentname}
                             onChange={handleChange}
+                            required
                           />
                         </div>
                       </div>
@@ -158,6 +232,7 @@ const Appointment = () => {
                             placeholder="Your Mail*"
                             value={formData.pasentmail}
                             onChange={handleChange}
+                            required
                           />
                         </div>
                       </div>
@@ -172,33 +247,7 @@ const Appointment = () => {
                             placeholder="Your Number*"
                             value={formData.pasentnumber}
                             onChange={handleChange}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Subject */}
-                      <div className="form-group col-md-6 col-lg-6">
-                        <div className="input-wrapper">
-                          <input
-                            type="text"
-                            name="subject"
-                            className="form-control"
-                            placeholder="Subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Time */}
-                      <div className="form-group col-md-6 col-lg-6">
-                        <div className="input-wrapper">
-                          <input
-                            type="datetime-local"
-                            name="appointmenttime"
-                            className="form-control date-picker"
-                            value={formData.appointmenttime}
-                            onChange={handleChange}
+                            required
                           />
                         </div>
                       </div>
@@ -211,6 +260,7 @@ const Appointment = () => {
                             className="form-control"
                             value={formData.speciality}
                             onChange={handleChange}
+                            required
                           >
                             <option value="">Choose Speciality...</option>
                             {Object.keys(SPECIALITY_DOCTORS).map((spec) => (
@@ -222,32 +272,89 @@ const Appointment = () => {
                         </div>
                       </div>
 
-                      {/* Doctor Dropdown (Dynamic) */}
+                      {/* Date Selection */}
                       <div className="form-group col-md-6 col-lg-6">
                         <div className="input-wrapper">
-                          <select
-                            name="doctor"
+                          <input
+                            type="date"
+                            name="selectedDate"
                             className="form-control"
-                            value={formData.doctor}
-                            onChange={handleChange}
-                            disabled={!formData.speciality}
-                          >
-                            <option value="">Choose Doctor...</option>
-                            {availableDoctors.map((doc, idx) => (
-                              <option key={idx} value={doc}>
-                                {doc}
-                              </option>
-                            ))}
-                          </select>
+                            value={selectedDate}
+                            onChange={handleDateChange}
+                            required
+                            min={new Date().toISOString().split("T")[0]}
+                          />
                         </div>
                       </div>
 
+                      {/* Subject (Optional) */}
+                      <div className="form-group col-md-6 col-lg-6">
+                        <div className="input-wrapper">
+                          <input
+                            type="text"
+                            name="subject"
+                            className="form-control"
+                            placeholder="Subject (Optional)"
+                            value={formData.subject}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Time Slots Grid (Only show if date is selected) */}
+                      {selectedDate && (
+                        <div className="form-group col-md-12 col-lg-12">
+                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#64748B", marginBottom: "12px", display: "block" }}>Select Time Slot</label>
+                          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                            {TIME_SLOTS.map((slot) => {
+                              const isBooked = checkIsSlotBooked(slot);
+                              const isSelected = selectedSlot === slot;
+
+                              return (
+                                <button
+                                  key={slot}
+                                  type="button"
+                                  disabled={isBooked}
+                                  onClick={() => {
+                                    setSelectedSlot(slot);
+                                    const combined = combineDateAndTime(selectedDate, slot);
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      appointmenttime: combined.toISOString(),
+                                    }));
+                                  }}
+                                  style={{
+                                    padding: "10px 20px",
+                                    borderRadius: "10px",
+                                    border: "1.5px solid",
+                                    borderColor: isBooked ? "#E2E8F0" : isSelected ? "#3F59FF" : "#CBD5E1",
+                                    backgroundColor: isBooked ? "#F1F5F9" : isSelected ? "#3F59FF" : "#FFFFFF",
+                                    color: isBooked ? "#94A3B8" : isSelected ? "#FFFFFF" : "#0F172A",
+                                    cursor: isBooked ? "not-allowed" : "pointer",
+                                    fontWeight: "600",
+                                    textDecoration: isBooked ? "line-through" : "none",
+                                    transition: "all 0.2s"
+                                  }}
+                                >
+                                  {slot}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Submit Button */}
-                      <div className="form-group col-md-6 col-lg-3">
+                      <div className="form-group col-md-12 col-lg-12">
                         <button
                           type="submit"
                           className="btn submit-btn"
-                          disabled={isSubmitting}
+                          disabled={isSubmitting || !selectedDate || !selectedSlot}
+                          style={{ 
+                            width: "100%", 
+                            backgroundColor: (!selectedDate || !selectedSlot) ? "#94A3B8" : "", 
+                            cursor: (!selectedDate || !selectedSlot) ? "not-allowed" : "pointer" 
+                          }}
                         >
                           {isSubmitting ? (
                             <>
@@ -259,6 +366,7 @@ const Appointment = () => {
                           )}
                         </button>
                       </div>
+
                     </div>
                   </form>
                 </div>
@@ -271,6 +379,76 @@ const Appointment = () => {
           <img src="assets/img/bg/bg_shapes.png" alt="" />
         </div>
       </div>
+
+      {showSuccess && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(6, 15, 45, 0.4)",
+          backdropFilter: "blur(8px)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+          animation: "fadeIn 0.3s ease-out"
+        }}>
+          <div style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "24px",
+            padding: "40px",
+            maxWidth: "420px",
+            width: "90%",
+            textAlign: "center",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+            border: "1px solid rgba(255,255,255,0.8)",
+            transform: "scale(1)",
+            transition: "transform 0.3s ease"
+          }}>
+            <div style={{
+              width: "70px",
+              height: "70px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(16, 185, 129, 0.1)",
+              color: "#10B981",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: "32px",
+              margin: "0 auto 20px auto"
+            }}>
+              ✓
+            </div>
+            <h3 style={{ fontSize: "22px", fontWeight: "700", color: "#060F2D", marginBottom: "10px" }}>
+              Request Submitted!
+            </h3>
+            <p style={{ fontSize: "14px", color: "#64748B", lineHeight: "1.6", marginBottom: "25px" }}>
+              Your appointment request has been logged. Our administration team will contact you shortly to confirm your scheduled slot.
+            </p>
+            <button 
+              onClick={() => setShowSuccess(false)}
+              style={{
+                width: "100%",
+                padding: "12px 24px",
+                backgroundColor: "#3F59FF",
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "15px",
+                cursor: "pointer",
+                transition: "background-color 0.2s"
+              }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#2B44DD"}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#3F59FF"}
+            >
+              Got it, Thanks!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
