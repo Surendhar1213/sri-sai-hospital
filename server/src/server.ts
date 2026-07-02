@@ -7,6 +7,8 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";   // ← ADD THIS LINE
 import doctorRoutes from "./routes/doctorRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+
 
 
 
@@ -34,6 +36,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/doctor", doctorRoutes);
 
 app.use("/api/appointments", appointmentRoutes);
+
+app.use("/api/payments", paymentRoutes);
 
 
 

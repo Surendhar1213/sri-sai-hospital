@@ -103,6 +103,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     razorpaySecret: "",
   });
 
+    // Manage Appointment Modal States
+  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<any | null>(null);
+  const [manageStatus, setManageStatus] = useState("pending");
+  const [manageDoctor, setManageDoctor] = useState("");
+  const [managePrescription, setManagePrescription] = useState("");
+  const [isSavingAppointment, setIsSavingAppointment] = useState(false);
+
+
   // Alert/Toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -192,15 +201,49 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   }
 };
 
+  const handleManageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAppointment) return;
+
+    setIsSavingAppointment(true);
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${backendUrl}/api/appointments/${selectedAppointment._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: manageStatus,
+          assignedDoctor: manageDoctor || null,
+          prescription: managePrescription,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update appointment");
+      }
+
+      triggerToast("✅ Appointment updated successfully!");
+      setIsManageModalOpen(false);
+      setSelectedAppointment(null);
+      fetchAppointments();
+    } catch (err: any) {
+      triggerToast(`❌ Error: ${err.message}`);
+    } finally {
+      setIsSavingAppointment(false);
+    }
+  };
+
 
   useEffect(() => {
     fetchDoctors();
     fetchPatients();
-    fetchAppointments(); // Indha call-ai dynamic update-kaga add pannunga
-    if (isLoadingAppointments) {
-      // satisfy unused check
-    }
-  }, [activeTab, isLoadingAppointments]);
+    fetchAppointments(); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
 
   const handleAddDoctorSubmit = async (e: React.FormEvent) => {
@@ -2323,7 +2366,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                           {/* Manage Action */}
                           <td style={{ padding: "18px 12px" }}>
                             <button
-                              onClick={() => triggerToast(`Managing ${app.pasentname}'s appointment (Status: ${app.status})`)}
+                              onClick={() => {
+                                setSelectedAppointment(app);
+                                setManageStatus(app.status || "pending");
+                                setManageDoctor(app.assignedDoctor?._id || "");
+                                setManagePrescription(app.prescription || "");
+                                setIsManageModalOpen(true);
+                              }}
                               style={{
                                 padding: "6px 12px",
                                 backgroundColor: "transparent",
@@ -2545,6 +2594,173 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   Save Settings Setup
                 </button>
               </form>
+            </div>
+          )}
+
+          {/* ───────────────── MANAGE APPOINTMENT MODAL ───────────────── */}
+          {isManageModalOpen && selectedAppointment && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(6, 15, 45, 0.4)",
+                backdropFilter: "blur(6px)",
+                zIndex: 9999,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "20px",
+                animation: "fadeIn 0.25s ease forwards"
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  width: "100%",
+                  maxWidth: "560px",
+                  borderRadius: "24px",
+                  padding: "36px",
+                  boxShadow: "0 24px 60px rgba(6, 15, 45, 0.15)",
+                  border: "1px solid rgba(6, 15, 45, 0.05)",
+                  position: "relative",
+                  animation: "scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards"
+                }}
+              >
+                <button
+                  onClick={() => {
+                    setIsManageModalOpen(false);
+                    setSelectedAppointment(null);
+                  }}
+                  style={{
+                    position: "absolute",
+                    top: "24px",
+                    right: "24px",
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                    color: "#94a3b8",
+                    padding: "4px"
+                  }}
+                >
+                  <X size={24} />
+                </button>
+
+                <div style={{ marginBottom: "28px" }}>
+                  <h3 style={{ fontSize: "21px", fontWeight: "800", color: "#060F2D" }}>
+                    Manage Appointment
+                  </h3>
+                  <span style={{ fontSize: "14px", color: "#616161", marginTop: "4px", display: "block" }}>
+                    Patient: <strong>{selectedAppointment.pasentname}</strong> ({selectedAppointment.speciality})
+                  </span>
+                </div>
+
+                <form onSubmit={handleManageSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  {/* Status Selection */}
+                  <div>
+                    <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
+                      Consultation Status
+                    </label>
+                    <select
+                      value={manageStatus}
+                      onChange={(e) => setManageStatus(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "1.5px solid #cbd5e1",
+                        fontSize: "15px",
+                        backgroundColor: "#fff",
+                        outline: "none",
+                        cursor: "pointer"
+                      }}
+                    >
+                      <option value="pending">Pending ⏳</option>
+                      <option value="approved">Approved ✅</option>
+                      <option value="cancelled">Cancelled ❌</option>
+                    </select>
+                  </div>
+
+                  {/* Assign Doctor */}
+                  <div>
+                    <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
+                      Assign Specialist
+                    </label>
+                    <select
+                      value={manageDoctor}
+                      onChange={(e) => setManageDoctor(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "1.5px solid #cbd5e1",
+                        fontSize: "15px",
+                        backgroundColor: "#fff",
+                        outline: "none",
+                        cursor: "pointer"
+                      }}
+                    >
+                      <option value="">-- Select Doctor --</option>
+                      {doctors
+                        .filter((doc) => doc.speciality === selectedAppointment.speciality)
+                        .map((doc) => (
+                          <option key={doc._id} value={doc._id}>
+                            {doc.name}
+                          </option>
+                        ))}
+                    </select>
+                    <span style={{ fontSize: "12px", color: "#94a3b8", marginTop: "4px", display: "block" }}>
+                      Only showing doctors matching with specialty: {selectedAppointment.speciality}
+                    </span>
+                  </div>
+
+                  {/* Prescription */}
+                  <div>
+                    <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
+                      Prescription / Notes
+                    </label>
+                    <textarea
+                      placeholder="Enter prescription details and guidelines here..."
+                      value={managePrescription}
+                      onChange={(e) => setManagePrescription(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "1.5px solid #cbd5e1",
+                        fontSize: "15px",
+                        minHeight: "100px",
+                        outline: "none",
+                        resize: "vertical",
+                      }}
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSavingAppointment}
+                    style={{
+                      marginTop: "16px",
+                      padding: "16px",
+                      backgroundColor: "#3F59FF",
+                      color: "#FFFFFF",
+                      border: "none",
+                      borderRadius: "12px",
+                      fontWeight: "700",
+                      cursor: isSavingAppointment ? "not-allowed" : "pointer",
+                      fontSize: "15px",
+                      boxShadow: "0 8px 20px rgba(63, 89, 255, 0.2)",
+                      transition: "all 0.2s",
+                      opacity: isSavingAppointment ? 0.7 : 1
+                    }}
+                  >
+                    {isSavingAppointment ? "Saving Changes..." : "Save Appointment Updates"}
+                  </button>
+                </form>
+              </div>
             </div>
           )}
         </div>

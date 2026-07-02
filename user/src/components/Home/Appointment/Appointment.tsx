@@ -15,7 +15,7 @@ const SPECIALITY_DOCTORS: Record<string, string[]> = {
   "Women's Intimate Wellness": ["Dr. R. Anuradha"],
   "Dermatology & Cosmetology": ["Dr. R. Jayashree", "Dr. R. Arunkarthick"],
   "Hair & Nail Clinic": ["Dr. R. Jayashree", "Dr. R. Arunkarthick"],
-  "Endocrinology": ["Dr. R. Anuradha"], 
+  "Endocrinology": ["Dr. R. Anuradha"],
   "Obesity & Weight Loss": ["Dr. R. Anuradha"],
   "Diabetology": ["Dr. R. Anuradha"],
   "Urology": ["Dr. R. Anuradha"],
@@ -39,17 +39,28 @@ const Appointment = () => {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
   const TIME_SLOTS = [
-    "09:00 AM",
+    // Morning Session (10:00 AM - 01:00 PM)
     "10:00 AM",
+    "10:30 AM",
     "11:00 AM",
+    "11:30 AM",
     "12:00 PM",
-    "01:00 PM",
+    "12:30 PM",
+    // 01:00 PM to 02:00 PM Lunch Break (ஸ்லாட்டுகள் தவிர்க்கப்பட்டுள்ளன)
+    // Afternoon & Evening Session (02:00 PM - 07:00 PM)
     "02:00 PM",
+    "02:30 PM",
     "03:00 PM",
+    "03:30 PM",
     "04:00 PM",
+    "04:30 PM",
     "05:00 PM",
-    "06:00 PM"
+    "05:30 PM",
+    "06:00 PM",
+    "06:30 PM"
   ];
+
+
 
   const combineDateAndTime = (dateStr: string, slotStr: string): Date => {
     const [time, modifier] = slotStr.split(" ");
@@ -107,50 +118,146 @@ const Appointment = () => {
 
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    if (name === "pasentnumber") {
+      value = value.replace(/\D/g, "");
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-      const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setIsSubmitting(true); // <--- Inga `isSubmitting` iruku
+  // Razorpay SDK-ஐ பிரவுசரில் லோடு செய்வதற்கான ஹெல்பர்
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true); // isLoading-க்கு பதிலாக isSubmitting
 
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      
-      const response = await fetch(`${backendUrl}/api/appointments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // Inga formData direct-a backend schema fields oda matching
-      });
-
-      const data = await response.json();
-
-            if (response.ok) {
-        setShowSuccess(true); // <--- Pop-up active aagum
-        // Form field-la time, speciality and subject-ai reset panrom
-        setFormData((prev) => ({
-          ...prev,
-          appointmenttime: "",
-          speciality: "",
-          subject: "",
-        }));
-      } else {
-        alert("Booking failed: " + data.message);
+      // 1. Razorpay ஸ்கிரிப்ட் லோடு செய்யப்படுகிறதா எனச் சோதிக்கவும்
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        alert("Razorpay SDK failed to load. Please check your internet connection.");
+        setIsSubmitting(false);
+        return;
       }
 
-    } catch (error) {
-      console.error("Error submitting appointment:", error);
-      alert("Something went wrong. Please check your connection.");
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+      // 2. பேமெண்ட் கட்டணத்தை ₹1000 ஆக செட் செய்கிறோம்
+      const consultationFee = 1000; 
+      const orderResponse = await fetch(`${backendUrl}/api/payments/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: consultationFee }),
+      });
+
+      const orderData = await orderResponse.json();
+      if (!orderResponse.ok) {
+        alert(orderData.message || "Failed to initiate payment order");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 3. தேதி மற்றும் நேரத்தை ஒருங்கிணைக்கிறோம் (இங்கு ஏற்கனவே உள்ள combineDateAndTime-ஐப் பயன்படுத்துகிறோம்)
+      const appointmenttime = combineDateAndTime(selectedDate, selectedSlot).toISOString();
+
+      // 4. Razorpay பாப்-அப் விண்டோவிற்கான ஆப்ஷன்கள்
+      const options = {
+        key: "rzp_test_T8eJAMZt63GhNt", // உங்களது Razorpay Test Key ID
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Sri Sai Hospital",
+        description: `Appointment Consultation Fee - ${formData.speciality}`,
+        order_id: orderData.id,
+        handler: async function (response: any) {
+          try {
+            // 5. பேமெண்ட் வெற்றிகரமாக முடிந்ததும் வெரிஃபை செய்கிறோம்
+            const verifyResponse = await fetch(`${backendUrl}/api/payments/verify`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+            if (!verifyResponse.ok || !verifyData.success) {
+              alert("Payment verification failed");
+              return;
+            }
+
+            // 6. வெரிஃபிகேஷன் முடிந்ததும் அப்பாயிண்ட்மென்ட்டை மங்கோடிபியில் சேமிக்கிறோம்
+            const bookingResponse = await fetch(`${backendUrl}/api/appointments`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                pasentname: formData.pasentname,
+                pasentmail: formData.pasentmail,
+                pasentnumber: `+91${formData.pasentnumber}`,
+                appointmenttime,
+                speciality: formData.speciality,
+                subject: formData.subject || "General consultation booking",
+              }),
+            });
+
+            const bookingData = await bookingResponse.json();
+            if (!bookingResponse.ok) {
+              alert(bookingData.message || "Failed to save appointment after payment");
+              return;
+            }
+
+            // புக் ஆனது உறுதியானதும் வெற்றிப் பாப்-அப்பைக் காட்டுகிறோம்
+            setShowSuccess(true); 
+
+            // பார்ம் வேல்யூக்களை ரீசெட் செய்கிறோம்
+            setFormData({
+              pasentname: "",
+              pasentmail: "",
+              pasentnumber: "",
+              appointmenttime: "",
+              speciality: "",
+              subject: "",
+            });
+            setSelectedDate("");
+            setSelectedSlot("");
+          } catch (err: any) {
+            alert(`Payment successful, but appointment save error: ${err.message}`);
+          }
+        },
+        prefill: {
+          name: formData.pasentname,
+          email: formData.pasentmail,
+          contact: formData.pasentnumber,
+        },
+        theme: {
+          color: "#3F59FF",
+        },
+      };
+
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.open();
+    } catch (err: any) {
+      alert(err.message || "Failed to process booking flow.");
     } finally {
-      setIsSubmitting(false); // <--- Inga `isSubmitting`
+      setIsSubmitting(false);
     }
   };
+
+
 
 
 
@@ -233,21 +340,27 @@ const Appointment = () => {
                             value={formData.pasentmail}
                             onChange={handleChange}
                             required
+                            disabled={!formData.pasentname.trim()}
                           />
                         </div>
                       </div>
 
                       {/* Phone Number */}
                       <div className="form-group col-md-6 col-lg-6">
-                        <div className="input-wrapper">
+                        <div className="input-wrapper phone-input-wrapper">
+                          <span className="phone-prefix">+91</span>
                           <input
                             type="text"
                             name="pasentnumber"
-                            className="form-control"
+                            className="form-control phone-input"
                             placeholder="Your Number*"
                             value={formData.pasentnumber}
                             onChange={handleChange}
                             required
+                            disabled={!formData.pasentmail.trim()}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            maxLength={10}
                           />
                         </div>
                       </div>
@@ -261,6 +374,7 @@ const Appointment = () => {
                             value={formData.speciality}
                             onChange={handleChange}
                             required
+                            disabled={!formData.pasentnumber.trim()}
                           >
                             <option value="">Choose Speciality...</option>
                             {Object.keys(SPECIALITY_DOCTORS).map((spec) => (
@@ -283,6 +397,7 @@ const Appointment = () => {
                             onChange={handleDateChange}
                             required
                             min={new Date().toISOString().split("T")[0]}
+                            disabled={!formData.speciality}
                           />
                         </div>
                       </div>
@@ -301,10 +416,15 @@ const Appointment = () => {
                         </div>
                       </div>
 
+
                       {/* Time Slots Grid (Only show if date is selected) */}
                       {selectedDate && (
                         <div className="form-group col-md-12 col-lg-12">
-                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#64748B", marginBottom: "12px", display: "block" }}>Select Time Slot</label>
+                          <label style={{ fontSize: "14px", fontWeight: "600", color: "#64748B", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span>🕒 Select Preferred Time Slot (30 Mins Session)</span>
+                          </label>
+
+
                           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                             {TIME_SLOTS.map((slot) => {
                               const isBooked = checkIsSlotBooked(slot);
@@ -345,15 +465,14 @@ const Appointment = () => {
                       )}
 
                       {/* Submit Button */}
-                      <div className="form-group col-md-12 col-lg-12">
+                      <div className="form-group col-md-12 col-lg-12" style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
                         <button
                           type="submit"
                           className="btn submit-btn"
                           disabled={isSubmitting || !selectedDate || !selectedSlot}
-                          style={{ 
-                            width: "100%", 
-                            backgroundColor: (!selectedDate || !selectedSlot) ? "#94A3B8" : "", 
-                            cursor: (!selectedDate || !selectedSlot) ? "not-allowed" : "pointer" 
+                          style={{
+                            width: "auto",
+                            minWidth: "250px"
                           }}
                         >
                           {isSubmitting ? (
@@ -427,7 +546,7 @@ const Appointment = () => {
             <p style={{ fontSize: "14px", color: "#64748B", lineHeight: "1.6", marginBottom: "25px" }}>
               Your appointment request has been logged. Our administration team will contact you shortly to confirm your scheduled slot.
             </p>
-            <button 
+            <button
               onClick={() => setShowSuccess(false)}
               style={{
                 width: "100%",

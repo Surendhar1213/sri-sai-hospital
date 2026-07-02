@@ -1,0 +1,56 @@
+import { Request, Response } from "express";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+
+// Razorpay இன்ஸ்டன்ஸ்-ஐ .env கீகள் மூலம் லோட் செய்கிறோம்
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID || "",
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "",
+});
+
+// 1. புதிய ஆர்டர் உருவாக்குதல் (Create a new Order)
+export const createOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { amount } = req.body; // Amount in INR (எ.கா: 1000)
+
+    if (!amount) {
+      res.status(400).json({ message: "Amount is required" });
+      return;
+    }
+
+    const options = {
+      amount: Number(amount) * 100, // Razorpay-க்கு பைசாக்களாக அனுப்ப வேண்டும் (₹1 = 100 Paise)
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.status(201).json(order); // Razorpay வழங்கிய ஆர்டர் விவரங்களை அனுப்புகிறோம்
+  } catch (error: any) {
+    console.error("❌ Error creating Razorpay order:", error);
+    res.status(500).json({ message: "Failed to create payment order", error: error.message });
+  }
+};
+
+// 2. பேமெண்ட் செக்யூரிட்டி செக் (Verify Payment Signature)
+export const verifyPayment = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+      .update(sign.toString())
+      .digest("hex");
+
+    // Razorpay சிக்னேச்சரும் நமது கணக்கீடும் ஒத்துப்போகிறதா என்று பார்க்கிறோம்
+    if (razorpay_signature === expectedSign) {
+      res.status(200).json({ message: "Payment verified successfully", success: true });
+    } else {
+      res.status(400).json({ message: "Invalid payment signature", success: false });
+    }
+  } catch (error: any) {
+    console.error("❌ Error verifying payment:", error);
+    res.status(500).json({ message: "Server error during verification", error: error.message });
+  }
+};
