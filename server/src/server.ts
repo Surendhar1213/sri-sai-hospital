@@ -51,9 +51,11 @@ async function start() {
     await mongoose.connect(process.env.MONGO_URI!);
     console.log("✅ Database Connected Successfully");
 
-    app.listen(5000, () => {
-      console.log("✅ Hospital Server Started on Port 5000");
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`✅ Hospital Server Started on Port ${PORT}`);
     });
+
   } catch (err) {
     console.error("❌ MongoDB Connection Error");
     console.error(err);
