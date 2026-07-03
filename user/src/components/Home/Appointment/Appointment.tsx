@@ -157,13 +157,32 @@ const loadRazorpayScript = () => {
 
       // 2. பேமெண்ட் கட்டணத்தை ₹1000 ஆக செட் செய்கிறோம்
       const consultationFee = 1000; 
-      const orderResponse = await fetch(`${backendUrl}/api/payments/create-order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: consultationFee }),
-      });
+      let orderResponse;
+      try {
+        orderResponse = await fetch(`${backendUrl}/api/payments/create-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: consultationFee }),
+        });
+      } catch (err: any) {
+        alert(`Network Connection Error!\nFailed to connect to: ${backendUrl}/api/payments/create-order\nError: ${err.message}`);
+        setIsSubmitting(false);
+        return;
+      }
 
-      const orderData = await orderResponse.json();
+      const responseText = await orderResponse.text();
+      let orderData;
+      try {
+        orderData = JSON.parse(responseText);
+      } catch (err: any) {
+        alert(`API Error: Expected JSON but received HTML.\n\n` +
+              `Requested URL: ${backendUrl}/api/payments/create-order\n` +
+              `HTTP Status: ${orderResponse.status} ${orderResponse.statusText}\n\n` +
+              `Response Preview (First 150 chars):\n${responseText.substring(0, 150)}`);
+        setIsSubmitting(false);
+        return;
+      }
+
       if (!orderResponse.ok) {
         alert(orderData.message || "Failed to initiate payment order");
         setIsSubmitting(false);
