@@ -25,7 +25,7 @@ const Gallery = () => {
       pw.add("(min-width: 1200px)", () => {
         // Find all .design-choose-item-wrap within this component
         const wraps = containerRef.current!.querySelectorAll(".design-choose-item-wrap");
-        
+
         wraps.forEach((wrap: Element) => {
           const items1 = wrap.querySelectorAll(".design-choose-item-1");
           const items2 = wrap.querySelectorAll(".design-choose-item-2");
@@ -64,8 +64,8 @@ const Gallery = () => {
   }, []);
 
   return (
-    <section 
-      className="project-section fix " 
+    <section
+      className="project-section fix "
       ref={containerRef}
     >
       <div className="container Gallerys section-space mb-50">

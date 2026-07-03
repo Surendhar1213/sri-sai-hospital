@@ -15,6 +15,8 @@ import {
   FaBars,
   FaTimes,
   FaSignOutAlt,
+  FaCalendarAlt,
+  FaFileAlt,
 } from "react-icons/fa";
 
 import { IoMdMail } from "react-icons/io";
@@ -132,32 +134,82 @@ const Navbar = () => {
           </div>
           <div className="th-mobile-menu">
             <ul>
-              <li className="menu-item-has-children">
-                <a href="#">Home</a>
-              </li>
-              <li className="menu-item-has-children">
-                <Link to="/about">About us</Link>
-              </li>
-              <li className="menu-item-has-children">
-                <a href="#"> Services </a>
-                <SubMenuToggle onClick={() => toggleSubMenu("teachers")} />
-                <ul
-                  className={`sub-menu th-submenu ${openSubMenus.teachers ? "th-open" : ""}`}
-                  style={{ display: openSubMenus.teachers ? "block" : "none" }}
-                >
-                  <li>
-                    <a href="#">Instructors</a>
-                  </li>
-                  <li>
-                    <a href="#">Instructors Details</a>
-                  </li>
-                </ul>
-              </li>
-              <li className="menu-item-has-children">
-                <a href="#">Gallery</a>
+              <li>
+                <Link to="/" onClick={toggleMobileMenu}>Home</Link>
               </li>
               <li>
-                <a href="#">Contact us</a>
+                <Link to="/about" onClick={toggleMobileMenu}>About us</Link>
+              </li>
+              <li>
+                <Link to="/facilities" onClick={toggleMobileMenu}>Our facilities</Link>
+              </li>
+              <li className="menu-item-has-children">
+                <a href="#" onClick={(e) => { e.preventDefault(); toggleSubMenu("specialities"); }}>Our speciality</a>
+                <SubMenuToggle onClick={() => toggleSubMenu("specialities")} />
+                <ul
+                  className={`sub-menu th-submenu ${openSubMenus.specialities ? "th-open" : ""}`}
+                  style={{ display: openSubMenus.specialities ? "block" : "none" }}
+                >
+                  <li><Link to="/gynecology" onClick={toggleMobileMenu}>Gynecology</Link></li>
+                  <li><Link to="/fertility" onClick={toggleMobileMenu}>Fertility</Link></li>
+                  <li><Link to="/obstetricsandmaternity" onClick={toggleMobileMenu}>Obstetrics & Maternity</Link></li>
+                  <li><Link to="/PelvicFloor" onClick={toggleMobileMenu}>Pelvic Floor Clinic</Link></li>
+                  <li><Link to="/WomensIntimateWellness" onClick={toggleMobileMenu}>Women's Intimate Wellness</Link></li>
+                  <li><Link to="/endocrinology" onClick={toggleMobileMenu}>Endocrinology</Link></li>
+                  <li><Link to="/obesityandweightloss" onClick={toggleMobileMenu}>Obesity & Weight Loss</Link></li>
+                  <li><Link to="/diabetology" onClick={toggleMobileMenu}>Diabetology</Link></li>
+                  <li><Link to="/dermatology" onClick={toggleMobileMenu}>Dermatology & Cosmetology</Link></li>
+                  <li><Link to="/hairandnail" onClick={toggleMobileMenu}>Hair & Nail Clinic</Link></li>
+                  <li><Link to="/urology" onClick={toggleMobileMenu}>Urology</Link></li>
+                  <li><Link to="/generalmedicine" onClick={toggleMobileMenu}>General Medicine</Link></li>
+                </ul>
+              </li>
+              <li>
+                <Link to="/doctors" onClick={toggleMobileMenu}>Doctors</Link>
+              </li>
+              <li>
+                <Link to="/gallery" onClick={toggleMobileMenu}>Gallery</Link>
+              </li>
+              <li>
+                <Link to="/contactus" onClick={toggleMobileMenu}>Contact us</Link>
+              </li>
+              {isLoggedIn ? (
+                <>
+                  <li style={{ borderTop: "1px solid #eee", paddingTop: "10px" }}>
+                    <Link to="/profile" onClick={toggleMobileMenu} style={{ color: "#3F59FF", fontWeight: "700" }}>
+                      My Dashboard ({userName.charAt(0).toUpperCase()})
+                    </Link>
+                  </li>
+                  <li>
+                    <a href="#" onClick={(e) => { e.preventDefault(); toggleMobileMenu(); handleLogout(); }} style={{ color: "#EF4444" }}>
+                      Log Out
+                    </a>
+                  </li>
+                </>
+              ) : (
+                <li style={{ borderTop: "1px solid #eee", paddingTop: "10px" }}>
+                  <Link to="/login" onClick={toggleMobileMenu} style={{ color: "#3F59FF", fontWeight: "700" }}>
+                    Log In / Register
+                  </Link>
+                </li>
+              )}
+              <li style={{ marginTop: "15px", listStyleType: "none" }}>
+                <button
+                  onClick={() => { toggleMobileMenu(); handleBookAppointment(); }}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "linear-gradient(90deg, #3F58FF 0%, #31B0FF 100%)",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "50px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  Book Appointment
+                </button>
               </li>
             </ul>
           </div>
@@ -225,7 +277,7 @@ const Navbar = () => {
                 <div className="col-auto">
                   <div className="header-logo">
                     <a href="#">
-                      <img src={Logo} style={{ width: "200px" }} alt="Logo" />
+                      <img src={Logo} className="header-logo-img" alt="Logo" />
                     </a>
                   </div>
                 </div>
@@ -334,13 +386,73 @@ const Navbar = () => {
                           </li>
                         </ul>
                       </nav>
-                      <button
-                        type="button"
-                        className="th-menu-toggle d-block d-lg-none"
-                        onClick={toggleMobileMenu}
-                      >
-                        <FaBars />
-                      </button>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        {/* Book Appointment (Mobile/Tablet View) */}
+                        <button
+                          onClick={handleBookAppointment}
+                          className="d-inline-flex d-xl-none mobile-book-btn"
+                          style={{
+                            padding: "8px 16px",
+                            background: "linear-gradient(90deg, #3F58FF 0%, #31B0FF 100%)",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "50px",
+                            fontSize: "13px",
+                            fontWeight: "600",
+                            cursor: "pointer",
+                            alignItems: "center",
+                            gap: "4px"
+                          }}
+                        >
+                          Book Appointment
+                        </button>
+
+                        {/* User Profile Avatar (Mobile/Tablet View) */}
+                        {isLoggedIn && (
+                          <div className="d-block d-xl-none" style={{ padding: 0, margin: 0, display: "inline-flex" }}>
+                            <Link
+                              to="/profile"
+                              title="Go to Patient Dashboard"
+                              style={{ textDecoration: "none", display: "inline-flex" }}
+                            >
+                              <button
+                                style={{
+                                  width: "38px",
+                                  height: "38px",
+                                  minWidth: "38px",
+                                  minHeight: "38px",
+                                  borderRadius: "50%",
+                                  background: "linear-gradient(135deg, #3F59FF 0%, #31B0FF 100%)",
+                                  color: "#FFFFFF",
+                                  border: "1.5px solid #FFFFFF",
+                                  fontSize: "13px",
+                                  fontWeight: "800",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  boxShadow: "0 0 0 1.5px rgba(63, 89, 255, 0.15), 0 6px 12px rgba(63, 89, 255, 0.15)",
+                                  position: "relative",
+                                  padding: 0,
+                                  margin: 0
+                                }}
+                              >
+                                {userName.charAt(0).toUpperCase()}
+                              </button>
+                            </Link>
+                          </div>
+                        )}
+
+                        {/* Mobile Hamburger Toggle */}
+                        <button
+                          type="button"
+                          className="th-menu-toggle d-block d-lg-none"
+                          onClick={toggleMobileMenu}
+                          style={{ margin: 0 }}
+                        >
+                          <FaBars />
+                        </button>
+                      </div>
                     </div>
                     <div className="col-auto d-none d-xl-block">
                       <div className="header-button hero-section-four">
@@ -369,42 +481,67 @@ const Navbar = () => {
                               <FaArrowRight />
                             </span>
                           </button>
-                          {/* User info / logout */}
+                          {/* Premium User Avatar - Direct Link to /profile */}
                           {isLoggedIn && (
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                              <span style={{
-                                background: "rgba(63,89,255,0.1)",
-                                color: "#3F59FF",
-                                borderRadius: "50px",
-                                padding: "6px 14px",
-                                fontSize: "13px",
-                                fontWeight: "600",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                              }}>
-                                <FaUser size={11} /> {userName}
-                              </span>
-                              <button
-                                onClick={handleLogout}
-                                title="Logout"
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: 0, margin: 0 }}>
+                              <Link
+                                to="/profile"
+                                title="Go to Patient Dashboard"
                                 style={{
-                                  background: "rgba(239,68,68,0.1)",
-                                  color: "#ef4444",
+                                  textDecoration: "none",
+                                  display: "inline-flex",
+                                  padding: 0,
+                                  margin: 0,
                                   border: "none",
-                                  borderRadius: "50%",
-                                  width: "34px",
-                                  height: "34px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  cursor: "pointer",
-                                  fontSize: "13px",
-                                  transition: "background 0.2s",
+                                  background: "none"
                                 }}
                               >
-                                <FaSignOutAlt />
-                              </button>
+                                <button
+                                  style={{
+                                    width: "44px",
+                                    height: "44px",
+                                    minWidth: "44px",
+                                    minHeight: "44px",
+                                    borderRadius: "50%",
+                                    background: "linear-gradient(135deg, #3F59FF 0%, #31B0FF 100%)",
+                                    color: "#FFFFFF",
+                                    border: "2px solid #FFFFFF",
+                                    fontSize: "16px",
+                                    fontWeight: "800",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 0 0 2px rgba(63, 89, 255, 0.15), 0 8px 16px rgba(63, 89, 255, 0.15)",
+                                    transition: "all 0.3s ease",
+                                    position: "relative",
+                                    padding: "0 !important",
+                                    margin: "0 !important",
+                                    boxSizing: "border-box"
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "translateY(-2px)";
+                                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(63, 89, 255, 0.25), 0 12px 20px rgba(63, 89, 255, 0.25)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.boxShadow = "0 0 0 2px rgba(63, 89, 255, 0.15), 0 8px 16px rgba(63, 89, 255, 0.15)";
+                                  }}
+                                >
+                                  {userName.charAt(0).toUpperCase()}
+                                  <span style={{
+                                    position: "absolute",
+                                    bottom: "2px",
+                                    right: "2px",
+                                    width: "10px",
+                                    height: "10px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#10B981",
+                                    border: "1.5px solid #FFFFFF",
+                                    boxShadow: "0 0 8px #10B981"
+                                  }} />
+                                </button>
+                              </Link>
                             </div>
                           )}
                         </div>

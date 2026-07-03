@@ -1,4 +1,5 @@
 import "./Footer.css";
+import { Link } from "react-router-dom";
 import {
   FaPhone,
   FaEnvelope,
@@ -131,19 +132,19 @@ const Footer = () => {
                     <div className="widget-content">
                       <ul className="user-links">
                         <li>
-                          <a href="/">Home</a>
+                          <Link to="/">Home</Link>
                         </li>
                         <li>
-                          <a href="/">About Us</a>
+                          <Link to="/about">About Us</Link>
                         </li>
                         <li>
-                          <a href="/">Facilities</a>
+                          <Link to="/facilities">Facilities</Link>
                         </li>
                         <li>
-                          <a href="/">Speciality</a>
+                          <Link to="/generalmedicine">Speciality</Link>
                         </li>
                         <li>
-                          <a href="/">Contact Us</a>
+                          <Link to="/contactus">Contact Us</Link>
                         </li>
                       </ul>
                     </div>

@@ -22,6 +22,7 @@ import Facilities from "./components/Facilities/Facilities";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -69,6 +70,9 @@ function App() {
           {/* ✅ Auth Pages — Login & Register */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* ✅ User Profile / Dashboard Page */}
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     <ToastContainer position="top-right" autoClose={3000} theme="colored" />

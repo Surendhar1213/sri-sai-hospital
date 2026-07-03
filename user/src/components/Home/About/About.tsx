@@ -6,9 +6,10 @@ import "./About.css";
 
 import About1 from "../../../assets/home/about/about-us-image-1.jpg";
 import About2 from "../../../assets/home/about/about-us-image-2.jpg";
-import Aboutauthor1 from "../../../assets/home/about/author-1.jpg";
-import Aboutauthor2 from "../../../assets/home/about/author-2.jpg";
-import Aboutauthor3 from "../../../assets/home/about/author-3.jpg";
+// import Aboutauthor1 from "../../../assets/home/about/author-1.jpg";
+// import Aboutauthor2 from "../../../assets/home/about/author-2.jpg";
+// import Aboutauthor3 from "../../../assets/home/about/author-3.jpg";
+import DiabetesTest from "../../../assets/home/about/diabetes-test.jpg";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -308,48 +309,18 @@ const About = () => {
               <div className="about-us-image-box-1">
                 {/* Happy Customer Review Box Start */}
                 <div className="happy-customer-review-box">
-                  <div className="happy-customer-review-item">
-                    {/* Hero Info Rating Star Start */}
-                    <div className="hero-info-rating-star">
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                    </div>
-                    {/* Hero Info Rating Star End */}
-
-                    {/* Happy Customer Review Content Start */}
-                    <div className="happy-customer-review-content">
-                      <p>Happy Customer Reviews 5000+</p>
-                    </div>
-                    {/* Happy Customer Review Content End */}
-
-                    {/* Satisfy Client Images Start */}
-                    <div className="satisfy-client-images">
-                      <div className="satisfy-client-image">
-                        <figure className="image-anime">
-                          <img src={Aboutauthor1} alt="Client 1" />
-                        </figure>
-                      </div>
-
-                      <div className="satisfy-client-image">
-                        <figure className="image-anime">
-                          <img src={Aboutauthor2} alt="Client 2" />
-                        </figure>
-                      </div>
-
-                      <div className="satisfy-client-image">
-                        <figure className="image-anime">
-                          <img src={Aboutauthor3} alt="Client 3" />
-                        </figure>
-                      </div>
-
-                      <div className="satisfy-client-image add-more">
-                        <FaPlus />
-                      </div>
-                    </div>
-                    {/* Satisfy Client Images End */}
+                  <div className="happy-customer-review-item" style={{ padding: 0, background: "none" }}>
+                    <img
+                      src={DiabetesTest}
+                      alt="Diabetes Test"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "20px",
+                        objectFit: "cover",
+                        display: "block"
+                      }}
+                    />
                   </div>
                 </div>
                 {/* Happy Customer Review Box End */}

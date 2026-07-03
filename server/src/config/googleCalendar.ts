@@ -3,20 +3,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// OAuth2 configuration setup (Admin / Client ID credential validation keys)
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
-
-// Session authorization using Saved Refresh Token
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN || null,
+// Service Account JWT authorization setup
+const auth = new google.auth.JWT({
+  email: process.env.GOOGLE_CLIENT_EMAIL || "",
+  key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+  scopes: ["https://www.googleapis.com/auth/calendar"],
 });
 
 
-const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+const calendar = google.calendar({ version: "v3", auth });
 
 interface MeetEventOptions {
   patientEmail: string;
@@ -35,22 +30,21 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
   const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); 
 
   const event = {
-    summary: `🩺 ${speciality} Consultation - Sri Sai Hospital`,
-    description: `Virtual consultation session with specialist. Google Meet video conferencing is enabled.`,
+    summary: `🩺 Sri Sai Hospital - ${speciality} Consultation`,
+    description: `Virtual video consultation.\nPatient: ${patientEmail}\nDoctor: ${doctorEmail || "Not Assigned"}`,
     start: {
       dateTime: startTime.toISOString(),
-      timeZone: "Asia/Kolkata", // Indian timezone setup
+      timeZone: "Asia/Kolkata",
     },
     end: {
       dateTime: endTime.toISOString(),
       timeZone: "Asia/Kolkata",
     },
-    // Inviting both Patient and Doctor
-    attendees: [
-      { email: patientEmail },
-      ...(doctorEmail ? [{ email: doctorEmail }] : []),
-    ],
-    // 💡 KEY PART: Requests Google Meet creation request!
+    // attendees: [
+    //   { email: patientEmail },
+    //   ...(doctorEmail ? [{ email: doctorEmail }] : []),
+    // ],
+    // Google Meet லிங்க் உருவாக்கச் சொல்கிறோம்
     conferenceData: {
       createRequest: {
         requestId: `meet-${Date.now()}`,
@@ -63,12 +57,11 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
 
   try {
     const response = await calendar.events.insert({
-      calendarId: "primary", // Schedules on main account's calendar
+      calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
       requestBody: event,
-      conferenceDataVersion: 1, // Must be 1 to enable conference link creation!
+      conferenceDataVersion: 1, // கூகுள் மீட் லிங்க் வர இது மிக முக்கியம்!
     });
 
-    // Extracting generated Google Meet Link 🌐
     const meetLink = response.data.hangoutLink;
     console.log("📅 Google Calendar Event created successfully!");
     console.log("🔗 Generated Google Meet Link:", meetLink);
@@ -76,7 +69,6 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
     return meetLink;
   } catch (error) {
     console.error("❌ Google Calendar API Event Creation Error:", error);
-    // If OAuth configuration fails, fallback to null so the app doesn't crash
     return null;
   }
 };

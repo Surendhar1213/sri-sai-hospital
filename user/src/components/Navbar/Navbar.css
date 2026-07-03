@@ -129,11 +129,14 @@
 }
 
 .th-mobile-menu ul li a:before {
-    content: '\f105';
-    font-family: var(--icon-font);
+    content: '›';
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 18px;
+    color: #3F59FF;
     position: absolute;
     left: 0;
-    top: 12px;
+    top: 8px;
     margin-right: 10px;
     display: inline-block
 }
@@ -301,20 +304,20 @@
     z-index: 9
 }
 
-.menu-item-has-children > a {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.menu-item-has-children>a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .dropdown-icon {
-  font-size: 12px;
-  transition: transform 0.3s ease;
+    font-size: 12px;
+    transition: transform 0.3s ease;
 }
 
 /* Rotate icon on hover */
 .menu-item-has-children:hover .dropdown-icon {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .main-menu ul.sub-menu {
@@ -745,4 +748,78 @@ blockquote p:has(cite),
     justify-content: space-between;
     gap: 20px;
     max-width: 500px
+}
+
+/* User Profile Premium Hover Dropdown Menu CSS */
+.user-profile-menu-container:hover .user-dropdown-menu {
+    display: flex !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Menu Toggling CSS Rules */
+.th-menu-wrapper.th-body-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.th-menu-wrapper.th-body-visible .th-menu-area {
+    left: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Mobile Submenu Expand Arrow Icon CSS */
+.th-mobile-menu ul li {
+    position: relative !important;
+}
+
+.th-mean-expand {
+    position: absolute !important;
+    right: 15px !important;
+    top: 10px !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: rgba(63, 89, 255, 0.08) !important;
+    color: #3F59FF !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    z-index: 99 !important;
+    transition: transform 0.3s ease !important;
+}
+
+.th-mean-expand svg {
+    display: block !important;
+}
+
+/* Responsive CSS for Header logo and Mobile button below 500px */
+.header-logo-img {
+    width: 170px !important;
+    transition: width 0.3s ease !important;
+    max-width: 100% !important;
+}
+
+@media (max-width: 500px) {
+    .header-logo-img {
+        width: 110px !important;
+    }
+
+    .mobile-book-btn {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+    }
 }

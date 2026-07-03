@@ -92,17 +92,19 @@ export const getBookedSlots = async (req: Request, res: Response): Promise<void>
   }
 };
 
-// 2. Admin dashboard-ku ella appointments-aiyum fetch pannanum
+// 2. Admin dashboard-ku/User profile-ku appointments-ai fetch pannanum
 export const getAllAppointments = async (req: Request, res: Response): Promise<void> => {
   try {
-    const appointments = await Appointment.find().populate("assignedDoctor", "name email speciality").sort({ createdAt: -1 });
+    const { email } = req.query;
+    const filter = email ? { pasentmail: String(email) } : {};
+    const appointments = await Appointment.find(filter).populate("assignedDoctor", "name email speciality").sort({ createdAt: -1 });
     res.status(200).json(appointments);
   } catch (error: any) {
     res.status(500).json({ message: "Server error while fetching appointments", error: error.message });
   }
 };
 
-// 3. Admin status change panna/Doctor assign panna update API
+
 // 3. Admin status change panna/Doctor assign panna update API
 export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -118,6 +120,14 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
 
     let meetingLink = appointment.meetingLink;
 
+    // இதைச் சேர்க்கவும் (Debug Log):
+    console.log("🔍 DEBUG CHECK:", {
+      incomingStatus: status,
+      incomingDoctor: assignedDoctor,
+      currentMeetingLink: meetingLink,
+      shouldEnterBlock: (status === "approved" && assignedDoctor && !meetingLink)
+    });
+
     // 2. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
     if (status === "approved" && assignedDoctor && !meetingLink) {
       // Find Doctor details (especially doctor email)
@@ -127,18 +137,25 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         console.log(`📅 Scheduling Meet: Patient(${appointment.pasentmail}) with Doctor(${doctorDetails.email})`);
         
         // Google Calendar call panni meet link gen panrom
-        const generatedLink = await createMeetEvent({
-          patientEmail: appointment.pasentmail,
-          doctorEmail: doctorDetails.email,
-          speciality: appointment.speciality,
-          startTime: new Date(appointment.appointmenttime),
-        });
+    //     const generatedLink = await createMeetEvent({
+    //       patientEmail: appointment.pasentmail,
+    //       doctorEmail: doctorDetails.email,
+    //       speciality: appointment.speciality,
+    //       startTime: new Date(appointment.appointmenttime),
+    //     });
 
-        if (generatedLink) {
-          meetingLink = generatedLink; // save setup link details
-        }
+    //     if (generatedLink) {
+    //       meetingLink = generatedLink; 
+    //     }
+
+        meetingLink = `https://meet.jit.si/SriSaiHospital-Consultation-${appointment._id}`;
+        console.log(`🔗 Generated Jitsi Meet Link: ${meetingLink}`);
+
       }
     }
+
+        
+
 
     // 3. DB values update panrom
     const updatedAppointment = await Appointment.findByIdAndUpdate(
@@ -157,7 +174,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    // 4. Send Confirmation Email if status approved now
+       // 4. Send Confirmation Email if status approved now (Wrapped in Try-Catch)
     if (status === "approved" && updatedAppointment.assignedDoctor) {
       const doctorObj = updatedAppointment.assignedDoctor as any;
       const formattedTime = new Date(updatedAppointment.appointmenttime).toLocaleString("en-IN", {
@@ -166,30 +183,33 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         timeStyle: "short",
       });
 
-      // Email trigger to Patient
-      await sendAppointmentEmail({
-        to: updatedAppointment.pasentmail,
-        patientName: updatedAppointment.pasentname,
-        doctorName: doctorObj.name,
-        speciality: updatedAppointment.speciality,
-        time: formattedTime,
-        meetingLink: updatedAppointment.meetingLink,
-      });
-      // வரிகள் 178-179 க்கு நடுவில் (sendAppointmentEmail பிளாக்கிற்கு கீழே) இதைச் சேர்க்கவும்:
+      // ஈமெயில் அனுப்பும் எர்ரரால் ஏபிஐ கிராஷ் ஆகாமல் இருக்க தனி try-catch போடுகிறோம்
+      try {
+        // Email trigger to Patient
+        await sendAppointmentEmail({
+          to: updatedAppointment.pasentmail,
+          patientName: updatedAppointment.pasentname,
+          doctorName: doctorObj.name,
+          speciality: updatedAppointment.speciality,
+          time: formattedTime,
+          meetingLink: updatedAppointment.meetingLink,
+        });
 
-// Email trigger for Prescription to Patient
-        if (prescription && updatedAppointment.assignedDoctor) {
-          const doctorObj = updatedAppointment.assignedDoctor as any;
+        // Email trigger for Prescription to Patient
+        if (prescription) {
           await sendPrescriptionEmail({
             to: updatedAppointment.pasentmail,
             patientName: updatedAppointment.pasentname,
             doctorName: doctorObj.name,
             prescription: updatedAppointment.prescription || ""
-  });
-}
-
-
+          });
+        }
+      } catch (emailError) {
+        // மெயில் அனுப்ப முடியவில்லை என்றாலும் லாக் மட்டும் காட்டிவிட்டு சர்வர் தொடர்ந்து ஓடும்
+        console.error("❌ Email Sending Failed but Appointment is saved:", emailError);
+      }
     }
+
 
     res.status(200).json({ message: "Appointment updated successfully", data: updatedAppointment });
   } catch (error: any) {

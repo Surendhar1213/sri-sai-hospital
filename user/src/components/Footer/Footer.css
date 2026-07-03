@@ -584,3 +584,12 @@
   background-color: #fff7f6;
   color: #000000;
 }
+
+@media (max-width: 600px) {
+  .footer-style-one .right-column .inner-column .circle-btn {
+    width: 160px !important;
+    height: 160px !important;
+    line-height: 160px !important;
+    font-size: 13px !important;
+  }
+}

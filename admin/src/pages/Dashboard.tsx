@@ -103,7 +103,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     razorpaySecret: "",
   });
 
-    // Manage Appointment Modal States
+  // Manage Appointment Modal States
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any | null>(null);
   const [manageStatus, setManageStatus] = useState("pending");
@@ -184,22 +184,22 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   };
 
   const fetchAppointments = async () => {
-  setIsLoadingAppointments(true);
-  try {
-    const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    const response = await fetch(`${backendUrl}/api/appointments`);
-    const data = await response.json();
+    setIsLoadingAppointments(true);
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${backendUrl}/api/appointments`);
+      const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to fetch appointments");
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch appointments");
+      }
+      setAppointments(data || []);
+    } catch (err: any) {
+      triggerToast(`❌ Error fetching appointments: ${err.message}`);
+    } finally {
+      setIsLoadingAppointments(false);
     }
-    setAppointments(data || []);
-  } catch (err: any) {
-    triggerToast(`❌ Error fetching appointments: ${err.message}`);
-  } finally {
-    setIsLoadingAppointments(false);
-  }
-};
+  };
 
   const handleManageSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,7 +241,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   useEffect(() => {
     fetchDoctors();
     fetchPatients();
-    fetchAppointments(); 
+    fetchAppointments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -891,33 +891,33 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                         </tr>
                       </thead>
                       <tbody>
-                                              {appointments.slice(0, 3).map((app: any, idx: number) => {
-                        const statusColor = app.status === "approved" ? "#10B981" : app.status === "cancelled" ? "#EF4444" : "#F59E0B";
-                        const statusBg = app.status === "approved" ? "rgba(16, 185, 129, 0.08)" : app.status === "cancelled" ? "rgba(239, 68, 68, 0.08)" : "rgba(245, 158, 11, 0.08)";
-                        return (
-                          <tr key={app._id || idx} style={{ borderBottom: "1px solid #F1F5F9", fontSize: "14px", color: "#0F172A" }}>
-                            <td style={{ padding: "16px 8px", fontWeight: "600" }}>{app.pasentname}</td>
-                            <td style={{ padding: "16px 8px", color: "#475569" }}>{app.speciality}</td>
-                            <td style={{ padding: "16px 8px" }}>
-                              <span style={{
-                                padding: "4px 10px",
-                                borderRadius: "20px",
-                                fontSize: "12px",
-                                fontWeight: "700",
-                                color: statusColor,
-                                backgroundColor: statusBg,
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                textTransform: "capitalize"
-                              }}>
-                                <span style={{ width: "6px", height: "6px", backgroundColor: statusColor, borderRadius: "50%" }}></span>
-                                {app.status}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                        {appointments.slice(0, 3).map((app: any, idx: number) => {
+                          const statusColor = app.status === "approved" ? "#10B981" : app.status === "cancelled" ? "#EF4444" : "#F59E0B";
+                          const statusBg = app.status === "approved" ? "rgba(16, 185, 129, 0.08)" : app.status === "cancelled" ? "rgba(239, 68, 68, 0.08)" : "rgba(245, 158, 11, 0.08)";
+                          return (
+                            <tr key={app._id || idx} style={{ borderBottom: "1px solid #F1F5F9", fontSize: "14px", color: "#0F172A" }}>
+                              <td style={{ padding: "16px 8px", fontWeight: "600" }}>{app.pasentname}</td>
+                              <td style={{ padding: "16px 8px", color: "#475569" }}>{app.speciality}</td>
+                              <td style={{ padding: "16px 8px" }}>
+                                <span style={{
+                                  padding: "4px 10px",
+                                  borderRadius: "20px",
+                                  fontSize: "12px",
+                                  fontWeight: "700",
+                                  color: statusColor,
+                                  backgroundColor: statusBg,
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                  textTransform: "capitalize"
+                                }}>
+                                  <span style={{ width: "6px", height: "6px", backgroundColor: statusColor, borderRadius: "50%" }}></span>
+                                  {app.status}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
 
                       </tbody>
                     </table>
@@ -2280,7 +2280,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     </tr>
                   </thead>
                   <tbody>
-                                        {appointments.map((app: any, idx: number) => {
+                    {appointments.map((app: any, idx: number) => {
                       const dateObj = new Date(app.appointmenttime);
                       const formattedDate = dateObj.toLocaleDateString("en-US", {
                         month: "short",
@@ -2289,11 +2289,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                         hour: "2-digit",
                         minute: "2-digit"
                       });
-                      
+
                       // Status styling logic
                       const statusColor = app.status === "approved" ? "#10B981" : app.status === "cancelled" ? "#EF4444" : "#F59E0B";
                       const statusBg = app.status === "approved" ? "rgba(16, 185, 129, 0.08)" : app.status === "cancelled" ? "rgba(239, 68, 68, 0.08)" : "rgba(245, 158, 11, 0.08)";
-                      
+
                       return (
                         <tr
                           key={app._id || idx}
@@ -2332,12 +2332,40 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                           </td>
 
                           {/* Assigned Doctor / Speciality info */}
-                          <td style={{ padding: "18px 12px", fontWeight: "500" }}>
-                            {app.assignedDoctor 
-                              ? `${app.assignedDoctor.name} (${app.speciality})` 
-                              : `Not Assigned (${app.speciality})`
-                            }
+                                                    <td style={{ padding: "18px 12px", fontWeight: "500" }}>
+                            <div>
+                              {app.assignedDoctor
+                                ? `${app.assignedDoctor.name} (${app.speciality})`
+                                : `Not Assigned (${app.speciality})`
+                              }
+                            </div>
+                            
+                            {/* மீட்டிங் லிங்க் இருந்தால் '🎥 Join Meeting' பட்டனைக் காட்டுவோம் */}
+                            {app.meetingLink && (
+                              <a
+                                href={app.meetingLink}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                  color: "#3F59FF",
+                                  textDecoration: "none",
+                                  marginTop: "6px",
+                                  fontSize: "12px",
+                                  fontWeight: "700",
+                                  backgroundColor: "rgba(63, 89, 255, 0.08)",
+                                  padding: "4px 8px",
+                                  borderRadius: "6px",
+                                  transition: "all 0.2s"
+                                }}
+                              >
+                                🎥 Join Meeting
+                              </a>
+                            )}
                           </td>
+
 
                           {/* Slot Time */}
                           <td style={{ padding: "18px 12px", color: "#616161" }}>{formattedDate}</td>
@@ -2680,6 +2708,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                       <option value="pending">Pending ⏳</option>
                       <option value="approved">Approved ✅</option>
                       <option value="cancelled">Cancelled ❌</option>
+                      <option value="completed">Completed 🩺</option>
+
                     </select>
                   </div>
 
@@ -2716,32 +2746,36 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     </span>
                   </div>
 
-                  {/* Prescription */}
-                  <div>
-                    <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
-                      Prescription / Notes
-                    </label>
-                    <textarea
-                      placeholder="Enter prescription details and guidelines here..."
-                      value={managePrescription}
-                      onChange={(e) => setManagePrescription(e.target.value)}
-                      style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "1.5px solid #cbd5e1",
-                        fontSize: "15px",
-                        minHeight: "100px",
-                        outline: "none",
-                        resize: "vertical",
-                      }}
-                    />
-                  </div>
+                  {/* இந்த கண்டிஷனைச் சேர்க்கவும் */}
+                  {manageStatus === "completed" && (
+                    <div>
+                      <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
+                        Prescription / Notes
+                      </label>
+                      <textarea
+                        placeholder="Enter prescription details and guidelines here..."
+                        value={managePrescription}
+                        onChange={(e) => setManagePrescription(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "14px",
+                          borderRadius: "10px",
+                          border: "1.5px solid #cbd5e1",
+                          fontSize: "15px",
+                          minHeight: "100px",
+                          outline: "none",
+                          resize: "vertical",
+                        }}
+                      />
+                    </div>
+                  )}
+
 
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isSavingAppointment}
+                    // கண்டிஷன்: சேவிங் ஆகும்போது அல்லது (Approved/Completed ஆக இருந்து டாக்டர் செலக்ட் செய்யாமல் இருந்தால்) டிசேபிள் ஆகும்
+                    disabled={isSavingAppointment || ((manageStatus === "approved" || manageStatus === "completed") && !manageDoctor)}
                     style={{
                       marginTop: "16px",
                       padding: "16px",
@@ -2750,13 +2784,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                       border: "none",
                       borderRadius: "12px",
                       fontWeight: "700",
-                      cursor: isSavingAppointment ? "not-allowed" : "pointer",
+                      // கர்சரையும் மாற்றுவோம்
+                      cursor: (isSavingAppointment || ((manageStatus === "approved" || manageStatus === "completed") && !manageDoctor)) ? "not-allowed" : "pointer",
                       fontSize: "15px",
                       boxShadow: "0 8px 20px rgba(63, 89, 255, 0.2)",
                       transition: "all 0.2s",
-                      opacity: isSavingAppointment ? 0.7 : 1
+                      opacity: (isSavingAppointment || ((manageStatus === "approved" || manageStatus === "completed") && !manageDoctor)) ? 0.6 : 1
                     }}
                   >
+
                     {isSavingAppointment ? "Saving Changes..." : "Save Appointment Updates"}
                   </button>
                 </form>
