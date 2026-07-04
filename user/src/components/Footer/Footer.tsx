@@ -1,5 +1,5 @@
 import "./Footer.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaPhone,
   FaEnvelope,
@@ -17,6 +17,31 @@ import logo from "../../assets/logo.svg";
 import footerShape from "../../assets/home/footer-one-shape.png";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleBookAppointment = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      navigate("/#appointment-section");
+      const element = document.getElementById("appointment-form-wrapper") || document.getElementById("appointment-section");
+      if (element) {
+        const headerHeight = 90; // Offset for sticky navbar
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: elementPosition - headerHeight - 20,
+          behavior: "smooth",
+        });
+        const nameInput = document.getElementById("pasentname");
+        if (nameInput) {
+          (nameInput as HTMLInputElement).focus();
+        }
+      }
+    } else {
+      navigate("/login", { state: { from: "/#appointment-section" } });
+    }
+  };
+
   return (
     <footer className="main-footer footer-style-one">
       <div className="outer-box">
@@ -211,7 +236,7 @@ const Footer = () => {
                 Health & Wellness
               </h3>
 
-              <a className="circle-btn" href="/">
+              <a className="circle-btn" href="/#appointment-section" onClick={handleBookAppointment}>
                 Book Appointment
                 <FaArrowUpRightFromSquare />
               </a>

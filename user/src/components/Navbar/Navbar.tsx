@@ -8,20 +8,25 @@ import {
   FaTwitter,
   FaLinkedinIn,
   FaInstagram,
-  FaYoutube,
   FaClock,
   FaPhoneAlt,
-  FaUser,
   FaBars,
   FaTimes,
-  FaSignOutAlt,
-  FaCalendarAlt,
-  FaFileAlt,
+  FaWhatsapp,
 } from "react-icons/fa";
 
 import { IoMdMail } from "react-icons/io";
 
 import Logo from "../../assets/logo.svg";
+
+const getInitials = (name: string) => {
+  if (!name) return "ST";
+  const parts = name.trim().split(" ");
+  if (parts.length >= 2) {
+    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -41,8 +46,14 @@ const Navbar = () => {
       if (token) {
         setIsLoggedIn(true);
         if (userInfo) {
-          const user = JSON.parse(userInfo);
-          setUserName(user.name?.split(" ")[0] || "User");
+          try {
+            const user = JSON.parse(userInfo);
+            setUserName(user.name || "User");
+          } catch (e) {
+            setUserName("User");
+          }
+        } else {
+          setUserName("User");
         }
       } else {
         setIsLoggedIn(false);
@@ -128,9 +139,9 @@ const Navbar = () => {
             <FaTimes />
           </button>
           <div className="mobile-logo">
-            <a href="#">
+            <Link to="/" onClick={toggleMobileMenu}>
               <img src={Logo} style={{ width: "200px" }} alt="Logo" />
-            </a>
+            </Link>
           </div>
           <div className="th-mobile-menu">
             <ul>
@@ -251,16 +262,16 @@ const Navbar = () => {
                           <FaFacebookF />
                         </a>
                         <a href="#">
-                          <FaTwitter />
-                        </a>
-                        <a href="#">
-                          <FaLinkedinIn />
+                          <FaWhatsapp />
                         </a>
                         <a href="#">
                           <FaInstagram />
                         </a>
                         <a href="#">
-                          <FaYoutube />
+                          <FaLinkedinIn />
+                        </a>
+                        <a href="#">
+                          <FaTwitter />
                         </a>
                       </div>
                     </li>
@@ -276,15 +287,15 @@ const Navbar = () => {
               <div className="row align-items-center justify-content-between flex-nowrap">
                 <div className="col-auto">
                   <div className="header-logo">
-                    <a href="#">
+                    <Link to="/">
                       <img src={Logo} className="header-logo-img" alt="Logo" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="col-auto">
                   <div className="row align-items-center flex-nowrap">
                     <div className="col-auto">
-                      <nav className="main-menu d-none d-lg-inline-block">
+                      <nav className="main-menu d-none d-xl-inline-block">
                         <ul>
                           <li>
                             <Link to="/">Home</Link>
@@ -404,7 +415,8 @@ const Navbar = () => {
                             gap: "4px"
                           }}
                         >
-                          Book Appointment
+                          <span className="book-appointment-text">Book Appointment</span>
+                          <span className="book-now-text">Book Now</span>
                         </button>
 
                         {/* User Profile Avatar (Mobile/Tablet View) */}
@@ -413,32 +425,45 @@ const Navbar = () => {
                             <Link
                               to="/profile"
                               title="Go to Patient Dashboard"
-                              style={{ textDecoration: "none", display: "inline-flex" }}
+                              style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}
                             >
-                              <button
-                                style={{
-                                  width: "38px",
-                                  height: "38px",
-                                  minWidth: "38px",
-                                  minHeight: "38px",
+                              <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
+                                <div style={{
+                                  width: "36px",
+                                  height: "36px",
                                   borderRadius: "50%",
-                                  background: "linear-gradient(135deg, #3F59FF 0%, #31B0FF 100%)",
-                                  color: "#FFFFFF",
-                                  border: "1.5px solid #FFFFFF",
+                                  backgroundColor: "#E1D5F5",
+                                  color: "#5B2C9C",
                                   fontSize: "13px",
-                                  fontWeight: "800",
-                                  cursor: "pointer",
+                                  fontWeight: "700",
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
-                                  boxShadow: "0 0 0 1.5px rgba(63, 89, 255, 0.15), 0 6px 12px rgba(63, 89, 255, 0.15)",
+                                  border: "2px solid #FFA000",
                                   position: "relative",
-                                  padding: 0,
-                                  margin: 0
-                                }}
-                              >
-                                {userName.charAt(0).toUpperCase()}
-                              </button>
+                                  zIndex: 2,
+                                  boxSizing: "border-box"
+                                }}>
+                                  {getInitials(userName)}
+                                </div>
+                                <div className="profile-pill-text" style={{
+                                  backgroundColor: "#6A1B9A",
+                                  color: "#FFFFFF",
+                                  fontSize: "11px",
+                                  fontWeight: "700",
+                                  padding: "6px 14px 6px 18px",
+                                  borderRadius: "0 20px 20px 0",
+                                  marginLeft: "-12px",
+                                  zIndex: 1,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  whiteSpace: "nowrap",
+                                  height: "26px",
+                                  boxSizing: "border-box"
+                                }}>
+                                  My Profile
+                                </div>
+                              </div>
                             </Link>
                           </div>
                         )}
@@ -446,7 +471,7 @@ const Navbar = () => {
                         {/* Mobile Hamburger Toggle */}
                         <button
                           type="button"
-                          className="th-menu-toggle d-block d-lg-none"
+                          className="th-menu-toggle d-block d-xl-none"
                           onClick={toggleMobileMenu}
                           style={{ margin: 0 }}
                         >
@@ -493,54 +518,47 @@ const Navbar = () => {
                                   padding: 0,
                                   margin: 0,
                                   border: "none",
-                                  background: "none"
+                                  background: "none",
+                                  alignItems: "center"
                                 }}
                               >
-                                <button
-                                  style={{
-                                    width: "44px",
-                                    height: "44px",
-                                    minWidth: "44px",
-                                    minHeight: "44px",
+                                <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
+                                  <div style={{
+                                    width: "36px",
+                                    height: "36px",
                                     borderRadius: "50%",
-                                    background: "linear-gradient(135deg, #3F59FF 0%, #31B0FF 100%)",
-                                    color: "#FFFFFF",
-                                    border: "2px solid #FFFFFF",
-                                    fontSize: "16px",
-                                    fontWeight: "800",
-                                    cursor: "pointer",
+                                    backgroundColor: "#E1D5F5",
+                                    color: "#5B2C9C",
+                                    fontSize: "13px",
+                                    fontWeight: "700",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    boxShadow: "0 0 0 2px rgba(63, 89, 255, 0.15), 0 8px 16px rgba(63, 89, 255, 0.15)",
-                                    transition: "all 0.3s ease",
+                                    border: "2px solid #FFA000",
                                     position: "relative",
-                                    padding: "0 !important",
-                                    margin: "0 !important",
+                                    zIndex: 2,
                                     boxSizing: "border-box"
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "translateY(-2px)";
-                                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(63, 89, 255, 0.25), 0 12px 20px rgba(63, 89, 255, 0.25)";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "translateY(0)";
-                                    e.currentTarget.style.boxShadow = "0 0 0 2px rgba(63, 89, 255, 0.15), 0 8px 16px rgba(63, 89, 255, 0.15)";
-                                  }}
-                                >
-                                  {userName.charAt(0).toUpperCase()}
-                                  <span style={{
-                                    position: "absolute",
-                                    bottom: "2px",
-                                    right: "2px",
-                                    width: "10px",
-                                    height: "10px",
-                                    borderRadius: "50%",
-                                    backgroundColor: "#10B981",
-                                    border: "1.5px solid #FFFFFF",
-                                    boxShadow: "0 0 8px #10B981"
-                                  }} />
-                                </button>
+                                  }}>
+                                    {getInitials(userName)}
+                                  </div>
+                                  <div style={{
+                                    backgroundColor: "#6A1B9A",
+                                    color: "#FFFFFF",
+                                    fontSize: "11px",
+                                    fontWeight: "700",
+                                    padding: "6px 14px 6px 18px",
+                                    borderRadius: "0 20px 20px 0",
+                                    marginLeft: "-12px",
+                                    zIndex: 1,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    whiteSpace: "nowrap",
+                                    height: "26px",
+                                    boxSizing: "border-box"
+                                  }}>
+                                    My Profile
+                                  </div>
+                                </div>
                               </Link>
                             </div>
                           )}

@@ -361,9 +361,13 @@ Service Two
   }
 }
 
-@media (max-width: 767px) {
-
+@media (max-width: 600px) {
+  .facilities-header {
+    margin-bottom: 36px;
+    display: block !important;
+  }
 }
+
 
 /* Update the hover-image visibility */
 .services-two__services-list .hover-item__box {

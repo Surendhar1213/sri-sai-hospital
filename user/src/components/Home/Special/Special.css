@@ -418,6 +418,16 @@
   }
 }
 
+@media (max-width: 600px) {
+  .spec-card {
+    padding-bottom: 20px !important;
+  }
+
+  .spec-content h3 {
+    margin: 18px !important;
+  }
+}
+
 @media (max-width: 520px) {
   .specialties-section {
     padding: 64px 18px;

@@ -23,6 +23,14 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Gmail validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid Gmail address (ending in @gmail.com)");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -125,6 +133,7 @@ const Login = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
+                    autoFocus
                   />
                 </div>
               </div>
@@ -144,11 +153,13 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
+                    disabled={!email}
                   />
                   <button
                     type="button"
                     className="user-auth-eye-btn"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={!email}
                   >
                     {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
                   </button>

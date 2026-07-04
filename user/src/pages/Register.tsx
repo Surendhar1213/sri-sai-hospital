@@ -33,13 +33,26 @@ const Register: React.FC = () => {
 
   // Input change handle பண்ண
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let value = e.target.value;
+    if (e.target.name === "phone" || e.target.name === "age") {
+      value = value.replace(/\D/g, "");
+    }
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    // Gmail validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailRegex.test(formData.email)) {
+      const msg = "Please enter a valid Gmail address (ending in @gmail.com)";
+      setError(msg);
+      toast.warning("⚠️ " + msg);
+      return;
+    }
 
     // Password match check
     if (formData.password !== formData.confirmPassword) {
@@ -178,6 +191,7 @@ const Register: React.FC = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      autoFocus
                     />
                   </div>
                 </div>
@@ -197,6 +211,7 @@ const Register: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      disabled={!formData.name}
                     />
                   </div>
                 </div>
@@ -216,6 +231,7 @@ const Register: React.FC = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       required
+                      disabled={!formData.email}
                     />
                   </div>
                 </div>
@@ -235,6 +251,7 @@ const Register: React.FC = () => {
                       min="1"
                       max="120"
                       required
+                      disabled={!formData.phone}
                     />
                   </div>
                 </div>
@@ -250,6 +267,7 @@ const Register: React.FC = () => {
                       value={formData.gender}
                       onChange={handleChange}
                       required
+                      disabled={!formData.age}
                     >
                       <option value="">Select gender</option>
                       <option value="Male">Male</option>
@@ -269,6 +287,7 @@ const Register: React.FC = () => {
                       className="user-auth-input user-auth-select"
                       value={formData.bloodGroup}
                       onChange={handleChange}
+                      disabled={!formData.gender}
                     >
                       <option value="Unknown">Unknown</option>
                       <option value="A+">A+</option>
@@ -299,11 +318,13 @@ const Register: React.FC = () => {
                       onChange={handleChange}
                       required
                       minLength={6}
+                      disabled={!formData.gender}
                     />
                     <button
                       type="button"
                       className="user-auth-eye-btn"
                       onClick={() => setShowPassword(!showPassword)}
+                      disabled={!formData.gender}
                     >
                       {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
                     </button>
@@ -325,11 +346,13 @@ const Register: React.FC = () => {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       required
+                      disabled={!formData.password}
                     />
                     <button
                       type="button"
                       className="user-auth-eye-btn"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      disabled={!formData.password}
                     >
                       {showConfirmPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
                     </button>

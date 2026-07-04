@@ -69,6 +69,12 @@ span {
   }
 }
 
+@media (max-width: 600px) {
+  .xb-service-inner {
+    padding: 17px 17px 20px !important;
+  }
+}
+
 .xb-service-inner::before {
   position: absolute;
   content: '';

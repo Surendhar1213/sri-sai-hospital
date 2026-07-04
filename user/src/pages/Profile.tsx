@@ -371,7 +371,7 @@ const Profile = () => {
                             <span style={{ fontSize: "14px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", letterSpacing: "0.5px" }}>{stat.title}</span>
                             <h4 style={{ fontSize: "28px", fontWeight: "700", color: "#0F2239", margin: "6px 0 0 0" }}>{stat.value}</h4>
                           </div>
-                          <div style={{ width: "40px", height: "40px", borderRadius: "10px", backgroundColor: stat.bg, color: stat.color, display: "flex", alignItems: "center", justifyConnection: "center", fontSize: "18px", fontWeight: "700", justifyContent: "center" }}>
+                          <div style={{ width: "40px", height: "40px", borderRadius: "10px", backgroundColor: stat.bg, color: stat.color, display: "flex", alignItems: "center", fontSize: "18px", fontWeight: "700", justifyContent: "center" }}>
                             #
                           </div>
                         </div>

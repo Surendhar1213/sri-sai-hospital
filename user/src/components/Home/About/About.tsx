@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FaStar, FaPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./About.css";
@@ -398,7 +399,7 @@ const About = () => {
 
               {/* About Us Button Start */}
               <div className="about-us-btn wow fadeInUp" data-wow-delay="0.8s">
-                <a className="thm-btn consulting-btn" href="#">
+                <Link className="thm-btn consulting-btn" to="/about">
                   <span className="btn_label" data-text="More About Us">
                     More About Us
                   </span>
@@ -468,7 +469,7 @@ const About = () => {
                       />
                     </svg>
                   </span>
-                </a>
+                </Link>
               </div>
               {/* About Us Button End */}
             </div>

@@ -198,6 +198,8 @@
   position: relative;
   color: #ffffff;
   margin-bottom: 20px;
+  text-decoration: underline;
+  text-underline-offset: 6px;
 }
 
 .user-links {
@@ -368,6 +370,12 @@
 .footer-style-one .footer-top .info-item:hover svg {
   -webkit-animation: ring-animation 2s ease-in-out infinite;
   animation: ring-animation 2s ease-in-out infinite;
+}
+
+@media (max-width: 600px) {
+  .footer-style-one .footer-top {
+    padding: 29px 0px !important;
+  }
 }
 
 @media (max-width: 575.98px) {

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import "./Specialities.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -51,21 +52,25 @@ const Specialities = () => {
       title: "Pelvic Floor Rehabilitation",
       description: "Advanced non-invasive therapy for pelvic health.",
       image: speciality4,
+      link: "/PelvicFloor",
     },
     {
       title: "Dermatology & Cosmetology",
       description: "Advanced skin, laser, and aesthetic treatments.",
       image: speciality8,
+      link: "/dermatology",
     },
     {
       title: "Hair & Nail Clinic",
       description: "Specialized care for hair loss and nail disorders.",
       image: speciality9,
+      link: "/hairandnail",
     },
     {
       title: "Urology & General Medicine",
       description: "Comprehensive healthcare for men and women.",
       image: speciality10,
+      link: "/urology",
     },
   ];
 
@@ -153,19 +158,19 @@ const Specialities = () => {
                   <div className="col-lg-6 mt-30">
                     <div className="xb-service-inner arrow_hover_effect">
                       <h2 className="xb-item--title">
-                        <a href="#">{item.title}</a>
+                        <Link to={item.link}>{item.title}</Link>
                       </h2>
                       <ul className="xb-item--list list-unstyled">
                         <li>
-                          <a href="#!">{item.description}</a>
+                          <Link to={item.link}>{item.description}</Link>
                         </li>
                       </ul>
-                      <a className="xb-item--icon" href="#">
+                      <Link className="xb-item--icon" to={item.link}>
                         <div className="xb-arrow">
                           <ArrowSVG />
                           <ArrowSVG />
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-lg-6 mt-30">
@@ -177,9 +182,9 @@ const Specialities = () => {
                         }
                       }}
                     >
-                      <a href="#" className="xb-img">
+                      <Link to={item.link} className="xb-img">
                         <img src={item.image} alt={item.title} />
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>

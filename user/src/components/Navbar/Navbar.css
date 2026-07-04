@@ -482,7 +482,17 @@
     background-color: #ffffff;
     padding: 9px 0;
     position: relative;
-    z-index: 3
+    z-index: 3;
+    display: block !important;
+}
+
+@media (max-width: 991px) {
+    .header-layout1 .header-top .header-links.header-right {
+        text-align: center;
+        width: 100%;
+        display: flex !important;
+        justify-content: center !important;
+    }
 }
 
 .header-layout1 .header-top a:hover {
@@ -821,5 +831,29 @@ blockquote p:has(cite),
     .mobile-book-btn {
         padding: 6px 10px !important;
         font-size: 11px !important;
+    }
+}
+
+@media (max-width: 440px) {
+    .profile-pill-text {
+        display: none !important;
+    }
+}
+
+/* Show "Book Now" below 350px, "Book Appointment" above 350px */
+@media (max-width: 350px) {
+    .book-appointment-text {
+        display: none !important;
+    }
+    .book-now-text {
+        display: inline-block !important;
+    }
+}
+@media (min-width: 351px) {
+    .book-appointment-text {
+        display: inline-block !important;
+    }
+    .book-now-text {
+        display: none !important;
     }
 }

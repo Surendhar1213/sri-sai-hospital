@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import "./Facilities.css";
 import { FaPlus } from "react-icons/fa";
 import gsap from "gsap";
@@ -179,9 +180,9 @@ const Facilities = () => {
           </div>
 
           <div className="facilities-btn" ref={buttonRef}>
-            <a href="/about" className="btn-primary">
+            <Link to="/facilities" className="btn-primary">
               Discover More
-            </a>
+            </Link>
           </div>
         </div>
 
