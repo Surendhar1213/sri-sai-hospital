@@ -365,6 +365,8 @@
   color: #ffffff;
   font-size: 20px;
   line-height: 26px;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .footer-style-one .footer-top .info-item:hover svg {
@@ -577,15 +579,23 @@
 }
 
 .footer-style-one .footer-widget .footer-nav li a {
-  display: inline-block;
-  width: 34px;
-  height: 34px;
-  line-height: 33px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  line-height: 28px;
   border-radius: 50%;
   text-align: center;
   background-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  font-size: 15px;
+  font-size: 23px;
 }
 
 .footer-style-one .footer-widget .footer-nav li a:hover {

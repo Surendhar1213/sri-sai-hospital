@@ -247,7 +247,7 @@ const Navbar = () => {
                     </li>
                     <li>
                       <FaClock />
-                      Mon - Sat: 8:00 - 15:00
+                      Mon - Sat: 09:00 Am - 10:30 Pm
                     </li>
                   </ul>
                 </div>

@@ -55,6 +55,7 @@ const HairandNail = () => {
   const r5 = useScrollReveal<HTMLDivElement>();
   const r6 = useScrollReveal<HTMLDivElement>();
   const r7 = useScrollReveal<HTMLDivElement>();
+  const r8 = useScrollReveal<HTMLDivElement>();
 
   return (
     <>
@@ -203,19 +204,20 @@ const HairandNail = () => {
         <section className="hairandnail-section hairandnail-section-alt">
           <div className="container">
             {/* Section Header */}
-            <div className="row mb-5">
-              <div className="col-lg-5 hairandnail-reveal" ref={r6}>
-                <h2 className="hairandnail-section-title">
-                  Nail Clinic Services
-                </h2>
-                <div className="hairandnail-section-divider" />
+            <div className="row">
+              <div className="col-md-12 hairandnail-reveal" ref={r6}>
+                <div className="section-title">
+                  <h2 className="hairandnail-section-title">
+                    Nail Clinic Services
+                  </h2>
+                </div>
               </div>
             </div>
 
             {/* Nail Cards */}
-            <div className="row g-4" ref={r7}>
+            <div className="row g-4">
               {/* Nail Disorders */}
-              <div className="col-md-6">
+              <div className="col-md-6 hairandnail-reveal" ref={r7}>
                 <div className="hairandnail-disorder-card">
                   <div className="hairandnail-disorder-icon">
                     <IconNail />
@@ -240,7 +242,7 @@ const HairandNail = () => {
               </div>
 
               {/* Nail Health Assessment */}
-              <div className="col-md-6 hairandnail-reveal hairandnail-reveal-delay-2">
+              <div className="col-md-6 hairandnail-reveal hairandnail-reveal-delay-2" ref={r8}>
                 <div className="hairandnail-assess-card">
                   <div className="hairandnail-disorder-icon">
                     <IconAssess />

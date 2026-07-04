@@ -117,7 +117,7 @@ const Aboutus = () => {
               <div className="about-content">
                 <div className="section-title">
                   {/* <h3 className="wow fadeInUp">
-                    Welcome to Srisai Subramaniya Hospital
+                    Welcome to Srisai Subhramaniya Hospital
                   </h3> */}
                   <h2 className="text-anime-style-3">
                     Caring Beyond Treatment
@@ -131,7 +131,7 @@ const Aboutus = () => {
                 </p>
 
                 <div className="row g-4 about-cards">
-                  <div className="col-md-6">
+                  <div className="col-12">
                     <div className="about-card">
                       <h3 className="about-card-title">Our Vision</h3>
                       <p className="about-card-text">
@@ -143,7 +143,7 @@ const Aboutus = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
+                  <div className="col-12">
                     <div
                       className="about-card"
                       style={{ transitionDelay: "0.12s" }}

@@ -78,7 +78,7 @@ const Facilities = () => {
       <div className="container ">
         <div className="row">
           {portfolioItems.map((item) => (
-            <div key={item.id} className="col-lg-4 col-md-4">
+            <div key={item.id} className="col-lg-4 col-md-6">
               <div className="prt-featured-postbox style2">
                 <div className="prt-featured-post-item">
                   <div className="prt-featured-thumbnail">

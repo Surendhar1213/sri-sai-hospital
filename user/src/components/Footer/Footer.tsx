@@ -4,8 +4,8 @@ import {
   FaPhone,
   FaEnvelope,
   FaFacebookF,
-  FaPinterestP,
-  FaVimeoV,
+  FaWhatsapp,
+  FaInstagram,
 } from "react-icons/fa";
 
 import {
@@ -130,19 +130,19 @@ const Footer = () => {
                     <div className="widget-content">
                       <ul className="user-links">
                         <li>
-                          <a href="/">Clinical Laboratory</a>
+                          <Link to="/facilities">Clinical Laboratory</Link>
                         </li>
                         <li>
-                          <a href="/">Pharmacy</a>
+                          <Link to="/facilities">Pharmacy</Link>
                         </li>
                         <li>
-                          <a href="/">Digital X-Ray</a>
+                          <Link to="/facilities">Digital X-Ray</Link>
                         </li>
                         <li>
-                          <a href="/">Ultrasound Scan</a>
+                          <Link to="/facilities">Ultrasound Scan</Link>
                         </li>
                         <li>
-                          <a href="/">ICU & NICU</a>
+                          <Link to="/facilities">ICU & NICU</Link>
                         </li>
                       </ul>
                     </div>
@@ -203,13 +203,13 @@ const Footer = () => {
 
                       <li>
                         <a href="/">
-                          <FaVimeoV />
+                          <FaWhatsapp />
                         </a>
                       </li>
 
                       <li>
                         <a href="/">
-                          <FaPinterestP />
+                          <FaInstagram />
                         </a>
                       </li>
                     </ul>
@@ -222,7 +222,11 @@ const Footer = () => {
             <div className="footer-bottom">
               <p className="copyright-text">
                 Copyright © 2026 Sri Sai Subhramaniya Hospitals | All Rights
-                Reserved. Designed by <a href="/">WiseWebTek</a>.
+                Reserved | Designed by{" "}
+                <a href="https://wisewebtek.com/" target="_blank" rel="noopener noreferrer">
+                  WiseWebTek
+                </a>
+                .
               </p>
             </div>
           </div>

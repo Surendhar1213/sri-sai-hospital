@@ -34,6 +34,8 @@ const Appointment = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
@@ -98,6 +100,21 @@ const Appointment = () => {
     fetchBookedSlots();
   }, [selectedDate, formData.speciality]);
 
+  // Prevent background scrolling when modals are open
+  useEffect(() => {
+    if (showTermsModal || showSuccess) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, [showTermsModal, showSuccess]);
+
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const dateVal = e.target.value;
     setSelectedDate(dateVal);
@@ -129,20 +146,31 @@ const Appointment = () => {
   };
 
   // Razorpay SDK-ஐ பிரவுசரில் லோடு செய்வதற்கான ஹெல்பர்
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true); // isLoading-க்கு பதிலாக isSubmitting
+    if (!selectedDate || !selectedSlot) {
+      alert("Please select a date and time slot first.");
+      return;
+    }
+    setAcceptedTerms(false);
+    setShowTermsModal(true);
+  };
+
+  const handleProceedToPayment = async () => {
+    if (!acceptedTerms) return;
+    setShowTermsModal(false);
+    setIsSubmitting(true);
 
     try {
       // 1. Razorpay ஸ்கிரிப்ட் லோடு செய்யப்படுகிறதா எனச் சோதிக்கவும்
@@ -156,7 +184,7 @@ const loadRazorpayScript = () => {
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
       // 2. பேமெண்ட் கட்டணத்தை ₹1000 ஆக செட் செய்கிறோம்
-      const consultationFee = 1000; 
+      const consultationFee = 1000;
       let orderResponse;
       try {
         orderResponse = await fetch(`${backendUrl}/api/payments/create-order`, {
@@ -176,9 +204,9 @@ const loadRazorpayScript = () => {
         orderData = JSON.parse(responseText);
       } catch (err: any) {
         alert(`API Error: Expected JSON but received HTML.\n\n` +
-              `Requested URL: ${backendUrl}/api/payments/create-order\n` +
-              `HTTP Status: ${orderResponse.status} ${orderResponse.statusText}\n\n` +
-              `Response Preview (First 150 chars):\n${responseText.substring(0, 150)}`);
+          `Requested URL: ${backendUrl}/api/payments/create-order\n` +
+          `HTTP Status: ${orderResponse.status} ${orderResponse.statusText}\n\n` +
+          `Response Preview (First 150 chars):\n${responseText.substring(0, 150)}`);
         setIsSubmitting(false);
         return;
       }
@@ -194,7 +222,7 @@ const loadRazorpayScript = () => {
 
       // 4. Razorpay பாப்-அப் விண்டோவிற்கான ஆப்ஷன்கள்
       const options = {
-        key: "rzp_test_T8eJAMZt63GhNt", // உங்களது Razorpay Test Key ID
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_T8eJAMZt63GhNt", // உங்களது Razorpay Key ID
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Sri Sai Hospital",
@@ -240,7 +268,7 @@ const loadRazorpayScript = () => {
             }
 
             // புக் ஆனது உறுதியானதும் வெற்றிப் பாப்-அப்பைக் காட்டுகிறோம்
-            setShowSuccess(true); 
+            setShowSuccess(true);
 
             // பார்ம் வேல்யூக்களை ரீசெட் செய்கிறோம்
             setFormData({
@@ -491,7 +519,7 @@ const loadRazorpayScript = () => {
                           disabled={isSubmitting || !selectedDate || !selectedSlot}
                           style={{
                             width: "auto",
-                            minWidth: "250px"
+                            minWidth: "280px"
                           }}
                         >
                           {isSubmitting ? (
@@ -500,7 +528,7 @@ const loadRazorpayScript = () => {
                               Submitting...
                             </>
                           ) : (
-                            "Make Appointment"
+                            "Pay ₹1,000 & Book Appointment"
                           )}
                         </button>
                       </div>
@@ -584,6 +612,232 @@ const loadRazorpayScript = () => {
             >
               Got it, Thanks!
             </button>
+          </div>
+        </div>
+      )}
+
+      {showTermsModal && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(15, 23, 42, 0.7)",
+          backdropFilter: "blur(16px)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+          animation: "fadeIn 0.3s ease-out",
+          touchAction: "none"
+        }}>
+          <div style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "28px",
+            padding: "40px",
+            maxWidth: "520px",
+            width: "90%",
+            boxShadow: "0 30px 70px rgba(15, 23, 42, 0.35)",
+            border: "1px solid rgba(255, 255, 255, 0.8)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+            transform: "scale(1)",
+            transition: "transform 0.3s ease",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            position: "relative",
+            overflow: "hidden"
+          }}>
+            {/* Soft top gradient accent line */}
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "5px",
+              background: "linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%)"
+            }}></div>
+
+            <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+              <div style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "18px",
+                backgroundColor: "rgba(39, 107, 212, 0.08)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "#276BD4",
+                boxShadow: "inset 0 0 12px rgba(39, 107, 212, 0.05)"
+              }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h3 style={{ fontSize: "23px", fontWeight: "800", color: "#0F172A", margin: "0 0 4px 0", letterSpacing: "-0.03em" }}>
+                  Terms & Privacy Policy
+                </h3>
+                <p style={{ fontSize: "14px", color: "#64748B", margin: 0, fontWeight: "500" }}>
+                  Please read and accept the terms to proceed with payment
+                </p>
+              </div>
+            </div>
+
+            {/* Scrollable Terms Content */}
+            <div className="terms-scroll-container" style={{
+              maxHeight: "180px",
+              overflowY: "auto",
+              padding: "20px",
+              backgroundColor: "#F8FAFC",
+              borderRadius: "16px",
+              border: "1px solid #E2E8F0",
+              fontSize: "13px",
+              color: "#475569",
+              lineHeight: "1.6",
+              textAlign: "left"
+            }}>
+              <style>{`
+                .terms-scroll-container::-webkit-scrollbar {
+                  width: 5px;
+                }
+                .terms-scroll-container::-webkit-scrollbar-track {
+                  background: transparent;
+                }
+                .terms-scroll-container::-webkit-scrollbar-thumb {
+                  background-color: #CBD5E1;
+                  border-radius: 20px;
+                }
+                .terms-scroll-container::-webkit-scrollbar-thumb:hover {
+                  background-color: #94A3B8;
+                }
+              `}</style>
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "14px", margin: "0 0 8px 0" }}>1. Booking & Cancellation Policy</h4>
+              <p style={{ margin: "0 0 16px 0" }}>
+                Appointments can be booked online by paying a standard consultation fee of ₹1,000. Cancellations made at least 24 hours prior to the slot are eligible for a full refund.
+              </p>
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "14px", margin: "0 0 8px 0" }}>2. Privacy & Data Protection</h4>
+              <p style={{ margin: "0 0 16px 0" }}>
+                Sri Sai Hospital values your privacy. The patient details (Name, Contact, and Email) provided during booking will only be used for appointment coordination, health record maintenance, and notifications.
+              </p>
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "14px", margin: "0 0 8px 0" }}>3. Consultation Terms</h4>
+              <p style={{ margin: 0 }}>
+                The fee paid covers online consultation scheduling or in-hospital checkups for the selected specialty. Please ensure you arrive 15 minutes before your slot.
+              </p>
+            </div>
+
+            {/* Checkbox Agreement */}
+            <label style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "12px",
+              fontSize: "13.5px",
+              color: "#334155",
+              cursor: "pointer",
+              userSelect: "none",
+              textAlign: "left",
+              padding: "8px 12px",
+              borderRadius: "12px",
+              backgroundColor: "rgba(241, 245, 249, 0.5)",
+              border: "1px solid #E2E8F0",
+              transition: "all 0.2s"
+            }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(241, 245, 249, 0.9)";
+                e.currentTarget.style.borderColor = "#CBD5E1";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(241, 245, 249, 0.5)";
+                e.currentTarget.style.borderColor = "#E2E8F0";
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  accentColor: "#276BD4",
+                  cursor: "pointer",
+                  marginTop: "2px",
+                  border: "2px solid #CBD5E1",
+                  borderRadius: "6px"
+                }}
+              />
+              <span style={{ fontWeight: "500", lineHeight: "1.4" }}>
+                I agree to the <b style={{ color: "#0F172A" }}>Terms of Booking</b> and authorize Sri Sai Hospital to contact me regarding this appointment.
+              </span>
+            </label>
+
+            {/* Action Buttons */}
+            <div style={{ display: "flex", gap: "14px", marginTop: "4px" }}>
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(false)}
+                style={{
+                  flex: 1,
+                  padding: "14px 20px",
+                  backgroundColor: "#F1F5F9",
+                  color: "#64748B",
+                  border: "none",
+                  borderRadius: "14px",
+                  fontWeight: "600",
+                  fontSize: "15px",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "#E2E8F0";
+                  e.currentTarget.style.color = "#475569";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "#F1F5F9";
+                  e.currentTarget.style.color = "#64748B";
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!acceptedTerms}
+                onClick={handleProceedToPayment}
+                style={{
+                  flex: 1,
+                  padding: "14px 20px",
+                  background: acceptedTerms
+                    ? "linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%)"
+                    : "#CBD5E1",
+                  color: "#FFFFFF",
+                  border: "none",
+                  borderRadius: "14px",
+                  fontWeight: "600",
+                  fontSize: "15px",
+                  cursor: acceptedTerms ? "pointer" : "not-allowed",
+                  transition: "all 0.2s",
+                  boxShadow: acceptedTerms ? "0 4px 15px rgba(39, 107, 212, 0.25)" : "none"
+                }}
+                onMouseOver={(e) => {
+                  if (acceptedTerms) {
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(39, 107, 212, 0.35)";
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (acceptedTerms) {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(39, 107, 212, 0.25)";
+                  }
+                }}
+              >
+                Agree & Pay ₹1,000
+              </button>
+            </div>
           </div>
         </div>
       )}

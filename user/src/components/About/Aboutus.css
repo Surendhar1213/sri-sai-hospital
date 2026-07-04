@@ -220,7 +220,7 @@
 
 .about-description {
   color: var(--title-color);
-  margin-bottom: 5px;
+  margin-bottom: 23px;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -244,11 +244,11 @@
 }
 
 .about-card:nth-of-type(1),
-.col-md-6:nth-child(1) .about-card {
+.col-12:nth-child(1) .about-card {
   border-left-color: var(--about-primary);
 }
 
-.col-md-6:nth-child(2) .about-card {
+.col-12:nth-child(2) .about-card {
   border-left-color: var(--about-secondary);
 }
 
