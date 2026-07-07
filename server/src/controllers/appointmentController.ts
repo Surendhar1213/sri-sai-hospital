@@ -2,24 +2,67 @@ import { Request, Response } from "express";
 import Appointment from "../models/Appointment.js";
 
 import { Doctor } from "../models/Doctor.js"; // Named import syntax (with curly braces)
-// வரிகள் 5-6 இல் இப்படி மாற்றவும்:
+// 
 import { createMeetEvent } from "../config/googleCalendar.js"; 
 import { sendAppointmentEmail, sendPrescriptionEmail } from "../config/emailService.js"; // <--- sendPrescriptionEmail சேர்க்கவும்
 
 
 
+let sseClients: Response[] = [];
+
+export const appointmentSSE = (req: Request, res: Response): void => {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Access-Control-Allow-Origin": "*"
+  });
+
+  // Keep-alive heartbeat to prevent timeout
+  const keepAlive = setInterval(() => {
+    res.write(": keepalive\n\n");
+  }, 20000);
+
+  sseClients.push(res);
+
+  req.on("close", () => {
+    clearInterval(keepAlive);
+    sseClients = sseClients.filter((client) => client !== res);
+  });
+};
+
+export const notifySSEClients = (data: any) => {
+  sseClients.forEach((client) => {
+    client.write(`data: ${JSON.stringify(data)}\n\n`);
+  });
+};
+
 // 1. User book panna new appointment create pannanum (With Double Booking Check)
 export const createAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { pasentname, pasentmail, pasentnumber, appointmenttime, speciality, subject } = req.body;
+    const { pasentname, pasentmail, pasentnumber, appointmenttime, speciality, subject, paymentStatus, paymentId } = req.body;
 
     if (!pasentname || !pasentmail || !pasentnumber || !appointmenttime || !speciality) {
       res.status(400).json({ message: "All required fields must be filled" });
       return;
     }
 
+    // [CHECK IF DOCTOR IS BLOCKED FOR THIS DATE]
+    const dateObj = new Date(appointmenttime);
+    const tzOffset = dateObj.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(dateObj.getTime() - tzOffset).toISOString();
+    const bookingDateStr = localISOTime.split("T")[0] || ""; // YYYY-MM-DD in local time representation
+
+    const doctorsOfSpeciality = await Doctor.find({ speciality, isAvailable: true });
+    if (doctorsOfSpeciality.length > 0) {
+      const allBlocked = doctorsOfSpeciality.every(doc => doc.blockedDates && doc.blockedDates.includes(bookingDateStr));
+      if (allBlocked) {
+        res.status(400).json({ message: `Sorry, specialists for ${speciality} are not available on ${bookingDateStr}.` });
+        return;
+      }
+    }
+
     // [CHECK IF SLOT ALREADY BOOKED]
-       // [CHECK IF SLOT ALREADY BOOKED]
     console.log("--- BACKEND CHECK ---");
     console.log("Incoming time string:", appointmenttime);
     console.log("Converted Date object:", new Date(appointmenttime).toISOString());
@@ -33,7 +76,6 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
 
     console.log("Existing Booking Found:", existingBooking ? "YES" : "NO");
 
-
     if (existingBooking) {
       res.status(400).json({ message: "This slot is already booked. Please choose another time." });
       return;
@@ -46,9 +88,15 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       appointmenttime,
       speciality,
       subject,
+      paymentStatus: paymentStatus || "pending",
+      paymentId: paymentId || ""
     });
 
     await newAppointment.save();
+
+    // Trigger SSE notification
+    notifySSEClients({ event: "new-appointment", data: newAppointment });
+
     res.status(201).json({ message: "Appointment submitted successfully!", data: newAppointment });
   } catch (error: any) {
     // MongoDB unique index constraints error handle panrom
@@ -67,6 +115,41 @@ export const getBookedSlots = async (req: Request, res: Response): Promise<void>
 
     if (!date || !speciality) {
       res.status(400).json({ message: "Date and speciality parameters are required." });
+      return;
+    }
+
+    const dateStr = (date as string).split("T")[0] || ""; // "YYYY-MM-DD"
+
+    // Fetch doctors of this speciality
+    const doctors = await Doctor.find({ speciality: speciality as string, isAvailable: true });
+    
+    // Check if ALL doctors of this specialty have blocked this date
+    const allDoctorsBlocked = doctors.length > 0 && doctors.every(doc => doc.blockedDates && doc.blockedDates.includes(dateStr));
+
+    if (allDoctorsBlocked) {
+      // If blocked, return all possible slots as booked
+      const TIME_SLOTS = [
+        "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM",
+        "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM",
+        "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM"
+      ];
+      
+      const blockedTimes = TIME_SLOTS.map(slotStr => {
+        const parts = slotStr.split(" ");
+        const time = parts[0] || "";
+        const modifier = parts[1] || "";
+        const timeParts = time.split(":").map(Number);
+        let hours = timeParts[0] || 0;
+        let minutes = timeParts[1] || 0;
+        if (modifier === "PM" && hours < 12) hours += 12;
+        if (modifier === "AM" && hours === 12) hours = 0;
+        
+        const dateObj = new Date(date as string);
+        dateObj.setHours(hours, minutes, 0, 0);
+        return dateObj.toISOString();
+      });
+      
+      res.status(200).json(blockedTimes);
       return;
     }
 
@@ -109,7 +192,7 @@ export const getAllAppointments = async (req: Request, res: Response): Promise<v
 export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { status, assignedDoctor, prescription } = req.body; // prescription details handling parameters
+    const { status, assignedDoctor, prescription, paymentStatus } = req.body; // prescription details handling parameters
 
     // 1. Existing appointment query parameters get pannanum
     const appointment = await Appointment.findById(id);
@@ -128,31 +211,32 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       shouldEnterBlock: (status === "approved" && assignedDoctor && !meetingLink)
     });
 
-    // 2. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
+        // 2. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
     if (status === "approved" && assignedDoctor && !meetingLink) {
       // Find Doctor details (especially doctor email)
       const doctorDetails = await Doctor.findById(assignedDoctor);
       
       if (doctorDetails) {
-        console.log(`📅 Scheduling Meet: Patient(${appointment.pasentmail}) with Doctor(${doctorDetails.email})`);
+        console.log(`📅 Scheduling Google Meet: Patient(${appointment.pasentmail}) with Doctor(${doctorDetails.email})`);
         
-        // Google Calendar call panni meet link gen panrom
-    //     const generatedLink = await createMeetEvent({
-    //       patientEmail: appointment.pasentmail,
-    //       doctorEmail: doctorDetails.email,
-    //       speciality: appointment.speciality,
-    //       startTime: new Date(appointment.appointmenttime),
-    //     });
+        // Google Calendar call panni Google Meet link generate panrom
+        const generatedLink = await createMeetEvent({
+          patientEmail: appointment.pasentmail,
+          doctorEmail: doctorDetails.email,
+          speciality: appointment.speciality,
+          startTime: new Date(appointment.appointmenttime),
+        });
 
-    //     if (generatedLink) {
-    //       meetingLink = generatedLink; 
-    //     }
-
-        meetingLink = `https://meet.jit.si/SriSaiHospital-Consultation-${appointment._id}`;
-        console.log(`🔗 Generated Jitsi Meet Link: ${meetingLink}`);
-
+        if (generatedLink) {
+          meetingLink = generatedLink; 
+          console.log(`🔗 Generated Google Meet Link: ${meetingLink}`);
+        } else {
+          console.error("❌ Google Calendar API failed to return meeting link.");
+          meetingLink = ""; // Fail aana empty string-ah podrom
+        }
       }
     }
+
 
         
 
@@ -164,7 +248,8 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         status, 
         assignedDoctor, 
         meetingLink,
-        prescription: prescription !== undefined ? prescription : appointment.prescription
+        prescription: prescription !== undefined ? prescription : appointment.prescription,
+        paymentStatus: paymentStatus !== undefined ? paymentStatus : appointment.paymentStatus
       },
       { new: true }
     ).populate("assignedDoctor", "name email speciality");
@@ -210,6 +295,9 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       }
     }
 
+
+    // Trigger SSE notification
+    notifySSEClients({ event: "update-appointment", data: updatedAppointment });
 
     res.status(200).json({ message: "Appointment updated successfully", data: updatedAppointment });
   } catch (error: any) {

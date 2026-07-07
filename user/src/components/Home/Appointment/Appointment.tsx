@@ -258,6 +258,8 @@ const Appointment = () => {
                 appointmenttime,
                 speciality: formData.speciality,
                 subject: formData.subject || "General consultation booking",
+                paymentStatus: "paid",
+                paymentId: response.razorpay_payment_id
               }),
             });
 

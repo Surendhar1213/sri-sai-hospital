@@ -4,10 +4,12 @@ import {
   getAllAppointments,
   updateAppointment,
   getBookedSlots,
+  appointmentSSE,
 } from "../controllers/appointmentController.js";
 
 const router = Router();
 
+router.get("/live", appointmentSSE);
 router.get("/booked-slots", getBookedSlots); // <--- Add this route BEFORE "/"
 // Public route for patients to book
 router.post("/", createAppointment);

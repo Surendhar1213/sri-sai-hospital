@@ -2,16 +2,18 @@ import { Request, Response } from "express";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
-// Razorpay இன்ஸ்டன்ஸ்-ஐ .env கீகள் மூலம் லோட் செய்கிறோம்
+// Razorpay instans-ஐ .env load 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || "",
   key_secret: process.env.RAZORPAY_KEY_SECRET || "",
 });
 
-// 1. புதிய ஆர்டர் உருவாக்குதல் (Create a new Order)
+
+
+// 1. Create a new order 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { amount } = req.body; // Amount in INR (எ.கா: 1000)
+    const { amount } = req.body; // Amount in INR (Ex: 1000)
 
     if (!amount) {
       res.status(400).json({ message: "Amount is required" });
@@ -19,7 +21,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     }
 
     const options = {
-      amount: Number(amount) * 100, // Razorpay-க்கு பைசாக்களாக அனுப்ப வேண்டும் (₹1 = 100 Paise)
+      amount: Number(amount) * 100, // Razorpay-க்கு convert to paisa (₹1 = 100 Paise)
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };

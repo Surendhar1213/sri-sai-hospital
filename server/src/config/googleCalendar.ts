@@ -3,15 +3,18 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Service Account JWT authorization setup
-const auth = new google.auth.JWT({
-  email: process.env.GOOGLE_CLIENT_EMAIL || "",
-  key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-  scopes: ["https://www.googleapis.com/auth/calendar"],
+// OAuth2 Client authorization setup
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID || "",
+  process.env.GOOGLE_CLIENT_SECRET || ""
+);
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN || "",
 });
 
+const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
-const calendar = google.calendar({ version: "v3", auth });
 
 interface MeetEventOptions {
   patientEmail: string;
@@ -72,3 +75,5 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
     return null;
   }
 };
+
+

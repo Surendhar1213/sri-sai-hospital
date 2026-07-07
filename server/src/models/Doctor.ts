@@ -8,6 +8,7 @@ export interface IDoctor extends Document {
   experience: number;
   timing: string;
   isAvailable: boolean;
+  blockedDates: string[]; // Store YYYY-MM-DD strings
   createdAt: Date;
 }
 
@@ -20,6 +21,7 @@ const doctorSchema = new Schema<IDoctor>(
     experience: { type: Number, required: true },
     timing: { type: String, required: true },
     isAvailable: { type: Boolean, default: true }, // Available/Unavailable check
+    blockedDates: { type: [String], default: [] }, // Blocked slot dates YYYY-MM-DD
   },
   { timestamps: true } // Auto create "createdAt" and "updatedAt"
 );
