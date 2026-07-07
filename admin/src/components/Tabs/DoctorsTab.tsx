@@ -72,7 +72,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
   isLoadingDoctors,
   doctorsError,
   fetchDoctors,
-  triggerToast,
+  triggerToast: _triggerToast,
 
   isAddDoctorModalOpen,
   setIsAddDoctorModalOpen,
