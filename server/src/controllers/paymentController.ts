@@ -3,12 +3,21 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 
 // Razorpay instans-ஐ .env load 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "",
-});
-
-
+let razorpay: Razorpay | null = null;
+try {
+  const key_id = process.env.RAZORPAY_KEY_ID;
+  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  if (key_id && key_secret) {
+    razorpay = new Razorpay({
+      key_id,
+      key_secret,
+    });
+  } else {
+    console.warn("⚠️ RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing from environment variables. Razorpay payment integration will not work.");
+  }
+} catch (err) {
+  console.error("❌ Failed to initialize Razorpay:", err);
+}
 
 // 1. Create a new order 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
@@ -17,6 +26,13 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     if (!amount) {
       res.status(400).json({ message: "Amount is required" });
+      return;
+    }
+
+    if (!razorpay) {
+      res.status(500).json({
+        message: "Razorpay payment gateway is not configured on the server. Please check environment variables (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)."
+      });
       return;
     }
 
@@ -38,6 +54,14 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 export const verifyPayment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (!razorpay) {
+      res.status(500).json({
+        message: "Razorpay payment gateway is not configured on the server.",
+        success: false
+      });
+      return;
+    }
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
