@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { 
-  Calendar, Stethoscope, Video, Users, Link2, Copy, Send, 
-  CheckCircle2, ShieldAlert, Search, Filter, RefreshCw, ChevronRight, PlayCircle
+  Calendar, Stethoscope, Video, Link2, Copy, Send, 
+  CheckCircle2, ShieldAlert, Search, Filter, RefreshCw
 } from "lucide-react";
 
 interface OverviewTabProps {
@@ -15,7 +15,6 @@ interface OverviewTabProps {
 const OverviewTab: React.FC<OverviewTabProps> = ({
   appointments,
   doctors,
-  patients,
   setActiveTab,
   triggerToast,
 }) => {

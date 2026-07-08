@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { 
-  CreditCard, Search, ArrowUpRight, ArrowDownRight, Download, 
+  CreditCard, Search, Download, 
   Calendar, Filter, ChevronLeft, ChevronRight, Copy, Check, 
-  TrendingUp, Activity, Printer, X, RefreshCw, Stethoscope 
+  TrendingUp, Activity, Printer, X, Stethoscope 
 } from "lucide-react";
-import Logo from "../../assets/logo.svg";
 
 interface PaymentsTabProps {
   appointments: any[];
