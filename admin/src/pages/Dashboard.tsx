@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell } from "lucide-react";
+import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, CreditCard } from "lucide-react";
 import OverviewTab from "../components/Tabs/OverviewTab";
 import DoctorsTab from "../components/Tabs/DoctorsTab";
 import PatientsTab from "../components/Tabs/PatientsTab";
 import AppointmentsTab from "../components/Tabs/AppointmentsTab";
 import SettingsTab from "../components/Tabs/SettingsTab";
+import PaymentsTab from "../components/Tabs/PaymentsTab";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -124,6 +125,33 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }, 3000);
   };
 
+  // Inactivity Auto-Logout Security Hook (15 Minutes)
+  useEffect(() => {
+    let inactivityTimer: any;
+
+    const resetInactivityTimer = () => {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        onLogout();
+        // Since we are logging out, we can trigger a alert or redirect
+      }, 15 * 60 * 1000); // 15 Minutes
+    };
+
+    const activityEvents = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetInactivityTimer);
+    });
+
+    resetInactivityTimer();
+
+    return () => {
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetInactivityTimer);
+      });
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+    };
+  }, [onLogout]);
+
   const getHeaderTitle = () => {
     switch (activeTab) {
       case "dashboard":
@@ -134,6 +162,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         return "Patients Registry";
       case "appointments":
         return "Appointments & Bookings";
+      case "payments":
+        return "Payments Registry";
       case "settings":
         return "Admin Settings";
       default:
@@ -185,8 +215,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const fetchAppointments = async () => {
     setIsLoadingAppointments(true);
     try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        onLogout();
+        return;
+      }
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${backendUrl}/api/appointments`);
+      const response = await fetch(`${backendUrl}/api/appointments`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        onLogout();
+        return;
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -206,11 +251,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
     setIsSavingAppointment(true);
     try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        onLogout();
+        return;
+      }
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const response = await fetch(`${backendUrl}/api/appointments/${selectedAppointment._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           status: manageStatus,
@@ -220,11 +271,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         }),
       });
 
+      if (response.status === 401 || response.status === 403) {
+        onLogout();
+        return;
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to update appointment");
       }
+      
 
       triggerToast("✅ Appointment updated successfully!");
       setIsManageModalOpen(false);
@@ -587,10 +644,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               <Stethoscope size={20} color="#FFFFFF" />
             </div>
             <div>
-              <h1 style={{ fontSize: "16.5px", fontWeight: "800", letterSpacing: "-0.5px", fontFamily: "'Outfit', sans-serif" }}>
-                SRI SAI
+              <h1 style={{ fontSize: "12px", fontWeight: "800", letterSpacing: "-0.3px", fontFamily: "'Outfit', sans-serif", color: "#FFFFFF", margin: 0, whiteSpace: "nowrap" }}>
+                SRISAI SUBHRAMANIYA
               </h1>
-              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", fontWeight: "600", letterSpacing: "1px", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "9px", color: "rgba(255,255,255,0.4)", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginTop: "2px" }}>
                 Hospitals
               </span>
             </div>
@@ -603,6 +660,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               { id: "doctors", label: "Doctors Directory", icon: <Stethoscope size={18} /> },
               { id: "patients", label: "Patients Registry", icon: <Users size={18} /> },
               { id: "appointments", label: "Appointments Log", icon: <Calendar size={18} /> },
+              { id: "payments", label: "Payments & Revenue", icon: <CreditCard size={18} /> },
               { id: "settings", label: "Gateway Config", icon: <Settings size={18} /> },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
@@ -831,6 +889,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               isSavingAppointment={isSavingAppointment}
               handleManageSubmit={handleManageSubmit}
               SPECIALITIES={SPECIALITIES}
+            />
+          )}
+
+          {activeTab === "payments" && (
+            <PaymentsTab
+              appointments={appointments}
+              triggerToast={triggerToast}
             />
           )}
 

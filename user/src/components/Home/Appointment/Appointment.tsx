@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import "./Appointment.css"; // We'll create this CSS file for styles
+import AuthModal from "../../AuthModal/AuthModal";
 
 import image1 from "../../../assets/home/appointment/proj-1.jpg";
 import image2 from "../../../assets/home/appointment/proj-2.jpg";
@@ -39,6 +40,7 @@ const Appointment = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const TIME_SLOTS = [
     // Morning Session (10:00 AM - 01:00 PM)
@@ -102,7 +104,7 @@ const Appointment = () => {
 
   // Prevent background scrolling when modals are open
   useEffect(() => {
-    if (showTermsModal || showSuccess) {
+    if (showTermsModal || showSuccess || isAuthModalOpen) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
     } else {
@@ -113,7 +115,7 @@ const Appointment = () => {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [showTermsModal, showSuccess]);
+  }, [showTermsModal, showSuccess, isAuthModalOpen]);
 
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const dateVal = e.target.value;
@@ -163,6 +165,19 @@ const Appointment = () => {
       alert("Please select a date and time slot first.");
       return;
     }
+
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setAcceptedTerms(false);
+    setShowTermsModal(true);
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
     setAcceptedTerms(false);
     setShowTermsModal(true);
   };
@@ -295,6 +310,29 @@ const Appointment = () => {
         theme: {
           color: "#3F59FF",
         },
+        modal: {
+          ondismiss: async function () {
+            try {
+              const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+              await fetch(`${backendUrl}/api/appointments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  pasentname: formData.pasentname,
+                  pasentmail: formData.pasentmail,
+                  pasentnumber: `+91${formData.pasentnumber}`,
+                  appointmenttime,
+                  speciality: formData.speciality,
+                  subject: formData.subject || "Payment Cancelled / Dismissed by User",
+                  paymentStatus: "failed",
+                  paymentId: orderData.id || "cancelled_order"
+                }),
+              });
+            } catch (err) {
+              console.error("Failed to log failed/cancelled appointment:", err);
+            }
+          }
+        }
       };
 
       const rzp1 = new (window as any).Razorpay(options);
@@ -843,6 +881,13 @@ const Appointment = () => {
           </div>
         </div>
       )}
+
+      {/* Auth Modal for Unauthenticated Users */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 };

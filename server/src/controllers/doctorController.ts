@@ -63,7 +63,7 @@ export const updateDoctor = async (req: Request, res: Response): Promise<void> =
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       id,
       { $set: req.body }, // Body dynamic variables (Name, Speciality, Experience, Timing, isAvailable etc.)
-      { new: true } // Latest updated state output return
+      { returnDocument: "after" } // Latest updated state output return
     );
 
     if (!updatedDoctor) {

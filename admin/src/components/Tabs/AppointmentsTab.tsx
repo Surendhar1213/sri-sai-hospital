@@ -547,11 +547,34 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       })
                       : "--";
 
-                    const statusColor = app.status === "approved" ? "#10B981" : app.status === "cancelled" ? "#EF4444" : app.status === "completed" ? "#3F59FF" : "#F59E0B";
-                    const statusBg = app.status === "approved" ? "rgba(16, 185, 129, 0.08)" : app.status === "cancelled" ? "rgba(239, 68, 68, 0.08)" : app.status === "completed" ? "rgba(63, 89, 255, 0.08)" : "rgba(245, 158, 11, 0.08)";
+                    const getStatusStyles = (status: string) => {
+                      const normalized = (status || "").toLowerCase().trim();
+                      switch (normalized) {
+                        case "paid":
+                        case "approved":
+                          return { color: "#10B981", bg: "rgba(16, 185, 129, 0.08)" };
+                        case "failed":
+                          return { color: "#EF4444", bg: "rgba(239, 68, 68, 0.08)" };
+                        case "pending":
+                          return { color: "#F59E0B", bg: "rgba(245, 158, 11, 0.08)" };
+                        case "processing":
+                          return { color: "#3B82F6", bg: "rgba(59, 130, 246, 0.08)" };
+                        case "completed":
+                          return { color: "#6366F1", bg: "rgba(99, 102, 241, 0.08)" };
+                        case "cancelled":
+                          return { color: "#64748B", bg: "rgba(100, 116, 139, 0.08)" };
+                        case "rescheduled":
+                          return { color: "#8B5CF6", bg: "rgba(139, 92, 246, 0.08)" };
+                        case "in progress":
+                        case "inprogress":
+                          return { color: "#0EA5E9", bg: "rgba(14, 165, 233, 0.08)" };
+                        default:
+                          return { color: "#64748B", bg: "rgba(100, 116, 139, 0.08)" };
+                      }
+                    };
 
-                    const paymentColor = app.paymentStatus === "paid" ? "#10B981" : app.paymentStatus === "failed" ? "#EF4444" : "#F59E0B";
-                    const paymentBg = app.paymentStatus === "paid" ? "rgba(16, 185, 129, 0.08)" : app.paymentStatus === "failed" ? "rgba(239, 68, 68, 0.08)" : "rgba(245, 158, 11, 0.08)";
+                    const statusStyle = getStatusStyles(app.status);
+                    const paymentStyle = getStatusStyles(app.paymentStatus || "pending");
 
                     return (
                       <tr
@@ -634,8 +657,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                             style={{
                               padding: "6px 12px",
                               borderRadius: "20px",
-                              backgroundColor: statusBg,
-                              color: statusColor,
+                              backgroundColor: statusStyle.bg,
+                              color: statusStyle.color,
                               fontSize: "12px",
                               fontWeight: "700",
                               display: "inline-flex",
@@ -644,7 +667,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               textTransform: "capitalize",
                             }}
                           >
-                            <span style={{ width: "6px", height: "6px", backgroundColor: statusColor, borderRadius: "50%" }}></span>
+                            <span style={{
+                              width: "6px",
+                              height: "6px",
+                              backgroundColor: statusStyle.color,
+                              borderRadius: "50%",
+                              boxShadow: `0 0 6px ${statusStyle.color}`,
+                            }}></span>
                             {app.status}
                           </span>
                         </td>
@@ -655,8 +684,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                             style={{
                               padding: "6px 12px",
                               borderRadius: "20px",
-                              backgroundColor: paymentBg,
-                              color: paymentColor,
+                              backgroundColor: paymentStyle.bg,
+                              color: paymentStyle.color,
                               fontSize: "12px",
                               fontWeight: "700",
                               display: "inline-flex",
@@ -665,7 +694,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               textTransform: "capitalize",
                             }}
                           >
-                            <span style={{ width: "6px", height: "6px", backgroundColor: paymentColor, borderRadius: "50%" }}></span>
+                            <span style={{
+                              width: "6px",
+                              height: "6px",
+                              backgroundColor: paymentStyle.color,
+                              borderRadius: "50%",
+                              boxShadow: `0 0 6px ${paymentStyle.color}`,
+                            }}></span>
                             {app.paymentStatus || "pending"}
                           </span>
                         </td>

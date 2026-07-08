@@ -102,6 +102,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
       localStorage.setItem("userToken", data.token);
       localStorage.setItem("userInfo", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("storage"));
 
       setSuccess("Login successful! Redirecting...");
       setTimeout(() => {

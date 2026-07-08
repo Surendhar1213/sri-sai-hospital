@@ -5,16 +5,20 @@ import {
   updateAppointment,
   getBookedSlots,
   appointmentSSE,
+  getRevenueStats,
 } from "../controllers/appointmentController.js";
+import { verifyAdminToken } from "../middlewares/authMiddleware.js";
+import { bookingLimiter } from "../middlewares/rateLimiter.js";
 
 const router = Router();
 
 router.get("/live", appointmentSSE);
 router.get("/booked-slots", getBookedSlots); // <--- Add this route BEFORE "/"
-// Public route for patients to book
-router.post("/", createAppointment);
-// Admin dashboard actions (Neenga middle-ware protections add pannikalaam)
-router.get("/", getAllAppointments);
-router.put("/:id", updateAppointment);
+router.get("/revenue-stats", verifyAdminToken, getRevenueStats);
+// Public route for patients to book (Rate limited to prevent spam)
+router.post("/", bookingLimiter, createAppointment);
+// Admin dashboard actions secured with authentication middleware
+router.get("/", verifyAdminToken, getAllAppointments);
+router.put("/:id", verifyAdminToken, updateAppointment);
 
 export default router;

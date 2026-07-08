@@ -11,6 +11,7 @@ export interface IAppointment extends Document {
   assignedDoctor?: mongoose.Types.ObjectId;
   paymentStatus: "pending" | "paid" | "failed";
   paymentId?: string;
+  amount?: number;
   meetingLink?: string;
   prescription?: string;
   createdAt: Date;
@@ -41,6 +42,7 @@ const AppointmentSchema: Schema = new Schema(
       default: "pending",
     },
     paymentId: { type: String, default: "" },
+    amount: { type: Number, default: 1000 },
     meetingLink: { type: String, default: "" },
     prescription: { type: String, default: "" },
   },
@@ -55,5 +57,8 @@ AppointmentSchema.index(
     partialFilterExpression: { status: { $ne: "cancelled" } } 
   }
 );
+AppointmentSchema.index({ pasentmail: 1 });
+AppointmentSchema.index({ createdAt: -1 });
+
 export default mongoose.model<IAppointment>("Appointment", AppointmentSchema);
 

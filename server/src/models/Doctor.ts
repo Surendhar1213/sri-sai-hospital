@@ -26,4 +26,6 @@ const doctorSchema = new Schema<IDoctor>(
   { timestamps: true } // Auto create "createdAt" and "updatedAt"
 );
 
+doctorSchema.index({ speciality: 1 });
+
 export const Doctor = model<IDoctor>("Doctor", doctorSchema);

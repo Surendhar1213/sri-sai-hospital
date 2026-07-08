@@ -40,7 +40,7 @@ export const notifySSEClients = (data: any) => {
 // 1. User book panna new appointment create pannanum (With Double Booking Check)
 export const createAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { pasentname, pasentmail, pasentnumber, appointmenttime, speciality, subject, paymentStatus, paymentId } = req.body;
+    const { pasentname, pasentmail, pasentnumber, appointmenttime, speciality, subject, paymentStatus, paymentId, amount } = req.body;
 
     if (!pasentname || !pasentmail || !pasentnumber || !appointmenttime || !speciality) {
       res.status(400).json({ message: "All required fields must be filled" });
@@ -89,7 +89,8 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       speciality,
       subject,
       paymentStatus: paymentStatus || "pending",
-      paymentId: paymentId || ""
+      paymentId: paymentId || "",
+      amount: amount || 1000
     });
 
     await newAppointment.save();
@@ -201,6 +202,23 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       return;
     }
 
+    // Checking if the assigned doctor is already booked at this exact time slot for another approved/completed appointment
+    if ((status === "approved" || status === "completed") && assignedDoctor) {
+      const conflictingAppointment = await Appointment.findOne({
+        _id: { $ne: id as any },
+        assignedDoctor,
+        appointmenttime: new Date(appointment.appointmenttime),
+        status: { $in: ["approved", "completed"] }
+      });
+
+      if (conflictingAppointment) {
+        res.status(400).json({
+          message: "Conflict: This doctor is already assigned to another approved/completed appointment at this time slot."
+        });
+        return;
+      }
+    }
+
     let meetingLink = appointment.meetingLink;
 
     // இதைச் சேர்க்கவும் (Debug Log):
@@ -251,7 +269,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         prescription: prescription !== undefined ? prescription : appointment.prescription,
         paymentStatus: paymentStatus !== undefined ? paymentStatus : appointment.paymentStatus
       },
-      { new: true }
+      { returnDocument: "after" }
     ).populate("assignedDoctor", "name email speciality");
 
     if (!updatedAppointment) {
@@ -303,6 +321,67 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
   } catch (error: any) {
     console.error("❌ Error updating appointment:", error);
     res.status(500).json({ message: "Server error while updating appointment", error: error.message });
+  }
+};
+
+// 6. Get payments and revenue statistics (Today, Weekly, Monthly)
+export const getRevenueStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const now = new Date();
+    
+    // Today starts at 00:00:00 in local timezone
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Start of this week (assume Monday as start of week)
+    const currentDay = now.getDay();
+    const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
+    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - distanceToMonday);
+    
+    // Start of this month
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Fetch all paid appointments
+    const paidAppointments = await Appointment.find({ paymentStatus: "paid" });
+
+    let todayRevenue = 0;
+    let todayCount = 0;
+    let weekRevenue = 0;
+    let weekCount = 0;
+    let monthRevenue = 0;
+    let monthCount = 0;
+    let totalRevenue = 0;
+    let totalCount = 0;
+
+    paidAppointments.forEach((app) => {
+      const amount = app.amount || 1000;
+      const appDate = new Date(app.createdAt || app.appointmenttime);
+      
+      totalRevenue += amount;
+      totalCount += 1;
+
+      if (appDate >= startOfToday) {
+        todayRevenue += amount;
+        todayCount += 1;
+      }
+      if (appDate >= startOfWeek) {
+        weekRevenue += amount;
+        weekCount += 1;
+      }
+      if (appDate >= startOfMonth) {
+        monthRevenue += amount;
+        monthCount += 1;
+      }
+    });
+
+    res.status(200).json({
+      today: { revenue: todayRevenue, count: todayCount },
+      week: { revenue: weekRevenue, count: weekCount },
+      month: { revenue: monthRevenue, count: monthCount },
+      total: { revenue: totalRevenue, count: totalCount }
+    });
+  } catch (error: any) {
+    console.error("❌ Error calculating revenue stats:", error);
+    res.status(500).json({ message: "Server error calculating revenue stats", error: error.message });
   }
 };
 

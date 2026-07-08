@@ -3,20 +3,39 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import dns from "node:dns";
+import helmet from "helmet";
+import compression from "compression";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";   // ← ADD THIS LINE
 import doctorRoutes from "./routes/doctorRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 
-
-
-
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 dotenv.config();
 
+// Validate critical environment variables on startup
+const REQUIRED_ENV_VARS = ["MONGO_URI", "JWT_SECRET"];
+REQUIRED_ENV_VARS.forEach((envVar) => {
+  if (!process.env[envVar]) {
+    console.error(`❌ CRITICAL ERROR: Environment variable "${envVar}" is missing!`);
+    process.exit(1);
+  }
+});
+console.log("✅ Environment variables validated successfully.");
+
 const app = express();
+
+// ✅ Security Headers
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+// ✅ Response Compression
+app.use(compression());
 
 // ✅ CORS — Allow all origins dynamically (makes Vercel deployment seamless)
 app.use(cors({
