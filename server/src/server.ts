@@ -27,6 +27,10 @@ console.log("✅ Environment variables validated successfully.");
 
 const app = express();
 
+// Enable trust proxy for Render deployment (required by express-rate-limit)
+app.set("trust proxy", 1);
+
+
 // ✅ Security Headers
 app.use(
   helmet({
