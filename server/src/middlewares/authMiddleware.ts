@@ -54,3 +54,46 @@ export const verifyAdminToken = (
     res.status(401).json({ message: "Invalid or expired token." });
   }
 };
+
+export const verifyUserOrAdminToken = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ message: "Access denied. No token provided." });
+      return;
+    }
+
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      res.status(401).json({ message: "Access denied. Token format invalid." });
+      return;
+    }
+
+    const decoded = jwt.verify(
+      token,
+      (process.env.JWT_SECRET || "sri_sai_hospital_secret_key") as string
+    ) as any;
+
+    // அட்மின் அல்லது சூப்பர் அட்மின் என்றால் நேரடியாக அனுமதிக்கவும்
+    if (decoded.role === "admin" || decoded.role === "super-admin") {
+      req.admin = decoded;
+      return next();
+    }
+
+    // நோயாளி என்றால், அவர் தனது சொந்த மின்னஞ்சல் விவரங்களை மட்டுமே பார்க்க அனுமதிக்கவும்
+    const queryEmail = req.query.email;
+    if (queryEmail && decoded.email !== queryEmail) {
+      res.status(403).json({ message: "Access forbidden. You can only view your own appointments." });
+      return;
+    }
+
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid or expired token." });
+  }
+};
+

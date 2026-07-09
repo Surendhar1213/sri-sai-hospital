@@ -7,6 +7,7 @@ import image2 from "../../../assets/home/appointment/proj-2.jpg";
 import image3 from "../../../assets/home/appointment/proj-3.jpg";
 import image4 from "../../../assets/home/appointment/proj-4.jpg";
 
+
 // Speciality to Doctor Mapping
 const SPECIALITY_DOCTORS: Record<string, string[]> = {
   "Gynecology & Women's Health": ["Dr. R. Anuradha"],
@@ -24,10 +25,13 @@ const SPECIALITY_DOCTORS: Record<string, string[]> = {
 };
 
 const Appointment = () => {
+  // Pre-fill from localStorage if logged in
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
   const [formData, setFormData] = useState({
-    pasentname: "",
-    pasentmail: "",
-    pasentnumber: "",
+    pasentname: userInfo?.name || "",
+    pasentmail: userInfo?.email || "",
+    pasentnumber: userInfo?.phone || "",
     appointmenttime: "",
     speciality: "",
     subject: "",
@@ -178,9 +182,17 @@ const Appointment = () => {
 
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
+    const freshUser = JSON.parse(localStorage.getItem("userInfo") || "{}");
+    setFormData((prev) => ({
+      ...prev,
+      pasentname: freshUser?.name || prev.pasentname,
+      pasentmail: freshUser?.email || prev.pasentmail,
+      pasentnumber: freshUser?.phone || prev.pasentnumber,
+    }));
     setAcceptedTerms(false);
     setShowTermsModal(true);
   };
+
 
   const handleProceedToPayment = async () => {
     if (!acceptedTerms) return;

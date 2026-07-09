@@ -47,7 +47,7 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
     //   { email: patientEmail },
     //   ...(doctorEmail ? [{ email: doctorEmail }] : []),
     // ],
-    // Google Meet லிங்க் உருவாக்கச் சொல்கிறோம்
+    // Google Meet create new 
     conferenceData: {
       createRequest: {
         requestId: `meet-${Date.now()}`,

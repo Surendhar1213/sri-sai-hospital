@@ -58,7 +58,14 @@ const Profile = () => {
     const fetchAppointments = async () => {
       try {
         const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const response = await fetch(`${backendUrl}/api/appointments?email=${userEmail}`);
+        const token = localStorage.getItem("userToken");
+        const response = await fetch(`${backendUrl}/api/appointments?email=${userEmail}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
         const data = await response.json();
         if (response.ok) {
           setAppointments(data || []);

@@ -4,7 +4,7 @@ import Appointment from "../models/Appointment.js";
 import { Doctor } from "../models/Doctor.js"; // Named import syntax (with curly braces)
 // 
 import { createMeetEvent } from "../config/googleCalendar.js"; 
-import { sendAppointmentEmail, sendPrescriptionEmail } from "../config/emailService.js"; // <--- sendPrescriptionEmail சேர்க்கவும்
+import { sendAppointmentEmail, sendPrescriptionEmail, sendBookingReceiptEmail, sendDoctorNotificationEmail } from "../config/emailService.js";
 
 
 
@@ -93,7 +93,33 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       amount: amount || 1000
     });
 
-    await newAppointment.save();
+        await newAppointment.save();
+
+    // 💡 [இந்த இடத்தில் தான் சேர்க்க வேண்டும்]
+    if (paymentStatus === "paid") {
+      const formattedTime = new Date(newAppointment.appointmenttime).toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+      try {
+          await sendBookingReceiptEmail({
+          to: newAppointment.pasentmail || "",
+          patientName: newAppointment.pasentname || "",
+          amount: newAppointment.amount || 1000,
+          paymentId: newAppointment.paymentId || "", // <--- empty string fallback
+          speciality: newAppointment.speciality || "",
+          time: formattedTime,
+        });
+
+      } catch (emailErr) {
+        console.error("❌ Failed to send automatic booking receipt email:", emailErr);
+      }
+    }
+
+    // Trigger SSE notification
+    notifySSEClients({ event: "new-appointment", data: newAppointment });
+
 
     // Trigger SSE notification
     notifySSEClients({ event: "new-appointment", data: newAppointment });
