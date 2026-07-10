@@ -32,6 +32,7 @@ interface Appointment {
 interface AppointmentsTabProps {
   appointments: Appointment[];
   doctors: Doctor[];
+  patients: any[];
   isLoadingAppointments: boolean;
   appointmentsError: string;
   fetchAppointments: () => void;
@@ -59,6 +60,7 @@ interface AppointmentsTabProps {
 const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   appointments,
   doctors,
+  patients,
   isLoadingAppointments,
   appointmentsError,
   fetchAppointments,
@@ -89,6 +91,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   const [appointmentCustomDate, setAppointmentCustomDate] = useState("");
   const [activeAppPage, setAppointmentCurrentPage] = useState(1);
   const [appointmentViewMode, setAppointmentViewMode] = useState<"table" | "calendar">("table");
+  const [printPrescriptionAppointment, setPrintPrescriptionAppointment] = useState<any | null>(null);
   const appointmentsPerPage = 8;
 
   // Helper date matching
@@ -707,28 +710,47 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
 
                         {/* Manage Action */}
                         <td style={{ padding: "18px 12px" }}>
-                          <button
-                            onClick={() => {
-                              setSelectedAppointment(app);
-                              setManageStatus(app.status || "pending");
-                              setManageDoctor(app.assignedDoctor?._id || "");
-                              setManagePrescription(app.prescription || "");
-                              setManagePaymentStatus(app.paymentStatus || "pending");
-                              setIsManageModalOpen(true);
-                            }}
-                            style={{
-                              padding: "6px 12px",
-                              backgroundColor: "transparent",
-                              border: "1.5px solid #cbd5e1",
-                              borderRadius: "8px",
-                              fontSize: "12px",
-                              fontWeight: "600",
-                              color: "#616161",
-                              cursor: "pointer",
-                            }}
-                          >
-                            Manage
-                          </button>
+                          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                            <button
+                              onClick={() => {
+                                setSelectedAppointment(app);
+                                setManageStatus(app.status || "pending");
+                                setManageDoctor(app.assignedDoctor?._id || "");
+                                setManagePrescription(app.prescription || "");
+                                setManagePaymentStatus(app.paymentStatus || "pending");
+                                setIsManageModalOpen(true);
+                              }}
+                              style={{
+                                padding: "6px 12px",
+                                backgroundColor: "transparent",
+                                border: "1.5px solid #cbd5e1",
+                                borderRadius: "8px",
+                                fontSize: "12px",
+                                fontWeight: "600",
+                                color: "#616161",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Manage
+                            </button>
+                            {app.status === "completed" && app.prescription && (
+                              <button
+                                onClick={() => setPrintPrescriptionAppointment(app)}
+                                style={{
+                                  padding: "6px 12px",
+                                  backgroundColor: "#3F59FF",
+                                  border: "none",
+                                  borderRadius: "8px",
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                  color: "#FFFFFF",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Rx Slip
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -945,51 +967,60 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
               </div>
 
               {/* Prescription / Notes Textarea */}
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
-                  Prescription / Consultation Notes
-                </label>
-                <textarea
-                  rows={4}
-                  placeholder="Type advice dosage, diagnostic findings, or session notes here..."
-                  value={managePrescription}
-                  onChange={(e) => setManagePrescription(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "14px",
-                    borderRadius: "10px",
-                    border: "1.5px solid #cbd5e1",
-                    fontSize: "15px",
-                    outline: "none",
-                    resize: "none",
-                    fontFamily: "inherit",
-                  }}
-                />
-              </div>
+              {manageStatus === "completed" && (
+                <div>
+                  <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
+                    Prescription / Consultation Notes
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Type advice dosage, diagnostic findings, or session notes here..."
+                    value={managePrescription}
+                    onChange={(e) => setManagePrescription(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "14px",
+                      borderRadius: "10px",
+                      border: "1.5px solid #cbd5e1",
+                      fontSize: "15px",
+                      outline: "none",
+                      resize: "none",
+                      fontFamily: "inherit",
+                    }}
+                  />
+                </div>
+              )}
 
-              {/* Payment Status Dropdown */}
+              {/* Payment Status (Read-Only) */}
               <div>
                 <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
                   Gateway Payment Status
                 </label>
-                <select
-                  value={managePaymentStatus}
-                  onChange={(e) => setManagePaymentStatus(e.target.value)}
+                <div
                   style={{
-                    width: "100%",
                     padding: "14px",
                     borderRadius: "10px",
                     border: "1.5px solid #cbd5e1",
                     fontSize: "15px",
-                    backgroundColor: "#fff",
-                    outline: "none",
-                    cursor: "pointer",
+                    backgroundColor: "#f8fafc",
+                    fontWeight: "600",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px"
                   }}
                 >
-                  <option value="pending">Pending Gateway Capture</option>
-                  <option value="paid">Paid & Settled</option>
-                  <option value="failed">Failed / Refunded</option>
-                </select>
+                  <span
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: managePaymentStatus === "paid" ? "#10B981" : managePaymentStatus === "failed" ? "#EF4444" : "#F59E0B"
+                    }}
+                  />
+                  <span style={{ color: managePaymentStatus === "paid" ? "#10B981" : managePaymentStatus === "failed" ? "#EF4444" : "#F59E0B" }}>
+                    {managePaymentStatus === "paid" ? "Paid & Settled" : managePaymentStatus === "failed" ? "Failed / Cancelled" : "Pending Gateway Capture"}
+                  </span>
+                </div>
               </div>
 
               <button
@@ -1016,6 +1047,173 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
           </div>
         </div>
       )}
+
+      {/* Printable Prescription Modal */}
+      {printPrescriptionAppointment && (() => {
+        const patientDetails = patients.find(p => p.email === printPrescriptionAppointment.pasentmail) || {
+          age: "N/A",
+          gender: "N/A",
+          bloodGroup: "N/A"
+        };
+        return (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(6, 15, 45, 0.5)",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              zIndex: 99999,
+              backdropFilter: "blur(4px)",
+              overflowY: "auto",
+              padding: "40px 16px"
+            }}
+            onClick={() => setPrintPrescriptionAppointment(null)}
+          >
+            <style>{`
+              @media print {
+                body * {
+                  visibility: hidden !important;
+                }
+                .printable-prescription-slip, .printable-prescription-slip * {
+                  visibility: visible !important;
+                }
+                .printable-prescription-slip {
+                  position: absolute !important;
+                  left: 0 !important;
+                  top: 0 !important;
+                  width: 100% !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  box-shadow: none !important;
+                  border: none !important;
+                  background: white !important;
+                  color: black !important;
+                }
+                .print-btn-no-print {
+                  display: none !important;
+                }
+              }
+            `}</style>
+            
+            <div
+              className="printable-prescription-slip"
+              style={{
+                width: "100%",
+                maxWidth: "650px",
+                backgroundColor: "#FFFFFF",
+                borderRadius: "16px",
+                border: "1px solid #E2E8F0",
+                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+                overflow: "hidden",
+                position: "relative"
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div
+                style={{
+                  background: "#060F2D",
+                  padding: "24px 32px",
+                  color: "#FFFFFF",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "800", fontFamily: "'Outfit', sans-serif" }}>SRI SAI HOSPITAL</h3>
+                  <span style={{ fontSize: "11px", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px" }}>Clinical Consultation Slip</span>
+                </div>
+                <div style={{ display: "flex", gap: "10px" }} className="print-btn-no-print">
+                  <button
+                    onClick={() => window.print()}
+                    style={{
+                      background: "#3F59FF",
+                      border: "none",
+                      color: "#FFFFFF",
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Print PDF
+                  </button>
+                  <button
+                    onClick={() => setPrintPrescriptionAppointment(null)}
+                    style={{
+                      background: "rgba(255,255,255,0.1)",
+                      border: "none",
+                      color: "#FFFFFF",
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div style={{ padding: "32px" }}>
+                {/* Meta details */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", borderBottom: "1px dashed #E2E8F0", paddingBottom: "20px", marginBottom: "24px" }}>
+                  <div>
+                    <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#72849B", fontWeight: "700", letterSpacing: "0.5px" }}>Patient Details</span>
+                    <h4 style={{ margin: "4px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#060F2D" }}>{printPrescriptionAppointment.pasentname}</h4>
+                    <p style={{ margin: "2px 0 0 0", fontSize: "13.5px", color: "#72849B" }}>Phone: {printPrescriptionAppointment.pasentnumber}</p>
+                    <div style={{ display: "flex", gap: "12px", marginTop: "6px", fontSize: "13px", color: "#72849B" }}>
+                      <span>Age: <strong>{patientDetails.age || "N/A"}</strong></span>
+                      <span>Gender: <strong>{patientDetails.gender || "N/A"}</strong></span>
+                      <span>Blood: <strong>{patientDetails.bloodGroup || "N/A"}</strong></span>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#72849B", fontWeight: "700", letterSpacing: "0.5px" }}>Consultant Doctor</span>
+                    <h4 style={{ margin: "4px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#060F2D" }}>{printPrescriptionAppointment.assignedDoctor ? printPrescriptionAppointment.assignedDoctor.name : "Specialist Doctor"}</h4>
+                    <p style={{ margin: "2px 0 0 0", fontSize: "13.5px", color: "#72849B" }}>{printPrescriptionAppointment.speciality}</p>
+                  </div>
+                </div>
+
+                {/* Prescription Text */}
+                <div style={{ marginBottom: "28px" }}>
+                  <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#3F59FF", fontWeight: "700", letterSpacing: "1px" }}>Rx Prescriptions / Notes</span>
+                  <div style={{
+                    marginTop: "8px",
+                    padding: "20px",
+                    backgroundColor: "#F8FAFC",
+                    border: "1px solid #E2E8F0",
+                    borderRadius: "8px",
+                    fontSize: "14.5px",
+                    lineHeight: "1.6",
+                    whiteSpace: "pre-line",
+                    color: "#060F2D",
+                    minHeight: "150px",
+                    textAlign: "left"
+                  }}>
+                    {printPrescriptionAppointment.prescription}
+                  </div>
+                </div>
+
+                {/* Footer details */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", color: "#72849B", borderTop: "1px solid #F1F5F9", paddingTop: "20px" }}>
+                  <span>Date: {new Date(printPrescriptionAppointment.appointmenttime).toLocaleDateString("en-IN", { dateStyle: "long" })}</span>
+                  <span style={{ color: "#3F59FF", fontWeight: "700" }}>Sri Sai Hospital Telehealth Verified</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

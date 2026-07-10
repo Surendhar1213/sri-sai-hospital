@@ -870,6 +870,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             <AppointmentsTab
               appointments={appointments}
               doctors={doctors}
+              patients={patients}
               isLoadingAppointments={isLoadingAppointments}
               appointmentsError={""}
               fetchAppointments={fetchAppointments}

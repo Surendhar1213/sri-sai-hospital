@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Appointment.css"; // We'll create this CSS file for styles
 import AuthModal from "../../AuthModal/AuthModal";
 
@@ -25,6 +26,7 @@ const SPECIALITY_DOCTORS: Record<string, string[]> = {
 };
 
 const Appointment = () => {
+  const navigate = useNavigate();
   // Pre-fill from localStorage if logged in
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
@@ -39,6 +41,7 @@ const Appointment = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showFailure, setShowFailure] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
@@ -82,6 +85,24 @@ const Appointment = () => {
     const dateObj = new Date(dateStr);
     dateObj.setHours(hours, minutes, 0, 0);
     return dateObj;
+  };
+
+  const getTodayLocalDateStr = (): string => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const isSlotInPast = (slot: string): boolean => {
+    if (!selectedDate) return false;
+    const todayStr = getTodayLocalDateStr();
+    if (selectedDate === todayStr) {
+      const slotTime = combineDateAndTime(selectedDate, slot);
+      return slotTime.getTime() < Date.now();
+    }
+    return false;
   };
 
   useEffect(() => {
@@ -247,15 +268,18 @@ const Appointment = () => {
       // 3. தேதி மற்றும் நேரத்தை ஒருங்கிணைக்கிறோம் (இங்கு ஏற்கனவே உள்ள combineDateAndTime-ஐப் பயன்படுத்துகிறோம்)
       const appointmenttime = combineDateAndTime(selectedDate, selectedSlot).toISOString();
 
+      let paymentProcessed = false;
+
       // 4. Razorpay பாப்-அப் விண்டோவிற்கான ஆப்ஷன்கள்
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_T8eJAMZt63GhNt", // உங்களது Razorpay Key ID
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TBQAbNQmdj88dM", // உங்களது Razorpay Key ID
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Sri Sai Hospital",
         description: `Appointment Consultation Fee - ${formData.speciality}`,
         order_id: orderData.id,
         handler: async function (response: any) {
+          paymentProcessed = true;
           try {
             // 5. பேமெண்ட் வெற்றிகரமாக முடிந்ததும் வெரிஃபை செய்கிறோம்
             const verifyResponse = await fetch(`${backendUrl}/api/payments/verify`, {
@@ -324,6 +348,7 @@ const Appointment = () => {
         },
         modal: {
           ondismiss: async function () {
+            if (paymentProcessed) return;
             try {
               const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
               await fetch(`${backendUrl}/api/appointments`, {
@@ -340,6 +365,7 @@ const Appointment = () => {
                   paymentId: orderData.id || "cancelled_order"
                 }),
               });
+              setShowFailure(true);
             } catch (err) {
               console.error("Failed to log failed/cancelled appointment:", err);
             }
@@ -525,7 +551,7 @@ const Appointment = () => {
 
 
                           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                            {TIME_SLOTS.map((slot) => {
+                            {TIME_SLOTS.filter(slot => !isSlotInPast(slot)).map((slot) => {
                               const isBooked = checkIsSlotBooked(slot);
                               const isSelected = selectedSlot === slot;
 
@@ -646,7 +672,10 @@ const Appointment = () => {
               Your appointment request has been logged. Our administration team will contact you shortly to confirm your scheduled slot.
             </p>
             <button
-              onClick={() => setShowSuccess(false)}
+              onClick={() => {
+                setShowSuccess(false);
+                navigate("/profile?tab=appointments");
+              }}
               style={{
                 width: "100%",
                 padding: "12px 24px",
@@ -663,6 +692,77 @@ const Appointment = () => {
               onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#3F59FF"}
             >
               Got it, Thanks!
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showFailure && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(6, 15, 45, 0.4)",
+          backdropFilter: "blur(8px)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+          animation: "fadeIn 0.3s ease-out"
+        }}>
+          <div style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "24px",
+            padding: "40px",
+            maxWidth: "420px",
+            width: "90%",
+            textAlign: "center",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+            border: "1px solid rgba(255,255,255,0.8)",
+            transform: "scale(1)",
+            transition: "transform 0.3s ease"
+          }}>
+            <div style={{
+              width: "70px",
+              height: "70px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(239, 68, 68, 0.1)",
+              color: "#EF4444",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: "32px",
+              margin: "0 auto 20px auto",
+              fontWeight: "bold"
+            }}>
+              ⚠️
+            </div>
+            <h3 style={{ fontSize: "20px", fontWeight: "700", color: "#060F2D", marginBottom: "10px" }}>
+              Booking Cancelled
+            </h3>
+            <p style={{ fontSize: "14px", color: "#64748B", lineHeight: "1.6", marginBottom: "25px" }}>
+              Your payment attempt was cancelled or failed, so the slot was not booked. If any amount was deducted, it will be refunded automatically by your bank within 5-7 business days.
+            </p>
+            <button
+              onClick={() => setShowFailure(false)}
+              style={{
+                width: "100%",
+                padding: "12px 24px",
+                backgroundColor: "#EF4444",
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "15px",
+                cursor: "pointer",
+                transition: "background-color 0.2s"
+              }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#DC2626"}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#EF4444"}
+            >
+              Try Again
             </button>
           </div>
         </div>

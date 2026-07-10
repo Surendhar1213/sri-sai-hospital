@@ -250,3 +250,75 @@ export const sendBookingReceiptEmail = async (options: ReceiptMailOptions) => {
     return false;
   }
 };
+
+// 5. Function to send Booking Failure & Payment Cancelled Email to Patient
+interface FailureMailOptions {
+  to: string;
+  patientName: string;
+  amount: number;
+  paymentId: string;
+  speciality: string;
+  time: string;
+}
+
+export const sendBookingFailureEmail = async (options: FailureMailOptions) => {
+  const { to, patientName, amount, paymentId, speciality, time } = options;
+
+  const mailOptions = {
+    from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "⚠️ Booking Failed / Payment Cancelled - Srisai Subhramaniya Hospitals",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+        
+        <!-- Header with logo style -->
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="display: inline-block; background-color: #ef4444; color: white; font-size: 24px; font-weight: bold; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; text-align: center;">⚠️</div>
+          <h2 style="color: #ef4444; margin: 10px 0 0 0;">Booking Failed</h2>
+          <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">Srisai Subhramaniya Hospitals</p>
+        </div>
+
+        <p>Dear <strong>${patientName}</strong>,</p>
+        <p>We noticed that your payment attempt for booking an appointment was cancelled or failed. As a result, your appointment slot has not been booked.</p>
+        
+        <!-- Details -->
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">Attempt Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 6px 0; color: #64748b; font-size: 14px;">Attempt/Order ID:</td>
+              <td style="padding: 6px 0; color: #1e293b; font-weight: bold; font-size: 14px;">${paymentId}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b; font-size: 14px;">Amount:</td>
+              <td style="padding: 6px 0; color: #ef4444; font-weight: bold; font-size: 14px;">₹${amount}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b; font-size: 14px;">Department:</td>
+              <td style="padding: 6px 0; color: #1e293b; font-size: 14px;">${speciality}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b; font-size: 14px;">Requested Date & Time:</td>
+              <td style="padding: 6px 0; color: #1e293b; font-size: 14px;">${time}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 6px; font-size: 13px; color: #b91c1c; text-align: center;">
+          If the amount was deducted from your account, it will be refunded automatically by your bank within 5-7 business days. Please try booking again.
+        </div>
+
+        <p style="margin-top: 25px; text-align: center; color: #94a3b8; font-size: 11px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+      </div>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("📧 Booking failure email sent successfully:", info.messageId);
+    return true;
+  } catch (error) {
+    console.error("❌ Error sending booking failure email:", error);
+    return false;
+  }
+};

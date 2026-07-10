@@ -19,10 +19,28 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("User");
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [userAge, setUserAge] = useState<number | string>("");
+  const [userGender, setUserGender] = useState("");
+  const [userBloodGroup, setUserBloodGroup] = useState("");
+
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editAge, setEditAge] = useState<number | string>("");
+  const [editGender, setEditGender] = useState("");
+  const [editBloodGroup, setEditBloodGroup] = useState("");
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [popupType, setPopupType] = useState<"success" | "error">("success");
+  const [selectedReceipt, setSelectedReceipt] = useState<any | null>(null);
   
   const navigate = useNavigate();
 
@@ -38,9 +56,19 @@ const Profile = () => {
 
     if (userInfo) {
       const user = JSON.parse(userInfo);
+      setUserId(user.id || user._id || "");
       setUserName(user.name || "User");
       setUserEmail(user.email || "");
       setUserPhone(user.phone || "");
+      setUserAge(user.age || "");
+      setUserGender(user.gender || "");
+      setUserBloodGroup(user.bloodGroup || "");
+
+      setEditName(user.name || "");
+      setEditPhone(user.phone || "");
+      setEditAge(user.age || "");
+      setEditGender(user.gender || "");
+      setEditBloodGroup(user.bloodGroup || "");
     }
 
     // Read URL query parameter for tab selection
@@ -91,6 +119,68 @@ const Profile = () => {
     navigator.clipboard.writeText(text);
     setCopiedId(text);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editName || !editPhone || !editAge || !editGender) {
+      setPopupType("error");
+      setPopupMessage("Please fill all required fields");
+      setTimeout(() => setPopupMessage(null), 3000);
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const token = localStorage.getItem("userToken");
+      const response = await fetch(`${backendUrl}/api/user/update/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: editName,
+          phone: editPhone,
+          age: Number(editAge),
+          gender: editGender,
+          bloodGroup: editBloodGroup
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUserName(data.user.name);
+        setUserPhone(data.user.phone);
+        setUserAge(data.user.age);
+        setUserGender(data.user.gender);
+        setUserBloodGroup(data.user.bloodGroup);
+        
+        const userInfoObj = JSON.parse(localStorage.getItem("userInfo") || "{}");
+        const updatedUserInfo = {
+          ...userInfoObj,
+          name: data.user.name,
+          phone: data.user.phone,
+          age: data.user.age,
+          gender: data.user.gender,
+          bloodGroup: data.user.bloodGroup
+        };
+        localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+        setIsEditing(false);
+        setPopupType("success");
+        setPopupMessage("Profile updated successfully!");
+        setTimeout(() => setPopupMessage(null), 3000);
+      } else {
+        setPopupType("error");
+        setPopupMessage(data.message || "Failed to update profile");
+        setTimeout(() => setPopupMessage(null), 3000);
+      }
+    } catch (err: any) {
+      console.error("Error updating profile:", err);
+      setPopupType("error");
+      setPopupMessage("Failed to update profile due to a network error.");
+      setTimeout(() => setPopupMessage(null), 3000);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Find next upcoming appointment
@@ -269,9 +359,15 @@ const Profile = () => {
             boxShadow: "0 10px 30px rgba(77, 87, 101, 0.03)"
           }}>
             {loading ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "400px" }}>
-                <div style={{ border: "3px solid #E2E8F0", borderTop: "3px solid #3F59FF", borderRadius: "50%", width: "40px", height: "40px", animation: "spin 1s linear infinite" }} />
-                <p style={{ marginTop: "16px", color: "#72849B", fontWeight: "700", fontSize: "16px" }}>Loading records...</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div className="skeleton" style={{ height: "40px", width: "40%", borderRadius: "8px" }}></div>
+                <div className="skeleton" style={{ height: "20px", width: "60%", borderRadius: "6px" }}></div>
+                <div className="skeleton" style={{ height: "180px", width: "100%", borderRadius: "14px", marginTop: "16px" }}></div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginTop: "16px" }}>
+                  <div className="skeleton" style={{ height: "100px", borderRadius: "14px" }}></div>
+                  <div className="skeleton" style={{ height: "100px", borderRadius: "14px" }}></div>
+                  <div className="skeleton" style={{ height: "100px", borderRadius: "14px" }}></div>
+                </div>
               </div>
             ) : (
               <>
@@ -558,6 +654,11 @@ const Profile = () => {
                                     <span style={{ fontSize: "12px", textTransform: "uppercase", color: "#72849B", fontWeight: "700" }}>Patient</span>
                                     <h4 style={{ margin: "2px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#0F2239" }}>{app.pasentname}</h4>
                                     <p style={{ margin: "2px 0 0 0", fontSize: "14px", color: "#72849B" }}>Phone: {app.pasentnumber}</p>
+                                    <div style={{ display: "flex", gap: "10px", marginTop: "4px", fontSize: "13px", color: "#72849B" }}>
+                                      <span>Age: <strong>{userAge || "N/A"}</strong></span>
+                                      <span>Gender: <strong>{userGender || "N/A"}</strong></span>
+                                      <span>Blood: <strong>{userBloodGroup || "N/A"}</strong></span>
+                                    </div>
                                   </div>
                                   <div style={{ textAlign: "right" }}>
                                     <span style={{ fontSize: "12px", textTransform: "uppercase", color: "#72849B", fontWeight: "700" }}>Consultant</span>
@@ -616,6 +717,7 @@ const Profile = () => {
                               <th style={{ padding: "14px 16px" }}>Booking Description</th>
                               <th style={{ padding: "14px 16px" }}>Amount Paid</th>
                               <th style={{ padding: "14px 16px" }}>Payment Status</th>
+                              <th style={{ padding: "14px 16px" }}>Receipt</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -640,7 +742,7 @@ const Profile = () => {
                                       )}
                                     </div>
                                   </td>
-                                  <td style={{ padding: "16px", fontWeight: "700", color: "#0F2239" }}>₹ 500.00</td>
+                                  <td style={{ padding: "16px", fontWeight: "700", color: "#0F2239" }}>₹ {app.amount || 1000}.00</td>
                                   <td style={{ padding: "16px" }}>
                                     <span style={{
                                       padding: "4px 8px",
@@ -653,6 +755,30 @@ const Profile = () => {
                                     }}>
                                       {app.paymentStatus || "pending"}
                                     </span>
+                                  </td>
+                                  <td style={{ padding: "16px" }}>
+                                    {app.paymentStatus === "paid" ? (
+                                      <button
+                                        onClick={() => setSelectedReceipt(app)}
+                                        style={{
+                                          padding: "6px 12px",
+                                          backgroundColor: "#3F59FF",
+                                          border: "none",
+                                          borderRadius: "6px",
+                                          fontSize: "12px",
+                                          fontWeight: "700",
+                                          color: "#FFFFFF",
+                                          cursor: "pointer",
+                                          transition: "opacity 0.2s"
+                                        }}
+                                        onMouseOver={(e) => e.currentTarget.style.opacity = "0.9"}
+                                        onMouseOut={(e) => e.currentTarget.style.opacity = "1"}
+                                      >
+                                        Receipt
+                                      </button>
+                                    ) : (
+                                      <span style={{ fontSize: "13px", color: "#94A3B8" }}>No Receipt</span>
+                                    )}
                                   </td>
                                 </tr>
                               );
@@ -667,8 +793,36 @@ const Profile = () => {
                 {/* 5. ACCOUNT SETTINGS TAB */}
                 {activeTab === "settings" && (
                   <div>
-                    <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#0F2239", margin: "0 0 6px 0" }}>Patient Profile Info</h2>
-                    <p style={{ margin: 0, color: "#72849B", fontSize: "14px", fontWeight: "600", marginBottom: "28px" }}>Your registered telehealth profile details.</p>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
+                      <div>
+                        <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#0F2239", margin: "0 0 6px 0" }}>Patient Profile Info</h2>
+                        <p style={{ margin: 0, color: "#72849B", fontSize: "14px", fontWeight: "600" }}>Your registered telehealth profile details.</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (isEditing) {
+                            setEditName(userName);
+                            setEditPhone(userPhone);
+                            setEditAge(userAge);
+                            setEditGender(userGender);
+                            setEditBloodGroup(userBloodGroup);
+                          }
+                          setIsEditing(!isEditing);
+                        }}
+                        style={{
+                          padding: "8px 16px",
+                          borderRadius: "8px",
+                          border: "1px solid #E2E8F0",
+                          backgroundColor: isEditing ? "#EF4444" : "#FFFFFF",
+                          color: isEditing ? "#FFFFFF" : "#3F59FF",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        {isEditing ? "Cancel" : "Edit Profile"}
+                      </button>
+                    </div>
 
                     <div style={{
                       backgroundColor: "#FFFFFF",
@@ -680,24 +834,126 @@ const Profile = () => {
                       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                         <div>
                           <label style={{ fontSize: "12px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", display: "block", marginBottom: "6px", letterSpacing: "0.5px" }}>Full Name</label>
-                          <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
-                            {userName}
-                          </div>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              style={{ width: "100%", fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#FFFFFF", borderRadius: "8px", border: "1px solid #CBD5E1" }}
+                            />
+                          ) : (
+                            <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
+                              {userName}
+                            </div>
+                          )}
                         </div>
                         
                         <div>
                           <label style={{ fontSize: "12px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", display: "block", marginBottom: "6px", letterSpacing: "0.5px" }}>Email Address</label>
-                          <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
+                          <div style={{ fontSize: "15px", fontWeight: "600", color: "#72849B", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9", cursor: "not-allowed" }}>
                             {userEmail}
                           </div>
                         </div>
 
                         <div>
                           <label style={{ fontSize: "12px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", display: "block", marginBottom: "6px", letterSpacing: "0.5px" }}>Mobile Number</label>
-                          <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
-                            {userPhone || "Not Provided"}
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editPhone}
+                              onChange={(e) => setEditPhone(e.target.value.replace(/\D/g, ""))}
+                              style={{ width: "100%", fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#FFFFFF", borderRadius: "8px", border: "1px solid #CBD5E1" }}
+                            />
+                          ) : (
+                            <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
+                              {userPhone || "Not Provided"}
+                            </div>
+                          )}
+                        </div>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                          <div>
+                            <label style={{ fontSize: "12px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", display: "block", marginBottom: "6px", letterSpacing: "0.5px" }}>Age</label>
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                value={editAge}
+                                onChange={(e) => setEditAge(e.target.value)}
+                                style={{ width: "100%", fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#FFFFFF", borderRadius: "8px", border: "1px solid #CBD5E1" }}
+                              />
+                            ) : (
+                              <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
+                                {userAge || "Not Provided"}
+                              </div>
+                            )}
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: "12px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", display: "block", marginBottom: "6px", letterSpacing: "0.5px" }}>Gender</label>
+                            {isEditing ? (
+                              <select
+                                value={editGender}
+                                onChange={(e) => setEditGender(e.target.value)}
+                                style={{ width: "100%", fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#FFFFFF", borderRadius: "8px", border: "1px solid #CBD5E1" }}
+                              >
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            ) : (
+                              <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
+                                {userGender || "Not Provided"}
+                              </div>
+                            )}
                           </div>
                         </div>
+
+                        <div>
+                          <label style={{ fontSize: "12px", fontWeight: "700", color: "#72849B", textTransform: "uppercase", display: "block", marginBottom: "6px", letterSpacing: "0.5px" }}>Blood Group</label>
+                          {isEditing ? (
+                            <select
+                              value={editBloodGroup}
+                              onChange={(e) => setEditBloodGroup(e.target.value)}
+                              style={{ width: "100%", fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#FFFFFF", borderRadius: "8px", border: "1px solid #CBD5E1" }}
+                            >
+                              <option value="Unknown">Unknown</option>
+                              <option value="A+">A+</option>
+                              <option value="A-">A-</option>
+                              <option value="B+">B+</option>
+                              <option value="B-">B-</option>
+                              <option value="AB+">AB+</option>
+                              <option value="AB-">AB-</option>
+                              <option value="O+">O+</option>
+                              <option value="O-">O-</option>
+                            </select>
+                          ) : (
+                            <div style={{ fontSize: "15px", fontWeight: "600", color: "#0F2239", padding: "12px 16px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #EBF1F9" }}>
+                              {userBloodGroup || "Unknown"}
+                            </div>
+                          )}
+                        </div>
+
+                        {isEditing && (
+                          <button
+                            onClick={handleSaveProfile}
+                            disabled={isSaving}
+                            style={{
+                              width: "100%",
+                              padding: "14px",
+                              backgroundColor: "#3F59FF",
+                              color: "#FFFFFF",
+                              border: "none",
+                              borderRadius: "8px",
+                              fontSize: "16px",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            {isSaving ? "Saving changes..." : "Save Profile Details"}
+                          </button>
+                        )}
 
                         <div style={{
                           display: "flex",
@@ -745,12 +1001,316 @@ const Profile = () => {
           color: #FFFFFF !important;
           border-color: #3F59FF !important;
         }
+        .skeleton {
+          background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+          background-size: 200% 100%;
+          animation: loading-shimmer 1.5s infinite;
+        }
+        @keyframes loading-shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
         @media (max-width: 992px) {
           div {
             grid-template-columns: 1fr !important;
           }
         }
       `}</style>
+      {popupMessage && (
+        <div style={{
+          position: "fixed",
+          bottom: "30px",
+          right: "30px",
+          backgroundColor: popupType === "success" ? "#10B981" : "#EF4444",
+          color: "#FFFFFF",
+          padding: "16px 24px",
+          borderRadius: "12px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          zIndex: 1000,
+          animation: "fadeInUp 0.3s ease",
+          fontWeight: "700"
+        }}>
+          {popupType === "success" ? <FaCheckCircle size={20} /> : "⚠️"}
+          <span>{popupMessage}</span>
+        </div>
+      )}
+
+      {/* Printable Receipt Modal */}
+      {selectedReceipt && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(6, 15, 45, 0.5)",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            zIndex: 99999,
+            backdropFilter: "blur(4px)",
+            overflowY: "auto",
+            padding: "40px 16px"
+          }}
+          onClick={() => setSelectedReceipt(null)}
+        >
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #printable-receipt-modal, #printable-receipt-modal * {
+                visibility: visible !important;
+              }
+              #printable-receipt-modal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: white !important;
+                color: black !important;
+              }
+              .print-btn-no-print {
+                display: none !important;
+              }
+            }
+          `}</style>
+          
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "650px",
+              backgroundColor: "#FFFFFF",
+              borderRadius: "16px",
+              border: "1px solid #E2E8F0",
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+              overflow: "hidden"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header controls */}
+            <div
+              style={{
+                background: "#060F2D",
+                padding: "20px 32px",
+                color: "#FFFFFF",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
+              className="print-btn-no-print"
+            >
+              <span style={{ fontSize: "16px", fontWeight: "700" }}>Payment Receipt Preview</span>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  onClick={() => window.print()}
+                  style={{
+                    background: "#3F59FF",
+                    border: "none",
+                    color: "#FFFFFF",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                  }}
+                >
+                  Print / Save PDF
+                </button>
+                <button
+                  onClick={() => setSelectedReceipt(null)}
+                  style={{
+                    background: "rgba(255,255,255,0.1)",
+                    border: "none",
+                    color: "#FFFFFF",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            {/* Receipt Sheet */}
+            <div
+              id="printable-receipt-modal"
+              style={{
+                padding: "48px",
+                color: "#0F172A",
+                display: "flex",
+                flexDirection: "column",
+                gap: "36px",
+                backgroundColor: "#FFFFFF",
+                textAlign: "left",
+                fontFamily: "'Inter', sans-serif"
+              }}
+            >
+              {/* Logo, Hospital Info & Invoice Meta */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "24px" }}>
+                {/* Left Side: Hospital Details */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "10px",
+                      backgroundColor: "#060F2D",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}>
+                      <span style={{ color: "#FFFFFF", fontSize: "18px", fontWeight: "700" }}>🩺</span>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "14px", fontWeight: "800", color: "#060F2D", display: "block" }}>
+                        SRISAI SUBHRAMANIYA
+                      </span>
+                      <span style={{ fontSize: "9.5px", color: "#64748B", fontWeight: "700", letterSpacing: "0.5px", textTransform: "uppercase", display: "block", marginTop: "-2px" }}>
+                        Hospitals
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#475569", lineHeight: "1.6", maxWidth: "260px", marginTop: "4px" }}>
+                    # 35,36, Masilamaneeswarar Nagar,<br />
+                    Thirumullaivoyal, Chennai-600062<br />
+                    Phone: +91 9840030402, +91 9444479090<br />
+                    Email: srisaisubhramaniyahospitals@gmail.com
+                  </div>
+                </div>
+
+                {/* Right Side: Invoice Info */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px", textAlign: "right" }}>
+                  <span style={{ fontSize: "24px", fontWeight: "800", color: "#060F2D", letterSpacing: "-1px" }}>PAYMENT RECEIPT</span>
+                  <span style={{ fontSize: "12px", color: "#64748B", fontWeight: "600" }}>
+                    Invoice No: <strong style={{ color: "#0F172A" }}>#SSH-{selectedReceipt.paymentId?.substring(0, 8).toUpperCase() || "ONLINE"}</strong>
+                  </span>
+                  <span style={{ fontSize: "12px", color: "#64748B", fontWeight: "600" }}>
+                    Date: <strong style={{ color: "#0F172A" }}>{new Date(selectedReceipt.createdAt || selectedReceipt.appointmenttime).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</strong>
+                  </span>
+                  <span style={{ fontSize: "12px", color: "#64748B", fontWeight: "600" }}>
+                    Payment Mode: <strong style={{ color: "#0F172A" }}>Razorpay Online</strong>
+                  </span>
+                  <span style={{
+                    marginTop: "6px",
+                    padding: "3px 10px",
+                    borderRadius: "6px",
+                    fontSize: "11px",
+                    fontWeight: "800",
+                    backgroundColor: "rgba(16, 185, 129, 0.08)",
+                    color: "#10B981"
+                  }}>
+                    PAID / VERIFIED
+                  </span>
+                </div>
+              </div>
+
+              {/* Bill To & Bill From */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", borderTop: "1.5px solid #F1F5F9", paddingTop: "24px" }}>
+                <div>
+                  <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "#64748B", letterSpacing: "1px", display: "block", marginBottom: "8px" }}>Patient Details (Bill To)</span>
+                  <strong style={{ fontSize: "15px", color: "#060F2D", display: "block" }}>{selectedReceipt.pasentname}</strong>
+                  <span style={{ fontSize: "13px", color: "#475569", display: "block", marginTop: "4px" }}>Email: {selectedReceipt.pasentmail}</span>
+                  <span style={{ fontSize: "13px", color: "#475569", display: "block", marginTop: "2px" }}>Phone: {selectedReceipt.pasentnumber}</span>
+                  <span style={{ fontSize: "13px", color: "#475569", display: "block", marginTop: "2px" }}>Patient ID: PID-{selectedReceipt._id?.substring(0, 6).toUpperCase() || "NEW"}</span>
+                </div>
+                
+                <div>
+                  <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "#64748B", letterSpacing: "1px", display: "block", marginBottom: "8px" }}>Consulting Unit</span>
+                  <strong style={{ fontSize: "15px", color: "#060F2D", display: "block" }}>{selectedReceipt.speciality}</strong>
+                  <span style={{ fontSize: "13px", color: "#475569", display: "block", marginTop: "4px" }}>Sri Sai Subhramaniya Clinic</span>
+                  <span style={{ fontSize: "13px", color: "#475569", display: "block", marginTop: "2px" }}>Service Category: Outpatient Consultation</span>
+                </div>
+              </div>
+
+              {/* Items Breakdown Table */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "12px" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid #0F172A", fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "#0F172A", letterSpacing: "0.5px" }}>
+                      <th style={{ padding: "10px 0" }}>Service Description</th>
+                      <th style={{ padding: "10px 0", textAlign: "right" }}>Fee (INR)</th>
+                      <th style={{ padding: "10px 0", textAlign: "right" }}>Discount</th>
+                      <th style={{ padding: "10px 0", textAlign: "right" }}>Total (INR)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: "1.5px solid #F1F5F9", fontSize: "13.5px", color: "#4D5765" }}>
+                      <td style={{ padding: "16px 0" }}>
+                        <strong style={{ color: "#060F2D", display: "block" }}>Clinical Consultation Charges</strong>
+                        <span style={{ fontSize: "11.5px", color: "#64748B" }}>Standard consult under specialty: {selectedReceipt.speciality}</span>
+                      </td>
+                      <td style={{ padding: "16px 0", textAlign: "right" }}>₹ {(selectedReceipt.amount || 1000).toLocaleString()}</td>
+                      <td style={{ padding: "16px 0", textAlign: "right" }}>₹ 0</td>
+                      <td style={{ padding: "16px 0", textAlign: "right", fontWeight: "700", color: "#060F2D" }}>₹ {(selectedReceipt.amount || 1000).toLocaleString()}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Subtotal, tax & grand total */}
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
+                <div style={{ width: "260px", display: "flex", flexDirection: "column", gap: "10px", fontSize: "13px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "#64748B" }}>
+                    <span>Subtotal</span>
+                    <span>₹ {(selectedReceipt.amount || 1000).toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "#64748B" }}>
+                    <span>Tax (GST 0%)</span>
+                    <span>₹ 0</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "15px", fontWeight: "800", color: "#060F2D", borderTop: "2px solid #0F172A", paddingTop: "10px" }}>
+                    <span>Total Paid</span>
+                    <span>₹ {(selectedReceipt.amount || 1000).toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Stamp & Disclaimer */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "40px", borderTop: "1.5px solid #F1F5F9", paddingTop: "24px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#10B981", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#10B981" }} />
+                    Computer Generated Receipt - No Signature Required
+                  </span>
+                  <span style={{ fontSize: "11px", color: "#94A3B8" }}>Thank you for choosing Sri Sai Hospital for your healthcare needs.</span>
+                </div>
+                
+                <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+                  <div style={{
+                    width: "80px",
+                    height: "35px",
+                    border: "1.5px dashed rgba(63, 89, 255, 0.4)",
+                    borderRadius: "8px",
+                    color: "#3F59FF",
+                    fontSize: "11px",
+                    fontWeight: "800",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transform: "rotate(-4deg)",
+                    marginBottom: "4px"
+                  }}>
+                    PAID STAMP
+                  </div>
+                  <span style={{ fontSize: "11.5px", fontWeight: "700", color: "#060F2D" }}>Sri Sai Hospital Hub</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

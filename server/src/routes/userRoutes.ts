@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, getAllUsers } from "../controllers/userAuthController.js";
+import { registerUser, loginUser, getAllUsers, updateUserProfile } from "../controllers/userAuthController.js";
 
 const router = Router();
 
@@ -11,5 +11,8 @@ router.post("/login", loginUser);
 
 // GET /api/user/all — Admin show all patient list view
 router.get("/all", getAllUsers);
+
+// PUT /api/user/update/:id — Update patient profile details
+router.put("/update/:id", updateUserProfile);
 
 export default router;

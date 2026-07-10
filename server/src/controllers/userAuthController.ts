@@ -119,3 +119,68 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// ─────────────────────────────────────────
+// UPDATE PROFILE — Update patient details
+// ─────────────────────────────────────────
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { name, phone, age, gender, bloodGroup } = req.body;
+
+    // Verify JWT Token and ownership
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ message: "Unauthorized access: Token missing." });
+      return;
+    }
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      res.status(401).json({ message: "Unauthorized access: Token invalid." });
+      return;
+    }
+
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET || "sri_sai_hospital_secret_key");
+    } catch (err) {
+      res.status(401).json({ message: "Unauthorized access: Token invalid or expired." });
+      return;
+    }
+
+    if (decoded.id !== id && decoded.role !== "admin") {
+      res.status(403).json({ message: "Forbidden: You can only update your own profile details." });
+      return;
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (age) user.age = Number(age);
+    if (gender) user.gender = gender;
+    if (bloodGroup) user.bloodGroup = bloodGroup;
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Profile updated successfully!",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        age: user.age,
+        gender: user.gender,
+        bloodGroup: user.bloodGroup,
+      },
+    });
+  } catch (error: any) {
+    console.error("Update Profile Error:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
