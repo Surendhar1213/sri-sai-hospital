@@ -58,22 +58,33 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
     },
   };
 
-  try {
-    const response = await calendar.events.insert({
-      calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
-      requestBody: event,
-      conferenceDataVersion: 1, // கூகுள் மீட் லிங்க் வர இது மிக முக்கியம்!
-    });
+  const apiCall = async () => {
+    try {
+      const response = await calendar.events.insert({
+        calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
+        requestBody: event,
+        conferenceDataVersion: 1, // கூகுள் மீட் லிங்க் வர இது மிக முக்கியம்!
+      });
 
-    const meetLink = response.data.hangoutLink;
-    console.log("📅 Google Calendar Event created successfully!");
-    console.log("🔗 Generated Google Meet Link:", meetLink);
+      const meetLink = response.data.hangoutLink;
+      console.log("📅 Google Calendar Event created successfully!");
+      console.log("🔗 Generated Google Meet Link:", meetLink);
 
-    return meetLink;
-  } catch (error) {
-    console.error("❌ Google Calendar API Event Creation Error:", error);
-    return null;
-  }
+      return meetLink;
+    } catch (error) {
+      console.error("❌ Google Calendar API Event Creation Error:", error);
+      return null;
+    }
+  };
+
+  const timeoutPromise = new Promise<null>((resolve) => {
+    setTimeout(() => {
+      console.warn("⚠️ Google Calendar API request timed out after 4 seconds.");
+      resolve(null);
+    }, 4000);
+  });
+
+  return Promise.race([apiCall(), timeoutPromise]);
 };
 
 

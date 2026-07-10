@@ -10,6 +10,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER, // Environment variable for email user
     pass: process.env.EMAIL_PASS, // App password generate panni set pannanum
   },
+  connectionTimeout: 5000, // 5 seconds
+  greetingTimeout: 5000,   // 5 seconds
+  socketTimeout: 5000,     // 5 seconds
 });
 
 interface AppointmentMailOptions {
