@@ -43,10 +43,10 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
       dateTime: endTime.toISOString(),
       timeZone: "Asia/Kolkata",
     },
-    // attendees: [
-    //   { email: patientEmail },
-    //   ...(doctorEmail ? [{ email: doctorEmail }] : []),
-    // ],
+    attendees: [
+      { email: patientEmail },
+      ...(doctorEmail ? [{ email: doctorEmail }] : []),
+    ],
     // Google Meet create new 
     conferenceData: {
       createRequest: {
@@ -64,6 +64,7 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
         calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
         requestBody: event,
         conferenceDataVersion: 1, // கூகுள் மீட் லிங்க் வர இது மிக முக்கியம்!
+        sendUpdates: "all", // இமெயில் மூலம் காலண்டர் அழைப்பிதழ் அனுப்ப இது உதவும்!
       });
 
       const meetLink = response.data.hangoutLink;
