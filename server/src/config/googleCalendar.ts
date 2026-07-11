@@ -13,6 +13,7 @@ oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN || "",
 });
 
+
 const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
 
@@ -55,6 +56,14 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
           type: "hangoutsMeet",
         },
       },
+    },
+    // Google Calendar notifications
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: "email", minutes: 30 }, // 30 minutes before Email alert
+        { method: "popup", minutes: 15 }  // 15 minutes before Mobile/Browser Pop-up
+      ],
     },
   };
 

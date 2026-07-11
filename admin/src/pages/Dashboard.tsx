@@ -118,6 +118,37 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   // Alert/Toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Track which appointments the admin has already "seen" during this session
+  const [seenAppointments, setSeenAppointments] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("seenAppointments");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Save seenAppointments to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("seenAppointments", JSON.stringify(seenAppointments));
+  }, [seenAppointments]);
+
+  // Mark all pending appointments as seen when clicking the Bell or entering Appointments tab
+  useEffect(() => {
+    if (activeTab === "appointments" && appointments.length > 0) {
+      const pendingIds = appointments
+        .filter((app) => app.status === "pending")
+        .map((app) => app._id);
+      
+      if (pendingIds.length > 0) {
+        setSeenAppointments((prev) => {
+          const updated = [...new Set([...prev, ...pendingIds])];
+          return updated;
+        });
+      }
+    }
+  }, [activeTab, appointments]);
+
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
@@ -659,7 +690,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               { id: "dashboard", label: "Overview Hub", icon: <LayoutDashboard size={18} /> },
               { id: "doctors", label: "Doctors Directory", icon: <Stethoscope size={18} /> },
               { id: "patients", label: "Patients Registry", icon: <Users size={18} /> },
-              { id: "appointments", label: "Appointments Log", icon: <Calendar size={18} /> },
+              { id: "appointments", label: "Appointments Log", icon: <Calendar size={18} />, badge: appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length },
               { id: "payments", label: "Payments & Revenue", icon: <CreditCard size={18} /> },
               { id: "settings", label: "Gateway Config", icon: <Settings size={18} /> },
             ].map((tab) => {
@@ -672,7 +703,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     width: "100%",
                     display: "flex",
                     alignItems: "center",
-                    gap: "14px",
+                    justifyContent: "space-between",
                     padding: "14px 18px",
                     borderRadius: "12px",
                     border: "none",
@@ -697,8 +728,25 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     }
                   }}
                 >
-                  {tab.icon}
-                  <span>{tab.label}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    {tab.icon}
+                    <span>{tab.label}</span>
+                  </div>
+                  {tab.badge !== undefined && tab.badge > 0 && (
+                    <span
+                      style={{
+                        backgroundColor: "#EF4444",
+                        color: "#FFFFFF",
+                        fontSize: "11px",
+                        fontWeight: "800",
+                        padding: "2px 8px",
+                        borderRadius: "10px",
+                        boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
+                      }}
+                    >
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -788,25 +836,53 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               Srisai Subhramaniya Hospitals Management Hub
             </span>
           </div>
-          <button
-            onClick={() => triggerToast("System notifications integration coming in next step!")}
-            style={{
-              background: "#F2F3FE",
-              border: "none",
-              cursor: "pointer",
-              width: "42px",
-              height: "42px",
-              borderRadius: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-            onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            <Bell size={20} color="#3F59FF" />
-          </button>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => {
+                setActiveTab("appointments");
+                triggerToast("🔔 Displaying all new pending appointment logs!");
+              }}
+              style={{
+                background: "#F2F3FE",
+                border: "none",
+                cursor: "pointer",
+                width: "42px",
+                height: "42px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              <Bell size={20} color="#3F59FF" />
+            </button>
+            {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-4px",
+                  right: "-4px",
+                  backgroundColor: "#EF4444",
+                  color: "#FFFFFF",
+                  fontSize: "10px",
+                  fontWeight: "850",
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 2px 6px rgba(239, 68, 68, 0.4)",
+                  pointerEvents: "none",
+                }}
+              >
+                {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length}
+              </span>
+            )}
+          </div>
         </header>
 
         {/* Tab Page Containers */}

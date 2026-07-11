@@ -121,6 +121,30 @@ const Profile = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleJoinMeeting = async (appointmentId: string) => {
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${backendUrl}/api/appointments/validate-meeting/${appointmentId}`);
+      const data = await response.json();
+
+      if (data.status === "active" && data.meetingLink) {
+        setPopupType("success");
+        setPopupMessage("Connecting to Google Meet consultation...");
+        setTimeout(() => setPopupMessage(null), 2000);
+        window.open(data.meetingLink, "_blank", "noopener,noreferrer");
+      } else {
+        setPopupType("error");
+        setPopupMessage(data.message || "Failed to join meeting.");
+        setTimeout(() => setPopupMessage(null), 4000);
+      }
+    } catch (error) {
+      console.error("Error joining meeting:", error);
+      setPopupType("error");
+      setPopupMessage("Unable to connect. Check your internet connection.");
+      setTimeout(() => setPopupMessage(null), 3000);
+    }
+  };
+
   const handleSaveProfile = async () => {
     if (!editName || !editPhone || !editAge || !editGender) {
       setPopupType("error");
@@ -415,10 +439,8 @@ const Profile = () => {
                             </div>
                           </div>
                           {upcomingAppointment.meetingLink && (
-                            <a
-                              href={upcomingAppointment.meetingLink}
-                              target="_blank"
-                              rel="noreferrer"
+                            <button
+                              onClick={() => handleJoinMeeting(upcomingAppointment._id)}
                               style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -427,7 +449,8 @@ const Profile = () => {
                                 borderRadius: "6px",
                                 backgroundColor: "#3F59FF",
                                 color: "#FFFFFF",
-                                textDecoration: "none",
+                                border: "none",
+                                cursor: "pointer",
                                 fontWeight: "700",
                                 fontSize: "16px",
                                 boxShadow: "0 4px 12px rgba(63, 89, 255, 0.2)",
@@ -435,7 +458,7 @@ const Profile = () => {
                               }}
                             >
                               🎥 Join Consultation
-                            </a>
+                            </button>
                           )}
                         </div>
                       </div>
@@ -557,10 +580,8 @@ const Profile = () => {
                                 </span>
 
                                 {app.status === "approved" && app.meetingLink && (
-                                  <a
-                                    href={app.meetingLink}
-                                    target="_blank"
-                                    rel="noreferrer"
+                                  <button
+                                    onClick={() => handleJoinMeeting(app._id)}
                                     style={{
                                       display: "inline-flex",
                                       alignItems: "center",
@@ -569,7 +590,8 @@ const Profile = () => {
                                       color: "#FFFFFF",
                                       padding: "8px 16px",
                                       borderRadius: "6px",
-                                      textDecoration: "none",
+                                      border: "none",
+                                      cursor: "pointer",
                                       fontWeight: "700",
                                       fontSize: "14px",
                                       boxShadow: "0 4px 10px rgba(63, 89, 255, 0.15)",
@@ -577,7 +599,7 @@ const Profile = () => {
                                     }}
                                   >
                                     🎥 Join Call
-                                  </a>
+                                  </button>
                                 )}
                               </div>
                             </div>

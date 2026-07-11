@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import Appointment from "../models/Appointment.js";
+import schedule from "node-schedule";
 
 import { Doctor } from "../models/Doctor.js"; // Named import syntax (with curly braces)
 // 
 import { createMeetEvent } from "../config/googleCalendar.js"; 
-import { sendAppointmentEmail, sendPrescriptionEmail, sendBookingReceiptEmail, sendDoctorNotificationEmail, sendBookingFailureEmail } from "../config/emailService.js";
+import { sendAppointmentEmail, sendPrescriptionEmail, sendBookingReceiptEmail, sendDoctorNotificationEmail, sendBookingFailureEmail, sendReminderEmail } from "../config/emailService.js";
 
 
 
@@ -326,30 +327,77 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         timeStyle: "short",
       });
 
-      // ஈமெயில் அனுப்பும் எர்ரரால் ஏபிஐ கிராஷ் ஆகாமல் இருக்க தனி try-catch போடுகிறோம்
-      try {
-        // Email trigger to Patient
-        await sendAppointmentEmail({
-          to: updatedAppointment.pasentmail,
-          patientName: updatedAppointment.pasentname,
-          doctorName: doctorObj.name,
-          speciality: updatedAppointment.speciality,
-          time: formattedTime,
-          meetingLink: updatedAppointment.meetingLink,
-        });
-
-        // Email trigger for Prescription to Patient
-        if (prescription) {
-          await sendPrescriptionEmail({
+      // API Response ஐ லேட் செய்யாமல் இருக்க பின்னணியில் (Asynchronously) மின்னஞ்சல்களை அனுப்புகிறோம்
+      setImmediate(async () => {
+        try {
+          console.log("✉️ Sending appointment confirmation email in background...");
+          // Email trigger to Patient
+          await sendAppointmentEmail({
             to: updatedAppointment.pasentmail,
             patientName: updatedAppointment.pasentname,
             doctorName: doctorObj.name,
-            prescription: updatedAppointment.prescription || ""
+            speciality: updatedAppointment.speciality,
+            time: formattedTime,
+            meetingLink: updatedAppointment.meetingLink,
           });
+
+          // Email trigger for Prescription to Patient
+          if (prescription) {
+            await sendPrescriptionEmail({
+              to: updatedAppointment.pasentmail,
+              patientName: updatedAppointment.pasentname,
+              doctorName: doctorObj.name,
+              prescription: updatedAppointment.prescription || ""
+            });
+          }
+        } catch (emailError) {
+          console.error("❌ Background Email Sending Failed:", emailError);
+        }
+      });
+
+      // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
+      try {
+        if (updatedAppointment.meetingLink) {
+          const appTime = new Date(updatedAppointment.appointmenttime);
+          const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000); // 15 minutes before
+
+          if (reminderTime > new Date()) {
+            console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
+            
+            schedule.scheduleJob(updatedAppointment._id.toString(), reminderTime, async () => {
+              console.log(`🔔 Executing scheduled 15-min reminders for appointment: ${updatedAppointment._id}`);
+              
+              // Send email alert to Patient
+              await sendReminderEmail({
+                to: updatedAppointment.pasentmail,
+                patientName: updatedAppointment.pasentname,
+                doctorName: doctorObj.name,
+                speciality: updatedAppointment.speciality,
+                time: formattedTime,
+                meetingLink: updatedAppointment.meetingLink || "",
+                role: "patient"
+              });
+
+              // Send email alert to Doctor
+              if (doctorObj.email) {
+                await sendReminderEmail({
+                  to: doctorObj.email,
+                  patientName: updatedAppointment.pasentname,
+                  doctorName: doctorObj.name,
+                  speciality: updatedAppointment.speciality,
+                  time: formattedTime,
+                  meetingLink: updatedAppointment.meetingLink || "",
+                  role: "doctor"
+                });
+              }
+            });
+          } else {
+            console.log(`⚠️ Reminder time ${reminderTime} is in the past. Skipping schedule.`);
+          }
         }
       } catch (emailError) {
         // மெயில் அனுப்ப முடியவில்லை என்றாலும் லாக் மட்டும் காட்டிவிட்டு சர்வர் தொடர்ந்து ஓடும்
-        console.error("❌ Email Sending Failed but Appointment is saved:", emailError);
+        console.error("❌ Email Sending / Scheduling Failed but Appointment is saved:", emailError);
       }
     }
 
@@ -424,4 +472,67 @@ export const getRevenueStats = async (req: Request, res: Response): Promise<void
     res.status(500).json({ message: "Server error calculating revenue stats", error: error.message });
   }
 };
+
+// 7. Check meeting link status (Too Early, Active, Expired)
+export const checkMeetingLink = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      res.status(404).json({ status: "error", message: "Appointment record not found." });
+      return;
+    }
+
+    if (!appointment.meetingLink) {
+      res.status(400).json({ status: "error", message: "Meeting link has not been generated yet. Please contact admin." });
+      return;
+    }
+
+    const now = new Date();
+    const appTime = new Date(appointment.appointmenttime);
+    
+    // Configurable validation bounds (in minutes)
+    // TEMPORARY FOR DEMO/TESTING: Set to 24 hours (1440 mins) so links are active easily
+    const earlyBoundMinutes = 1440; // 24 hours before
+    const lateBoundMinutes = 1440;  // 24 hours after
+    /*
+    const earlyBoundMinutes = 15; // 15 mins before
+    const lateBoundMinutes = 45;  // 45 mins after start time
+    */
+
+    const startTimeLimit = new Date(appTime.getTime() - earlyBoundMinutes * 60 * 1000);
+    const endTimeLimit = new Date(appTime.getTime() + lateBoundMinutes * 60 * 1000);
+
+    if (now < startTimeLimit) {
+      const formattedTime = appTime.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      res.status(200).json({
+        status: "early",
+        message: `Too Early! This consultation starts at ${formattedTime}. Please try joining within 15 minutes of your slot.`,
+      });
+      return;
+    }
+
+    if (now > endTimeLimit) {
+      res.status(200).json({
+        status: "expired",
+        message: "This consultation slot/meeting link has expired.",
+      });
+      return;
+    }
+
+    // Active slot
+    res.status(200).json({
+      status: "active",
+      meetingLink: appointment.meetingLink,
+    });
+  } catch (error: any) {
+    console.error("❌ Error validating meeting link:", error);
+    res.status(500).json({ status: "error", message: "Failed to validate meeting slot.", error: error.message });
+  }
+};
+
 

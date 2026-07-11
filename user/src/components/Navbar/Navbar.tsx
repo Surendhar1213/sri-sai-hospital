@@ -306,22 +306,6 @@ const Navbar = () => {
                           <li>
                             <Link to="/facilities">Our facilities</Link>
                           </li>
-                          {/* <li className="menu-item-has-children">
-                            <a href="#">Pages <FaAngleDown /></a>
-                            <ul className="sub-menu">
-                              <li><a href="about.html">About Us</a></li>
-                              <li className="menu-item-has-children">
-                                <a href="#">Shop</a>
-                                <ul className="sub-menu">
-                                  <li><a href="#">Shop</a></li>
-                                </ul>
-                              </li>
-                              <li><a href="#">Events</a></li>
-                              <li><a href="#">Event Details</a></li>
-                              <li><a href="#">Gallery</a></li>
-                              <li><a href="#">Error Page</a></li>
-                            </ul>
-                          </li> */}
                           <li className="menu-item-has-children">
                             <a href="#">
                               Our speciality
@@ -507,7 +491,7 @@ const Navbar = () => {
                             </span>
                           </button>
                           {/* Premium User Avatar - Direct Link to /profile */}
-                          {isLoggedIn && (
+                          {/* {isLoggedIn && (
                             <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: 0, margin: 0 }}>
                               <Link
                                 to="/profile"
@@ -561,7 +545,7 @@ const Navbar = () => {
                                 </div>
                               </Link>
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>

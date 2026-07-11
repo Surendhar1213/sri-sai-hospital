@@ -325,3 +325,79 @@ export const sendBookingFailureEmail = async (options: FailureMailOptions) => {
     return false;
   }
 };
+
+// 6. Function to send Consultation Alert Reminder Email (15 minutes prior)
+interface ReminderMailOptions {
+  to: string;
+  patientName: string;
+  doctorName: string;
+  speciality: string;
+  time: string;
+  meetingLink: string;
+  role: "patient" | "doctor";
+}
+
+export const sendReminderEmail = async (options: ReminderMailOptions) => {
+  const { to, patientName, doctorName, speciality, time, meetingLink, role } = options;
+
+  const recipientName = role === "patient" ? patientName : `Dr. ${doctorName}`;
+  const subject = role === "patient" 
+    ? "⏰ Alert: Your Consultation starts in 15 Minutes!" 
+    : "⏰ Alert: Upcoming Consultation in 15 Minutes!";
+
+  const mailOptions = {
+    from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="display: inline-block; background-color: #3f59ff; color: white; font-size: 24px; font-weight: bold; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; text-align: center;">⏰</div>
+          <h2 style="color: #0d9488; margin: 10px 0 0 0;">Consultation Reminder</h2>
+          <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">Srisai Subhramaniya Hospitals</p>
+        </div>
+
+        <p>Dear <strong>${recipientName}</strong>,</p>
+        <p>This is a reminder that the virtual video consultation is scheduled to begin in <strong>15 minutes</strong>.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Patient:</td>
+            <td style="padding: 8px 0; color: #1e293b;">${patientName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Doctor Assigned:</td>
+            <td style="padding: 8px 0; color: #1e293b;">Dr. ${doctorName} (${speciality})</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Consultation Time:</td>
+            <td style="padding: 8px 0; color: #1e293b;">${time}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Google Meet Link:</td>
+            <td style="padding: 8px 0;">
+              <a href="${meetingLink}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #3f59ff; color: white; font-weight: bold; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(63, 89, 255, 0.2);">
+                Join Google Meet 🎥
+              </a>
+            </td>
+          </tr>
+        </table>
+        
+        <div style="background-color: #f0fdfa; padding: 15px; border-radius: 8px; font-size: 13px; color: #0f766e; text-align: center;">
+          Please make sure you have a stable internet connection and click the link above when ready.
+        </div>
+        <p style="margin-top: 25px; text-align: center; color: #94a3b8; font-size: 11px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+      </div>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`📧 15-Min Reminder Email sent successfully to ${to}:`, info.messageId);
+    return true;
+  } catch (error) {
+    console.error(`❌ Error sending 15-Min Reminder email to ${to}:`, error);
+    return false;
+  }
+};
+
