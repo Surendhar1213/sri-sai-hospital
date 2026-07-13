@@ -332,3 +332,9 @@
 
 }
 
+.prt-featured-postbox.style2 .btn-overly a::before,
+.prt-featured-postbox.style2 .btn-overly a::after {
+    display: none !important;
+    content: none !important;
+}
+

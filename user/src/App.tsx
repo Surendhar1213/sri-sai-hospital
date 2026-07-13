@@ -1,29 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Layout from "./components/Layout/Layout";
 import Home from "./components/Home/Home";
-import Aboutus from "./components/About/Aboutus";
-import Gynecology from "./components/Speciality/Gynecology/Gynecology";
-import Fertility from "./components/Speciality/Fertility/Fertility";
-import ObstetricsAndMaternity from "./components/Speciality/ObstetricsAndMaternity/ObstetricsAndMaternity";
-import PelvicFloor from "./components/Speciality/PelvicFloor/PelvicFloor";
-import WomensIntimateWellness from "./components/Speciality/WomensIntimateWellness/WomensIntimateWellness";
-import Endocrinology from "./components/Speciality/Endocrinology/Endocrinology";
-import ObesityandWeightLoss from "./components/Speciality/ObesityandWeightLoss/ObesityandWeightLoss";
-import Diabetology from "./components/Speciality/Diabetology/Diabetology";
-import Dermatology from "./components/Speciality/DermatologyandCosmetology/Dermatology";
-import HairandNail from "./components/Speciality/Hairandnail/Hairandnail";
-import Urology from "./components/Speciality/Urology/Urology";
-import GeneralMedicine from "./components/Speciality/GeneralMedicin/GeneralMedicine";
-import Doctors from "./components/Doctors/Doctors";
-import Gallery from "./components/Gallery/Gallery";
-import Contactus from "./components/Contactus/Contactus";
-import Facilities from "./components/Facilities/Facilities";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
+// Lazy loaded page/speciality components
+const Aboutus = lazy(() => import("./components/About/Aboutus"));
+const Gynecology = lazy(() => import("./components/Speciality/Gynecology/Gynecology"));
+const Fertility = lazy(() => import("./components/Speciality/Fertility/Fertility"));
+const ObstetricsAndMaternity = lazy(() => import("./components/Speciality/ObstetricsAndMaternity/ObstetricsAndMaternity"));
+const PelvicFloor = lazy(() => import("./components/Speciality/PelvicFloor/PelvicFloor"));
+const WomensIntimateWellness = lazy(() => import("./components/Speciality/WomensIntimateWellness/WomensIntimateWellness"));
+const Endocrinology = lazy(() => import("./components/Speciality/Endocrinology/Endocrinology"));
+const ObesityandWeightLoss = lazy(() => import("./components/Speciality/ObesityandWeightLoss/ObesityandWeightLoss"));
+const Diabetology = lazy(() => import("./components/Speciality/Diabetology/Diabetology"));
+const Dermatology = lazy(() => import("./components/Speciality/DermatologyandCosmetology/Dermatology"));
+const HairandNail = lazy(() => import("./components/Speciality/Hairandnail/Hairandnail"));
+const Urology = lazy(() => import("./components/Speciality/Urology/Urology"));
+const GeneralMedicine = lazy(() => import("./components/Speciality/GeneralMedicin/GeneralMedicine"));
+const Doctors = lazy(() => import("./components/Doctors/Doctors"));
+const Gallery = lazy(() => import("./components/Gallery/Gallery"));
+const Contactus = lazy(() => import("./components/Contactus/Contactus"));
+const Facilities = lazy(() => import("./components/Facilities/Facilities"));
+
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,55 +40,66 @@ function ScrollToTop() {
   return null;
 }
 
+// Fallback loader while lazy components are downloading
+const PageLoader = () => (
+  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
+
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<Aboutus />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<Aboutus />} />
 
-          {/* Speciality pages */}
-          <Route path="/gynecology" element={<Gynecology />} />
-          <Route path="/fertility" element={<Fertility />} />
-          <Route
-            path="/obstetricsandmaternity"
-            element={<ObstetricsAndMaternity />}
-          />
-          <Route path="/PelvicFloor" element={<PelvicFloor />} />
-          <Route
-            path="/WomensIntimateWellness"
-            element={<WomensIntimateWellness />}
-          />
-          <Route path="/endocrinology" element={<Endocrinology />} />
+            {/* Speciality pages */}
+            <Route path="/gynecology" element={<Gynecology />} />
+            <Route path="/fertility" element={<Fertility />} />
+            <Route
+              path="/obstetricsandmaternity"
+              element={<ObstetricsAndMaternity />}
+            />
+            <Route path="/PelvicFloor" element={<PelvicFloor />} />
+            <Route
+              path="/WomensIntimateWellness"
+              element={<WomensIntimateWellness />}
+            />
+            <Route path="/endocrinology" element={<Endocrinology />} />
 
-          <Route
-            path="/obesityandweightloss"
-            element={<ObesityandWeightLoss />}
-          />
-          <Route path="/diabetology" element={<Diabetology />} />
-          <Route path="/dermatology" element={<Dermatology />} />
-          <Route path="/hairandnail" element={<HairandNail />} />
-          <Route path="/urology" element={<Urology />} />
-          <Route path="/generalmedicine" element={<GeneralMedicine />} />
+            <Route
+              path="/obesityandweightloss"
+              element={<ObesityandWeightLoss />}
+            />
+            <Route path="/diabetology" element={<Diabetology />} />
+            <Route path="/dermatology" element={<Dermatology />} />
+            <Route path="/hairandnail" element={<HairandNail />} />
+            <Route path="/urology" element={<Urology />} />
+            <Route path="/generalmedicine" element={<GeneralMedicine />} />
 
-          {/*  pages */}
-          
-          <Route path="/facilities" element={<Facilities />} />
-          <Route path="/doctors" element={<Doctors />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/contactus" element={<Contactus />} />
+            {/*  pages */}
 
-          {/* ✅ Auth Pages — Login & Register */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          {/* ✅ User Profile / Dashboard Page */}
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-      </Routes>
-    <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+            <Route path="/facilities" element={<Facilities />} />
+            <Route path="/doctors" element={<Doctors />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/contactus" element={<Contactus />} />
+
+            {/* ✅ Auth Pages — Login & Register */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* ✅ User Profile / Dashboard Page */}
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+        </Routes>
+      </Suspense>
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </BrowserRouter>
   );
 

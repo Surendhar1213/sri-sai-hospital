@@ -83,7 +83,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     // 4. JWT Token generate பண்ணு
     const token = jwt.sign(
       { id: user._id, name: user.name, email: user.email, role: user.role },
-      process.env.JWT_SECRET || "sri_sai_hospital_secret_key",
+      process.env.JWT_SECRET as string,
       { expiresIn: "7d" } // 7 days valid
     );
 
@@ -142,7 +142,7 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
 
     let decoded: any;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || "sri_sai_hospital_secret_key");
+      decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     } catch (err) {
       res.status(401).json({ message: "Unauthorized access: Token invalid or expired." });
       return;

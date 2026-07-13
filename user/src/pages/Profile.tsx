@@ -44,6 +44,13 @@ const Profile = () => {
   
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userInfo");
+    navigate("/");
+    window.location.reload();
+  };
+
   useEffect(() => {
     // Check Auth
     const token = localStorage.getItem("userToken");
@@ -97,6 +104,8 @@ const Profile = () => {
         const data = await response.json();
         if (response.ok) {
           setAppointments(data || []);
+        } else if (response.status === 401) {
+          handleLogout();
         }
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -107,13 +116,6 @@ const Profile = () => {
 
     fetchAppointments();
   }, [userEmail]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userInfo");
-    navigate("/");
-    window.location.reload();
-  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -193,6 +195,10 @@ const Profile = () => {
         setPopupMessage("Profile updated successfully!");
         setTimeout(() => setPopupMessage(null), 3000);
       } else {
+        if (response.status === 401) {
+          handleLogout();
+          return;
+        }
         setPopupType("error");
         setPopupMessage(data.message || "Failed to update profile");
         setTimeout(() => setPopupMessage(null), 3000);

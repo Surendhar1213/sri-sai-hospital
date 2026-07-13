@@ -11,6 +11,8 @@ import fecility7 from "../../assets/home/facilities/7.jpg";
 import fecility8 from "../../assets/home/facilities/8.jpg";
 import fecility9 from "../../assets/home/facilities/9.jpg";
 
+import { FaLink } from "react-icons/fa";
+
 const Facilities = () => {
   const portfolioItems = [
     {
@@ -89,7 +91,9 @@ const Facilities = () => {
                     />
                   </div>
                   <div className="btn-overly">
-                    <a href="">Read more</a>
+                    <a href="#" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <FaLink style={{ fontSize: "18px", color: "#0F2239" }} />
+                    </a>
                   </div>
                   <div className="prt-featured-overly">
                     <div className="prt-featured-content-box">

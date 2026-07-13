@@ -227,8 +227,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     setIsLoadingPatients(true);
     setPatientsError("");
     try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        onLogout();
+        return;
+      }
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${backendUrl}/api/user/all`);
+      const response = await fetch(`${backendUrl}/api/user/all`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       const data = await response.json();
 
       if (!response.ok) {

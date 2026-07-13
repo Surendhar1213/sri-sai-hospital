@@ -5,7 +5,8 @@ import schedule from "node-schedule";
 import { Doctor } from "../models/Doctor.js"; // Named import syntax (with curly braces)
 // 
 import { createMeetEvent } from "../config/googleCalendar.js"; 
-import { sendAppointmentEmail, sendPrescriptionEmail, sendBookingReceiptEmail, sendDoctorNotificationEmail, sendBookingFailureEmail, sendReminderEmail } from "../config/emailService.js";
+import { sendAppointmentEmail, sendPrescriptionEmail, sendBookingReceiptEmail, sendDoctorNotificationEmail, sendBookingFailureEmail, sendReminderEmail, sendMissedAppointmentEmail } from "../config/emailService.js";
+import { sendSMS } from "../config/smsService.js";
 
 
 
@@ -116,6 +117,14 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       } catch (emailErr) {
         console.error("❌ Failed to send automatic booking receipt email:", emailErr);
       }
+      try {
+        await sendSMS(
+          newAppointment.pasentnumber || "",
+          `Hi ${newAppointment.pasentname}, booking request of Rs.${newAppointment.amount || 1000} for ${newAppointment.speciality} on ${formattedTime} was successful. Status: Pending approval.`
+        );
+      } catch (smsErr) {
+        console.error("❌ Failed to send SMS booking receipt:", smsErr);
+      }
     } else if (paymentStatus === "failed") {
       const formattedTime = new Date(newAppointment.appointmenttime).toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
@@ -134,8 +143,17 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       } catch (emailErr) {
         console.error("❌ Failed to send booking failure/cancellation email:", emailErr);
       }
+      try {
+        await sendSMS(
+          newAppointment.pasentnumber || "",
+          `Hi ${newAppointment.pasentname}, booking of Rs.${newAppointment.amount || 1000} for ${newAppointment.speciality} failed/cancelled. Check details or retry.`
+        );
+      } catch (smsErr) {
+        console.error("❌ Failed to send SMS booking failure alert:", smsErr);
+      }
     }
 
+    
     // Trigger SSE notification
     notifySSEClients({ event: "new-appointment", data: newAppointment });
 
@@ -341,6 +359,14 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
             meetingLink: updatedAppointment.meetingLink,
           });
 
+          // Send SMS confirmation to Patient
+          try {
+            const smsMsg = `Hi ${updatedAppointment.pasentname}, your appointment for ${updatedAppointment.speciality} with ${doctorObj.name} on ${formattedTime} is confirmed.${updatedAppointment.meetingLink ? ` Link: ${updatedAppointment.meetingLink}` : ""}`;
+            await sendSMS(updatedAppointment.pasentnumber, smsMsg);
+          } catch (smsErr) {
+            console.error("❌ Background SMS Confirmation failed:", smsErr);
+          }
+
           // Email trigger for Prescription to Patient
           if (prescription) {
             await sendPrescriptionEmail({
@@ -351,7 +377,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
             });
           }
         } catch (emailError) {
-          console.error("❌ Background Email Sending Failed:", emailError);
+          console.error("❌ Background Email/SMS Sending Failed:", emailError);
         }
       });
 
@@ -362,7 +388,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
           const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000); // 15 minutes before
 
           if (reminderTime > new Date()) {
-            console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
+            console.log(`⏰ Scheduling 15-min email/SMS reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
             
             schedule.scheduleJob(updatedAppointment._id.toString(), reminderTime, async () => {
               console.log(`🔔 Executing scheduled 15-min reminders for appointment: ${updatedAppointment._id}`);
@@ -377,6 +403,14 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
                 meetingLink: updatedAppointment.meetingLink || "",
                 role: "patient"
               });
+
+              // Send SMS alert to Patient
+              try {
+                const smsMsg = `Reminder: Your appointment with ${doctorObj.name} starts in 15 mins (${formattedTime}). Join Meet: ${updatedAppointment.meetingLink || ""}`;
+                await sendSMS(updatedAppointment.pasentnumber, smsMsg);
+              } catch (smsErr) {
+                console.error("❌ Scheduled SMS Reminder failed:", smsErr);
+              }
 
               // Send email alert to Doctor
               if (doctorObj.email) {
@@ -399,6 +433,37 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         // மெயில் அனுப்ப முடியவில்லை என்றாலும் லாக் மட்டும் காட்டிவிட்டு சர்வர் தொடர்ந்து ஓடும்
         console.error("❌ Email Sending / Scheduling Failed but Appointment is saved:", emailError);
       }
+    }
+
+    // 5. Send Missed Appointment Notification if status is missed (Wrapped in Try-Catch)
+    if (status === "missed") {
+      const doctorObj = updatedAppointment.assignedDoctor as any;
+      const doctorName = doctorObj ? doctorObj.name : "Assigned Specialist";
+      const formattedTime = new Date(updatedAppointment.appointmenttime).toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+
+      setImmediate(async () => {
+        try {
+          console.log("✉️ Sending missed appointment email & SMS in background...");
+          // Email to Patient
+          await sendMissedAppointmentEmail({
+            to: updatedAppointment.pasentmail,
+            patientName: updatedAppointment.pasentname,
+            doctorName,
+            speciality: updatedAppointment.speciality,
+            time: formattedTime,
+          });
+
+          // SMS to Patient
+          const smsMsg = `Hi ${updatedAppointment.pasentname}, you missed your scheduled appointment with Dr. ${doctorName} on ${formattedTime}. Please contact us to reschedule.`;
+          await sendSMS(updatedAppointment.pasentnumber, smsMsg);
+        } catch (err) {
+          console.error("❌ Failed to send missed notifications:", err);
+        }
+      });
     }
 
 

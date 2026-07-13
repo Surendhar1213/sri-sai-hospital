@@ -72,8 +72,8 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
       const response = await calendar.events.insert({
         calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
         requestBody: event,
-        conferenceDataVersion: 1, // கூகுள் மீட் லிங்க் வர இது மிக முக்கியம்!
-        sendUpdates: "all", // இமெயில் மூலம் காலண்டர் அழைப்பிதழ் அனுப்ப இது உதவும்!
+        conferenceDataVersion: 1, // Google meet link vara this is mukkiyam ithuu
+        sendUpdates: "all", // email moolam calendar anupa uses!
       });
 
       const meetLink = response.data.hangoutLink;

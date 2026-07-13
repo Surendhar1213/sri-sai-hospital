@@ -298,10 +298,13 @@ const Appointment = () => {
               return;
             }
 
-            // 6. வெரிஃபிகேஷன் முடிந்ததும் அப்பாயிண்ட்மென்ட்டை மங்கோடிபியில் சேமிக்கிறோம்
+            const token = localStorage.getItem("userToken") || "";
             const bookingResponse = await fetch(`${backendUrl}/api/appointments`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
               body: JSON.stringify({
                 pasentname: formData.pasentname,
                 pasentmail: formData.pasentmail,
@@ -351,9 +354,13 @@ const Appointment = () => {
             if (paymentProcessed) return;
             try {
               const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+              const token = localStorage.getItem("userToken") || "";
               await fetch(`${backendUrl}/api/appointments`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({
                   pasentname: formData.pasentname,
                   pasentmail: formData.pasentmail,

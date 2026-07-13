@@ -37,7 +37,7 @@ export const verifyAdminToken = (
     // 4. Verify jwt token signature
     const decoded = jwt.verify(
       token,
-      (process.env.JWT_SECRET || "sri_sai_hospital_secret_key") as string
+      process.env.JWT_SECRET as string
     ) as any;
 
     // 5. Check if the user is indeed an admin
@@ -75,7 +75,7 @@ export const verifyUserOrAdminToken = (
 
     const decoded = jwt.verify(
       token,
-      (process.env.JWT_SECRET || "sri_sai_hospital_secret_key") as string
+      process.env.JWT_SECRET as string
     ) as any;
 
     // அட்மின் அல்லது சூப்பர் அட்மின் என்றால் நேரடியாக அனுமதிக்கவும்
@@ -85,11 +85,8 @@ export const verifyUserOrAdminToken = (
     }
 
     // நோயாளி என்றால், அவர் தனது சொந்த மின்னஞ்சல் விவரங்களை மட்டுமே பார்க்க அனுமதிக்கவும்
-    const queryEmail = req.query.email;
-    if (queryEmail && decoded.email !== queryEmail) {
-      res.status(403).json({ message: "Access forbidden. You can only view your own appointments." });
-      return;
-    }
+    // Force the query email parameter to the decoded email of the user to prevent IDOR
+    req.query.email = decoded.email;
 
     next();
   } catch (error) {

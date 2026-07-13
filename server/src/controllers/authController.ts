@@ -30,7 +30,7 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
     // 4. JWT Token generate — successful login
     const token = jwt.sign(
       { id: admin._id, username: admin.username, role: admin.role },
-      process.env.JWT_SECRET || "sri_sai_hospital_secret_key",
+      process.env.JWT_SECRET as string,
       { expiresIn: "1d" } // 1 day valid
     );
 

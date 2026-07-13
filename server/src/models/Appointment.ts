@@ -7,7 +7,7 @@ export interface IAppointment extends Document {
   appointmenttime: Date;
   speciality: string;
   subject?: string;
-  status: "pending" | "approved" | "cancelled" | "completed";
+  status: "pending" | "approved" | "cancelled" | "completed" | "missed";
   assignedDoctor?: mongoose.Types.ObjectId;
   paymentStatus: "pending" | "paid" | "failed";
   paymentId?: string;
@@ -29,7 +29,7 @@ const AppointmentSchema: Schema = new Schema(
     subject: { type: String, default: "" },
     status: {
       type: String,
-      enum: ["pending", "approved", "cancelled", "completed"],
+      enum: ["pending", "approved", "cancelled", "completed", "missed"],
       default: "pending",
     },
     assignedDoctor: {

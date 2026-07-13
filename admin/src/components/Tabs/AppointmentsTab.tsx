@@ -557,6 +557,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                         case "approved":
                           return { color: "#10B981", bg: "rgba(16, 185, 129, 0.08)" };
                         case "failed":
+                        case "missed":
                           return { color: "#EF4444", bg: "rgba(239, 68, 68, 0.08)" };
                         case "pending":
                           return { color: "#F59E0B", bg: "rgba(245, 158, 11, 0.08)" };
@@ -578,6 +579,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
 
                     const statusStyle = getStatusStyles(app.status);
                     const paymentStyle = getStatusStyles(app.paymentStatus || "pending");
+                    const isOverdue = app.status === "approved" && app.appointmenttime && (new Date(app.appointmenttime).getTime() + 30 * 60 * 1000 < Date.now());
 
                     return (
                       <tr
@@ -679,6 +681,20 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                             }}></span>
                             {app.status}
                           </span>
+                          {isOverdue && (
+                            <span style={{
+                              marginLeft: "8px",
+                              padding: "4px 8px",
+                              backgroundColor: "rgba(239, 68, 68, 0.12)",
+                              color: "#EF4444",
+                              fontSize: "10px",
+                              fontWeight: "800",
+                              borderRadius: "6px",
+                              border: "1px solid rgba(239, 68, 68, 0.2)",
+                            }}>
+                              ⚠️ OVERDUE
+                            </span>
+                          )}
                         </td>
 
                         {/* Payment status label */}
@@ -932,6 +948,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                   <option value="approved">Approved / Active</option>
                   <option value="cancelled">Cancelled / Revoked</option>
                   <option value="completed">Completed Consult</option>
+                  <option value="missed">Missed / No Show</option>
                 </select>
               </div>
 

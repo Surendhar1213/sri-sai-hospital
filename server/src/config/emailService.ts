@@ -264,6 +264,7 @@ interface FailureMailOptions {
   time: string;
 }
 
+
 export const sendBookingFailureEmail = async (options: FailureMailOptions) => {
   const { to, patientName, amount, paymentId, speciality, time } = options;
 
@@ -397,6 +398,65 @@ export const sendReminderEmail = async (options: ReminderMailOptions) => {
     return true;
   } catch (error) {
     console.error(`❌ Error sending 15-Min Reminder email to ${to}:`, error);
+    return false;
+  }
+};
+
+interface MissedMailOptions {
+  to: string;
+  patientName: string;
+  doctorName: string;
+  speciality: string;
+  time: string;
+}
+
+export const sendMissedAppointmentEmail = async (options: MissedMailOptions) => {
+  const { to, patientName, doctorName, speciality, time } = options;
+
+  const mailOptions = {
+    from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "⚠️ Appointment Missed / No-Show Notice - Srisai Subhramaniya Hospitals",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="display: inline-block; background-color: #ef4444; color: white; font-size: 24px; font-weight: bold; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; text-align: center;">⚠️</div>
+          <h2 style="color: #ef4444; margin: 10px 0 0 0;">Appointment Missed</h2>
+          <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">Srisai Subhramaniya Hospitals</p>
+        </div>
+
+        <p>Dear <strong>${patientName}</strong>,</p>
+        <p>This email is to inform you that you missed your scheduled virtual consultation with <strong>Dr. ${doctorName}</strong>.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Department:</td>
+            <td style="padding: 8px 0; color: #1e293b;">${speciality}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Doctor:</td>
+            <td style="padding: 8px 0; color: #1e293b;">Dr. ${doctorName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Missed Slot Time:</td>
+            <td style="padding: 8px 0; color: #1e293b;">${time}</td>
+          </tr>
+        </table>
+        
+        <div style="background-color: #fef2f2; padding: 15px; border-radius: 8px; font-size: 13px; color: #991b1b; text-align: center;">
+          If you missed this appointment by mistake or wish to reschedule, please contact the hospital administration as soon as possible.
+        </div>
+        <p style="margin-top: 25px; text-align: center; color: #94a3b8; font-size: 11px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+      </div>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`📧 Missed Appointment Email sent successfully to ${to}:`, info.messageId);
+    return true;
+  } catch (error) {
+    console.error(`❌ Error sending Missed Appointment email to ${to}:`, error);
     return false;
   }
 };
