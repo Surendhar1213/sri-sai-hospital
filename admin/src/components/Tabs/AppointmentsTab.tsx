@@ -658,43 +658,48 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
 
                         {/* Status label */}
                         <td style={{ padding: "18px 12px" }}>
-                          <span
-                            style={{
-                              padding: "6px 12px",
-                              borderRadius: "20px",
-                              backgroundColor: statusStyle.bg,
-                              color: statusStyle.color,
-                              fontSize: "12px",
-                              fontWeight: "700",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              textTransform: "capitalize",
-                            }}
-                          >
-                            <span style={{
-                              width: "6px",
-                              height: "6px",
-                              backgroundColor: statusStyle.color,
-                              borderRadius: "50%",
-                              boxShadow: `0 0 6px ${statusStyle.color}`,
-                            }}></span>
-                            {app.status}
-                          </span>
-                          {isOverdue && (
-                            <span style={{
-                              marginLeft: "8px",
-                              padding: "4px 8px",
-                              backgroundColor: "rgba(239, 68, 68, 0.12)",
-                              color: "#EF4444",
-                              fontSize: "10px",
-                              fontWeight: "800",
-                              borderRadius: "6px",
-                              border: "1px solid rgba(239, 68, 68, 0.2)",
-                            }}>
-                              ⚠️ OVERDUE
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                            <span
+                              style={{
+                                padding: "6px 12px",
+                                borderRadius: "20px",
+                                backgroundColor: statusStyle.bg,
+                                color: statusStyle.color,
+                                fontSize: "12px",
+                                fontWeight: "700",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                textTransform: "capitalize",
+                              }}
+                            >
+                              <span style={{
+                                width: "6px",
+                                height: "6px",
+                                backgroundColor: statusStyle.color,
+                                borderRadius: "50%",
+                                boxShadow: `0 0 6px ${statusStyle.color}`,
+                              }}></span>
+                              {app.status}
                             </span>
-                          )}
+                            {isOverdue && (
+                              <span style={{
+                                padding: "4px 8px",
+                                backgroundColor: "rgba(239, 68, 68, 0.12)",
+                                color: "#EF4444",
+                                fontSize: "10px",
+                                fontWeight: "800",
+                                borderRadius: "6px",
+                                border: "1px solid rgba(239, 68, 68, 0.2)",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                whiteSpace: "nowrap"
+                              }}>
+                                ⚠️ OVERDUE
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Payment status label */}

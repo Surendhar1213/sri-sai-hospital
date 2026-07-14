@@ -531,8 +531,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
               backgroundColor: "#FFFFFF",
               borderRadius: "20px",
               padding: "28px",
-              boxShadow: "0 10px 30px rgba(6, 15, 45, 0.02)",
-              border: "1.5px solid rgba(6, 15, 45, 0.04)",
+              boxShadow: "0 10px 30px rgba(6, 15, 45, 0.03)",
+              border: "1px solid #EBF1F9",
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 15px 35px rgba(6, 15, 45, 0.06)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 10px 30px rgba(6, 15, 45, 0.03)";
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
@@ -575,8 +584,11 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    alignSelf: "flex-start"
+                    alignSelf: "flex-start",
+                    transition: "background-color 0.2s"
                   }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = "rgba(14, 165, 233, 0.15)"}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = "rgba(14, 165, 233, 0.08)"}
                 >
                   <Link2 size={12} />
                   Copy Active Link
@@ -605,8 +617,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
               backgroundColor: "#FFFFFF",
               borderRadius: "20px",
               padding: "28px",
-              boxShadow: "0 10px 30px rgba(6, 15, 45, 0.02)",
-              border: "1.5px solid rgba(6, 15, 45, 0.04)",
+              boxShadow: "0 10px 30px rgba(6, 15, 45, 0.03)",
+              border: "1px solid #EBF1F9",
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 15px 35px rgba(6, 15, 45, 0.06)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 10px 30px rgba(6, 15, 45, 0.03)";
             }}
           >
             <h4 style={{ fontSize: "15px", fontWeight: "750", color: "#060F2D", marginBottom: "16px" }}>Clinical Quick Actions</h4>
@@ -625,44 +646,64 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "10px",
+                  padding: "14px 18px",
+                  borderRadius: "12px",
                   border: "1px solid #E2E8F0",
                   backgroundColor: "#FFFFFF",
-                  fontSize: "13px",
+                  fontSize: "13.5px",
                   fontWeight: "600",
                   color: "#0F172A",
                   cursor: "pointer",
-                  textAlign: "left"
+                  textAlign: "left",
+                  transition: "all 0.25s ease",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#F8FAFC"}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#FFFFFF"}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(63, 89, 255, 0.04)";
+                  e.currentTarget.style.borderColor = "#3F59FF";
+                  e.currentTarget.style.transform = "translateX(2px)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "#FFFFFF";
+                  e.currentTarget.style.borderColor = "#E2E8F0";
+                  e.currentTarget.style.transform = "translateX(0)";
+                }}
               >
                 <span>Copy Current Roster Call Link</span>
                 <Link2 size={14} color="#64748B" />
               </button>
 
               <button
-                onClick={() => triggerToast("📨 Bulk WhatsApp / Email reminders sent to today's patients!")}
+                onClick={() => triggerToast("📨 Bulk Email reminders sent to today's patients!")}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "10px",
+                  padding: "14px 18px",
+                  borderRadius: "12px",
                   border: "1px solid #E2E8F0",
                   backgroundColor: "#FFFFFF",
-                  fontSize: "13px",
+                  fontSize: "13.5px",
                   fontWeight: "600",
                   color: "#0F172A",
                   cursor: "pointer",
-                  textAlign: "left"
+                  textAlign: "left",
+                  transition: "all 0.25s ease",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#F8FAFC"}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#FFFFFF"}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(63, 89, 255, 0.04)";
+                  e.currentTarget.style.borderColor = "#3F59FF";
+                  e.currentTarget.style.transform = "translateX(2px)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "#FFFFFF";
+                  e.currentTarget.style.borderColor = "#E2E8F0";
+                  e.currentTarget.style.transform = "translateX(0)";
+                }}
               >
-                <span>Send SMS/Meet Link Reminders</span>
+                <span>Send Email/Meet Link Reminders</span>
                 <Send size={14} color="#64748B" />
               </button>
 
@@ -673,18 +714,28 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "10px",
+                  padding: "14px 18px",
+                  borderRadius: "12px",
                   border: "1px solid rgba(244, 63, 94, 0.2)",
                   backgroundColor: "rgba(244, 63, 94, 0.02)",
-                  fontSize: "13px",
+                  fontSize: "13.5px",
                   fontWeight: "600",
                   color: "#F43F5E",
                   cursor: "pointer",
-                  textAlign: "left"
+                  textAlign: "left",
+                  transition: "all 0.25s ease",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "rgba(244, 63, 94, 0.05)"}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "rgba(244, 63, 94, 0.02)"}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(244, 63, 94, 0.08)";
+                  e.currentTarget.style.borderColor = "#F43F5E";
+                  e.currentTarget.style.transform = "translateX(2px)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(244, 63, 94, 0.02)";
+                  e.currentTarget.style.borderColor = "rgba(244, 63, 94, 0.2)";
+                  e.currentTarget.style.transform = "translateX(0)";
+                }}
               >
                 <span>Trigger Emergency Slot Lockout</span>
                 <ShieldAlert size={14} color="#F43F5E" />
@@ -700,3 +751,5 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
 };
 
 export default OverviewTab;
+
+

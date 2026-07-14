@@ -18,6 +18,7 @@
 .prt-featured-postbox.style1 .prt-featured-category p {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,6 +114,7 @@
     transition: all .5s ease-in-out;
 }
 
+
 .prt-featured-postbox.style1:hover .featured-thumbnail a img {
     -moz-transform: scale(1.05);
     -webkit-transform: scale(1.05);
@@ -198,6 +200,7 @@
     font-size: 14px;
     display: inline;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     /* Show only 2 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -288,6 +291,7 @@
     line-height: 32px;
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

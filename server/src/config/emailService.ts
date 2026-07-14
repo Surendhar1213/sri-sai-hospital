@@ -327,6 +327,7 @@ export const sendBookingFailureEmail = async (options: FailureMailOptions) => {
   }
 };
 
+
 // 6. Function to send Consultation Alert Reminder Email (15 minutes prior)
 interface ReminderMailOptions {
   to: string;
@@ -450,6 +451,7 @@ export const sendMissedAppointmentEmail = async (options: MissedMailOptions) => 
       </div>
     `,
   };
+
 
   try {
     const info = await transporter.sendMail(mailOptions);
