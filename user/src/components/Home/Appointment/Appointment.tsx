@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Appointment.css"; // We'll create this CSS file for styles
 import AuthModal from "../../AuthModal/AuthModal";
@@ -48,6 +48,7 @@ const Appointment = () => {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   const TIME_SLOTS = [
     // Morning Session (10:00 AM - 01:00 PM)
@@ -165,6 +166,13 @@ const Appointment = () => {
     let { name, value } = e.target;
     if (name === "pasentnumber") {
       value = value.replace(/\D/g, "");
+      if (value.length > 0 && !/^[6-9]/.test(value)) {
+        setPhoneError("Indian mobile numbers must start with 6, 7, 8, or 9.");
+      } else if (value.length > 0 && value.length < 10) {
+        setPhoneError("Mobile number must be exactly 10 digits.");
+      } else {
+        setPhoneError("");
+      }
     }
     setFormData((prev) => ({
       ...prev,
@@ -188,6 +196,12 @@ const Appointment = () => {
     e.preventDefault();
     if (!selectedDate || !selectedSlot) {
       alert("Please select a date and time slot first.");
+      return;
+    }
+
+    const phoneVal = formData.pasentnumber.replace(/\D/g, "");
+    if (phoneVal.length !== 10 || !/^[6-9]/.test(phoneVal)) {
+      setPhoneError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
       return;
     }
 
@@ -495,6 +509,11 @@ const Appointment = () => {
                             maxLength={10}
                           />
                         </div>
+                        {phoneError && (
+                          <div style={{ color: "#EF4444", fontSize: "12px", marginTop: "4px", display: "flex", alignItems: "center", gap: "4px", fontWeight: "600" }}>
+                            <span>⚠️</span> {phoneError}
+                          </div>
+                        )}
                       </div>
 
                       {/* Speciality Dropdown */}
@@ -528,7 +547,7 @@ const Appointment = () => {
                             value={selectedDate}
                             onChange={handleDateChange}
                             required
-                            min={new Date().toISOString().split("T")[0]}
+                            min={getTodayLocalDateStr()}
                             disabled={!formData.speciality}
                           />
                         </div>

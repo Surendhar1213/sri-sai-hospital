@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Calendar,
   X,
@@ -55,6 +55,8 @@ interface AppointmentsTabProps {
   handleManageSubmit: (e: React.FormEvent) => void;
 
   SPECIALITIES: string[];
+  handleQuickCancel: (appId: string) => void;
+  handleTogglePaymentStatus: (appId: string, currentStatus: string) => void;
 }
 
 const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
@@ -82,6 +84,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   handleManageSubmit,
 
   SPECIALITIES,
+  handleQuickCancel,
+  handleTogglePaymentStatus,
 }) => {
   // Local filter states
   const [appointmentSearchText, setAppointmentSearchText] = useState("");
@@ -95,57 +99,101 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   const appointmentsPerPage = 8;
 
   // Helper date matching
-  const matchesFilterDate = (appDateStr: string) => {
-    if (appointmentDateFilter === "All") return true;
+  const matchesFilterDate = (appDateStr: string, dateFilter: string, customDate: string) => {
+    if (dateFilter === "All") return true;
 
-    const appDate = new Date(appDateStr);
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
+    try {
+      const appDate = new Date(appDateStr);
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
 
-    if (appointmentDateFilter === "today") {
-      return (
-        appDate.getDate() === today.getDate() &&
-        appDate.getMonth() === today.getMonth() &&
-        appDate.getFullYear() === today.getFullYear()
-      );
-    }
-    if (appointmentDateFilter === "tomorrow") {
-      return (
-        appDate.getDate() === tomorrow.getDate() &&
-        appDate.getMonth() === tomorrow.getMonth() &&
-        appDate.getFullYear() === tomorrow.getFullYear()
-      );
-    }
-    if (appointmentDateFilter === "custom" && appointmentCustomDate) {
-      const custom = new Date(appointmentCustomDate);
-      return (
-        appDate.getDate() === custom.getDate() &&
-        appDate.getMonth() === custom.getMonth() &&
-        appDate.getFullYear() === custom.getFullYear()
-      );
+      if (dateFilter === "today") {
+        return (
+          appDate.getDate() === today.getDate() &&
+          appDate.getMonth() === today.getMonth() &&
+          appDate.getFullYear() === today.getFullYear()
+        );
+      }
+      if (dateFilter === "tomorrow") {
+        return (
+          appDate.getDate() === tomorrow.getDate() &&
+          appDate.getMonth() === tomorrow.getMonth() &&
+          appDate.getFullYear() === tomorrow.getFullYear()
+        );
+      }
+      if (dateFilter === "custom" && customDate) {
+        const custom = new Date(customDate);
+        return (
+          appDate.getDate() === custom.getDate() &&
+          appDate.getMonth() === custom.getMonth() &&
+          appDate.getFullYear() === custom.getFullYear()
+        );
+      }
+    } catch (e) {
+      console.error("Invalid date format parsed:", appDateStr);
     }
     return true;
   };
 
-  const filteredAppointments = appointments.filter((app) => {
-    const searchLower = appointmentSearchText.toLowerCase();
-    const matchesSearch =
-      !appointmentSearchText ||
-      (app.pasentname && app.pasentname.toLowerCase().includes(searchLower)) ||
-      (app.pasentmail && app.pasentmail.toLowerCase().includes(searchLower)) ||
-      (app.pasentnumber && app.pasentnumber.includes(searchLower));
+  // Memoized appointment filtering to eliminate lags in rendering
+  const filteredAppointments = useMemo(() => {
+    return appointments.filter((app) => {
+      const searchLower = appointmentSearchText.toLowerCase().trim();
+      const matchesSearch =
+        !searchLower ||
+        (app.pasentname && app.pasentname.toLowerCase().includes(searchLower)) ||
+        (app.pasentmail && app.pasentmail.toLowerCase().includes(searchLower)) ||
+        (app.pasentnumber && app.pasentnumber.includes(searchLower));
 
-    const matchesSpeciality =
-      appointmentSpecialityFilter === "All" || app.speciality === appointmentSpecialityFilter;
+      const matchesSpeciality =
+        appointmentSpecialityFilter === "All" || app.speciality === appointmentSpecialityFilter;
 
-    const matchesStatus =
-      appointmentStatusFilter === "All" || app.status === appointmentStatusFilter.toLowerCase();
+      const matchesStatus =
+        appointmentStatusFilter === "All" || app.status === appointmentStatusFilter.toLowerCase();
 
-    const matchesDate = matchesFilterDate(app.appointmenttime);
+      const matchesDate = matchesFilterDate(app.appointmenttime, appointmentDateFilter, appointmentCustomDate);
 
-    return matchesSearch && matchesSpeciality && matchesStatus && matchesDate;
-  });
+      return matchesSearch && matchesSpeciality && matchesStatus && matchesDate;
+    });
+  }, [
+    appointments,
+    appointmentSearchText,
+    appointmentSpecialityFilter,
+    appointmentStatusFilter,
+    appointmentDateFilter,
+    appointmentCustomDate,
+  ]);
+
+  // Helper function to highlight matching search term
+  const highlightText = (text: string, search: string) => {
+    if (!text) return "";
+    if (!search || !search.trim()) return text;
+    const cleanSearch = search.trim();
+    const parts = text.split(new RegExp(`(${cleanSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi'));
+    return (
+      <>
+        {parts.map((part, index) =>
+          part.toLowerCase() === cleanSearch.toLowerCase() ? (
+            <mark
+              key={index}
+              style={{
+                backgroundColor: "#FEF08A",
+                color: "#854D0E",
+                padding: "1px 2px",
+                borderRadius: "4px",
+                fontWeight: "bold",
+              }}
+            >
+              {part}
+            </mark>
+          ) : (
+            part
+          )
+        )}
+      </>
+    );
+  };
 
   // Client-side pagination
   const totalAppointmentPages = Math.ceil(filteredAppointments.length / appointmentsPerPage) || 1;
@@ -581,6 +629,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                     const paymentStyle = getStatusStyles(app.paymentStatus || "pending");
                     const isOverdue = app.status === "approved" && app.appointmenttime && (new Date(app.appointmenttime).getTime() + 30 * 60 * 1000 < Date.now());
 
+                    const searchLower = appointmentSearchText.toLowerCase().trim();
+                    const isMatchedBySearch = searchLower && (
+                      (app.pasentname && app.pasentname.toLowerCase().includes(searchLower)) ||
+                      (app.pasentmail && app.pasentmail.toLowerCase().includes(searchLower)) ||
+                      (app.pasentnumber && app.pasentnumber.includes(searchLower))
+                    );
+
                     return (
                       <tr
                         key={app._id}
@@ -588,6 +643,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           borderBottom: "1px solid #F2F3FE",
                           fontSize: "14px",
                           color: "#060F2D",
+                          backgroundColor: isMatchedBySearch ? "#EFF2FE" : "transparent",
+                          transition: "background-color 0.2s ease",
                         }}
                       >
                         {/* Patient Profile info */}
@@ -598,13 +655,14 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                 width: "32px",
                                 height: "32px",
                                 borderRadius: "50%",
-                                backgroundColor: "rgba(63, 89, 255, 0.06)",
+                                backgroundColor: isMatchedBySearch ? "rgba(63, 89, 255, 0.12)" : "rgba(63, 89, 255, 0.06)",
                                 color: "#3F59FF",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 fontWeight: "800",
                                 fontSize: "12px",
+                                transition: "all 0.2s ease",
                               }}
                             >
                               {app.pasentname.charAt(0).toUpperCase()}
@@ -702,9 +760,11 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           </div>
                         </td>
 
-                        {/* Payment status label */}
+                        {/* Payment status label with quick toggle */}
                         <td style={{ padding: "18px 12px" }}>
-                          <span
+                          <button
+                            onClick={() => handleTogglePaymentStatus(app._id, app.paymentStatus || "pending")}
+                            title="Click to toggle payment status"
                             style={{
                               padding: "6px 12px",
                               borderRadius: "20px",
@@ -716,7 +776,12 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               alignItems: "center",
                               gap: "6px",
                               textTransform: "capitalize",
+                              border: "none",
+                              cursor: "pointer",
+                              transition: "all 0.15s",
                             }}
+                            onMouseOver={(e) => (e.currentTarget.style.filter = "brightness(0.95)")}
+                            onMouseOut={(e) => (e.currentTarget.style.filter = "none")}
                           >
                             <span style={{
                               width: "6px",
@@ -726,7 +791,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               boxShadow: `0 0 6px ${paymentStyle.color}`,
                             }}></span>
                             {app.paymentStatus || "pending"}
-                          </span>
+                          </button>
                         </td>
 
                         {/* Manage Action */}
@@ -754,6 +819,27 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                             >
                               Manage
                             </button>
+                            {app.status === "pending" && (
+                              <button
+                                onClick={() => {
+                                  if (window.confirm(`Are you sure you want to cancel ${app.pasentname}'s appointment?`)) {
+                                    handleQuickCancel(app._id);
+                                  }
+                                }}
+                                style={{
+                                  padding: "6px 12px",
+                                  backgroundColor: "rgba(239, 68, 68, 0.08)",
+                                  border: "1.5px solid rgba(239, 68, 68, 0.2)",
+                                  borderRadius: "8px",
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                  color: "#EF4444",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            )}
                             {app.status === "completed" && app.prescription && (
                               <button
                                 onClick={() => setPrintPrescriptionAppointment(app)}
@@ -768,7 +854,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                   cursor: "pointer",
                                 }}
                               >
-                                Rx Slip
+                                Prescription
                               </button>
                             )}
                           </div>
@@ -1121,7 +1207,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                 }
               }
             `}</style>
-            
+
             <div
               className="printable-prescription-slip"
               style={{

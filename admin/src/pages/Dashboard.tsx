@@ -55,7 +55,9 @@ const TIMINGS = [
 ];
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("adminActiveTab") || "dashboard";
+  });
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [isLoadingDoctors, setIsLoadingDoctors] = useState(false);
@@ -132,6 +134,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   useEffect(() => {
     localStorage.setItem("seenAppointments", JSON.stringify(seenAppointments));
   }, [seenAppointments]);
+
+  // Persist activeTab to localStorage
+  useEffect(() => {
+    localStorage.setItem("adminActiveTab", activeTab);
+  }, [activeTab]);
 
   // Mark all pending appointments as seen when clicking the Bell or entering Appointments tab
   useEffect(() => {
@@ -285,11 +292,103 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
 
+  const handleQuickCancel = async (appId: string) => {
+    const originalAppointments = [...appointments];
+    
+    // Optimistic update
+    setAppointments((prev) =>
+      prev.map((app) => (app._id === appId ? { ...app, status: "cancelled" } : app))
+    );
+    triggerToast("⏳ Cancelling appointment...");
+
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        onLogout();
+        return;
+      }
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${backendUrl}/api/appointments/${appId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: "cancelled" }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to cancel appointment");
+      }
+      triggerToast("✅ Appointment cancelled successfully!");
+    } catch (err: any) {
+      setAppointments(originalAppointments);
+      triggerToast(`❌ Error: ${err.message}`);
+    }
+  };
+
+  const handleTogglePaymentStatus = async (appId: string, currentStatus: string) => {
+    const originalAppointments = [...appointments];
+    const newStatus = currentStatus === "paid" ? "pending" : "paid";
+
+    // Optimistic update
+    setAppointments((prev) =>
+      prev.map((app) => (app._id === appId ? { ...app, paymentStatus: newStatus } : app))
+    );
+    triggerToast(`⏳ Updating payment to ${newStatus}...`);
+
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        onLogout();
+        return;
+      }
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${backendUrl}/api/appointments/${appId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ paymentStatus: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update payment status");
+      }
+      triggerToast(`✅ Payment status updated to ${newStatus}!`);
+    } catch (err: any) {
+      setAppointments(originalAppointments);
+      triggerToast(`❌ Error: ${err.message}`);
+    }
+  };
+
   const handleManageSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAppointment) return;
 
-    setIsSavingAppointment(true);
+    const originalAppointments = [...appointments];
+
+    // Find full assigned doctor details if assignedDoctor is selected
+    const assignedDoctorDetails = doctors.find((d) => d._id === manageDoctor);
+
+    // Optimistic update
+    const updatedApp = {
+      ...selectedAppointment,
+      status: manageStatus,
+      assignedDoctor: assignedDoctorDetails || selectedAppointment.assignedDoctor,
+      prescription: managePrescription,
+      paymentStatus: managePaymentStatus,
+    };
+
+    setAppointments((prev) =>
+      prev.map((app) => (app._id === selectedAppointment._id ? updatedApp : app))
+    );
+
+    triggerToast("⏳ Saving appointment updates...");
+    setIsManageModalOpen(false);
+    setSelectedAppointment(null);
+
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) {
@@ -316,21 +415,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         return;
       }
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.message || "Failed to update appointment");
       }
-      
-
       triggerToast("✅ Appointment updated successfully!");
-      setIsManageModalOpen(false);
-      setSelectedAppointment(null);
-      fetchAppointments();
     } catch (err: any) {
+      setAppointments(originalAppointments);
       triggerToast(`❌ Error: ${err.message}`);
-    } finally {
-      setIsSavingAppointment(false);
     }
   };
 
@@ -975,6 +1067,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               isSavingAppointment={isSavingAppointment}
               handleManageSubmit={handleManageSubmit}
               SPECIALITIES={SPECIALITIES}
+              handleQuickCancel={handleQuickCancel}
+              handleTogglePaymentStatus={handleTogglePaymentStatus}
             />
           )}
 

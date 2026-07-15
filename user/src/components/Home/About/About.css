@@ -529,7 +529,7 @@
 }
 
 .thm-btn .btn_label::before {
-	top: 120%;
+	top: 100%;
 	left: 50%;
 	width: 100%;
 	display: block;
@@ -543,7 +543,7 @@
 }
 
 .thm-btn:hover .btn_label {
-	transform: translateY(-86%);
+	transform: translateY(-100%);
 }
 
 .consulting-btn {

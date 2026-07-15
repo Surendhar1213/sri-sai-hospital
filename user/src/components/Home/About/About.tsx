@@ -45,21 +45,16 @@ const About = () => {
       //   },
       // );
 
-      gsap.set(bodyRef.current, {
-        opacity: 0,
-        y: 40,
-        scale: 0.95,
-      });
 
-      gsap.set(buttonRef.current, {
-        opacity: 0,
-        y: 30,
-      });
 
-      gsap.set(clientImagesRef.current, {
-        opacity: 0,
-        x: -30,
-      });
+
+
+      if (clientImagesRef.current) {
+        gsap.set(clientImagesRef.current, {
+          opacity: 0,
+          x: -30,
+        });
+      }
 
       // Main timeline for images with stagger
       const imageTimeline = gsap.timeline({
@@ -167,27 +162,8 @@ const About = () => {
           },
           "-=0.4",
         )
-        .to(
-          bodyRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.7,
-            ease: "power2.out",
-          },
-          "-=0.3",
-        )
-        .to(
-          buttonRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          "-=0.2",
-        );
+
+
 
       // Add hover animations for images
       // if (image1Ref.current) {
@@ -224,27 +200,9 @@ const About = () => {
         });
       }
 
-      // Button pulse animation
-      if (buttonRef.current) {
-        gsap.to(buttonRef.current, {
-          scale: 1.05,
-          duration: 1.5,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-      }
 
-      // Floating animation for review box
-      if (reviewBoxRef.current) {
-        gsap.to(reviewBoxRef.current, {
-          y: -10,
-          duration: 2,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-      }
+
+
 
       // Parallax effect for images on scroll
       // if (image1Ref.current) {
@@ -296,7 +254,15 @@ const About = () => {
       });
     }, sectionRef);
 
-    return () => ctx.revert(); // Cleanup
+    // Refresh GSAP ScrollTrigger after a short delay to account for lazy-loaded sections
+    const refreshTimeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 1000);
+
+    return () => {
+      ctx.revert(); // Cleanup
+      clearTimeout(refreshTimeout);
+    };
   }, []);
 
   return (
@@ -309,7 +275,7 @@ const About = () => {
               {/* About Us Image Box 1 Start */}
               <div className="about-us-image-box-1">
                 {/* Happy Customer Review Box Start */}
-                <div className="happy-customer-review-box">
+                <div className="happy-customer-review-box" ref={reviewBoxRef}>
                   <div className="happy-customer-review-item" style={{ padding: 0, background: "none" }}>
                     <img
                       src={DiabetesTest}
@@ -340,7 +306,7 @@ const About = () => {
               <div className="about-us-image-box-2">
                 <div className="about-us-image">
                   <figure className="image-anime">
-                    <img src={About2} alt="Hospital facility" />
+                    <img src={About2} alt="Hospital facility" ref={image2Ref} />
                   </figure>
                 </div>
               </div>
@@ -355,7 +321,7 @@ const About = () => {
               {/* Section Title Start */}
               <div className="section-title">
                 <div className="section-title">
-                  <h3 className="wow fadeInUp">Welcome to Srisai Subhramaniya Hospitals</h3>
+                  <h3 className="wow fadeInUp" ref={subtitleRef}>Welcome to Srisai Subhramaniya Hospitals</h3>
                   <h2
                     className="text-anime-style-3"
                     data-cursor="-opaque"
@@ -398,7 +364,7 @@ const About = () => {
               {/* About Us Body End */}
 
               {/* About Us Button Start */}
-              <div className="about-us-btn wow fadeInUp" data-wow-delay="0.8s">
+              <div className="about-us-btn wow fadeInUp" data-wow-delay="0.8s" ref={buttonRef}>
                 <Link className="thm-btn consulting-btn" to="/about">
                   <span className="btn_label" data-text="More About Us">
                     More About Us

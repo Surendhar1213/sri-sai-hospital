@@ -26,6 +26,9 @@ const Register: React.FC = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [ageError, setAgeError] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,11 +36,40 @@ const Register: React.FC = () => {
 
   // Input change handle பண்ண
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    let value = e.target.value;
-    if (e.target.name === "phone" || e.target.name === "age") {
+    let { name, value } = e.target;
+    
+    if (name === "phone") {
       value = value.replace(/\D/g, "");
+      if (value.length > 0 && !/^[6-9]/.test(value)) {
+        setPhoneError("Indian phone numbers must start with 6, 7, 8, or 9.");
+      } else if (value.length > 0 && value.length < 10) {
+        setPhoneError("Phone number must be exactly 10 digits.");
+      } else {
+        setPhoneError("");
+      }
     }
-    setFormData({ ...formData, [e.target.name]: value });
+    
+    if (name === "age") {
+      value = value.replace(/\D/g, "");
+      const ageNum = Number(value);
+      if (value.length > 0 && (ageNum < 1 || ageNum > 120)) {
+        setAgeError("Age must be between 1 and 120.");
+      } else {
+        setAgeError("");
+      }
+    }
+
+    if (name === "name") {
+      if (value.length > 0 && !/^[a-zA-Z\s]*$/.test(value)) {
+        setNameError("Name must contain letters only.");
+      } else if (value.length > 0 && value.trim().length < 3) {
+        setNameError("Name must be at least 3 characters.");
+      } else {
+        setNameError("");
+      }
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -45,10 +77,35 @@ const Register: React.FC = () => {
     setError("");
     setSuccess("");
 
+    // Full Name check
+    if (!formData.name.trim() || formData.name.trim().length < 3 || !/^[a-zA-Z\s]+$/.test(formData.name)) {
+      const msg = "Please enter a valid name (at least 3 characters, letters only)";
+      setError(msg);
+      toast.warning("⚠️ " + msg);
+      return;
+    }
+
     // Gmail validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     if (!emailRegex.test(formData.email)) {
       const msg = "Please enter a valid Gmail address (ending in @gmail.com)";
+      setError(msg);
+      toast.warning("⚠️ " + msg);
+      return;
+    }
+
+    // Phone Number check
+    if (formData.phone.length !== 10 || !/^[6-9]/.test(formData.phone)) {
+      const msg = "Please enter a valid 10-digit Indian phone number starting with 6-9";
+      setError(msg);
+      toast.warning("⚠️ " + msg);
+      return;
+    }
+
+    // Age Check
+    const ageNum = Number(formData.age);
+    if (!formData.age || ageNum < 1 || ageNum > 120) {
+      const msg = "Please enter a valid age (between 1 and 120)";
       setError(msg);
       toast.warning("⚠️ " + msg);
       return;
@@ -194,6 +251,11 @@ const Register: React.FC = () => {
                       autoFocus
                     />
                   </div>
+                  {nameError && (
+                    <span style={{ color: "#EF4444", fontSize: "11px", display: "block", marginTop: "4px", fontWeight: "600" }}>
+                      ⚠️ {nameError}
+                    </span>
+                  )}
                 </div>
 
                 {/* Email Address */}
@@ -232,8 +294,14 @@ const Register: React.FC = () => {
                       onChange={handleChange}
                       required
                       disabled={!formData.email}
+                      maxLength={10}
                     />
                   </div>
+                  {phoneError && (
+                    <span style={{ color: "#EF4444", fontSize: "11px", display: "block", marginTop: "4px", fontWeight: "600" }}>
+                      ⚠️ {phoneError}
+                    </span>
+                  )}
                 </div>
 
                 {/* Age */}
@@ -254,6 +322,11 @@ const Register: React.FC = () => {
                       disabled={!formData.phone}
                     />
                   </div>
+                  {ageError && (
+                    <span style={{ color: "#EF4444", fontSize: "11px", display: "block", marginTop: "4px", fontWeight: "600" }}>
+                      ⚠️ {ageError}
+                    </span>
+                  )}
                 </div>
 
                 {/* Gender */}

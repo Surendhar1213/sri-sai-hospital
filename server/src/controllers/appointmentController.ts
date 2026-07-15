@@ -301,13 +301,12 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       }
     }
 
-    // 3. DB values update panrom
+    // 3. DB values update panrom (without blocking on Google Calendar API)
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       { 
         status, 
         assignedDoctor, 
-        meetingLink,
         prescription: prescription !== undefined ? prescription : appointment.prescription,
         paymentStatus: paymentStatus !== undefined ? paymentStatus : appointment.paymentStatus
       },
@@ -319,90 +318,114 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-       // 4. Send Confirmation Email if status approved now (Wrapped in Try-Catch)
-    if (status === "approved" && updatedAppointment.assignedDoctor) {
-      const doctorObj = updatedAppointment.assignedDoctor as any;
-      const formattedTime = new Date(updatedAppointment.appointmenttime).toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        dateStyle: "medium",
-        timeStyle: "short",
-      });
+    // Trigger initial SSE notification so client gets the status update instantly
+    notifySSEClients({ event: "update-appointment", data: updatedAppointment });
 
-      // API Response ஐ லேட் செய்யாமல் இருக்க பின்னணியில் (Asynchronously) மின்னஞ்சல்களை அனுப்புகிறோம்
+    // 4. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
+    if (status === "approved" && assignedDoctor && !appointment.meetingLink) {
       setImmediate(async () => {
         try {
-          console.log("✉️ Sending appointment confirmation email in background...");
-          // Email trigger to Patient
-          await sendAppointmentEmail({
-            to: updatedAppointment.pasentmail,
-            patientName: updatedAppointment.pasentname,
-            doctorName: doctorObj.name,
-            speciality: updatedAppointment.speciality,
-            time: formattedTime,
-            meetingLink: updatedAppointment.meetingLink,
-          });
+          const doctorDetails = await Doctor.findById(assignedDoctor);
+          if (doctorDetails) {
+            console.log(`📅 Background Scheduling Google Meet: Patient(${appointment.pasentmail}) with Doctor(${doctorDetails.email})`);
+            
+            const generatedLink = await createMeetEvent({
+              patientEmail: appointment.pasentmail,
+              doctorEmail: doctorDetails.email,
+              speciality: appointment.speciality,
+              startTime: new Date(appointment.appointmenttime),
+            });
 
-          // Email trigger for Prescription to Patient
-          if (prescription) {
+            if (generatedLink) {
+              const fullyUpdated = await Appointment.findByIdAndUpdate(
+                id,
+                { meetingLink: generatedLink },
+                { returnDocument: "after" }
+              ).populate("assignedDoctor", "name email speciality");
+
+              if (fullyUpdated) {
+                console.log(`🔗 Generated Google Meet Link & Updated DB: ${generatedLink}`);
+                
+                const doctorObj = fullyUpdated.assignedDoctor as any;
+                const formattedTime = new Date(fullyUpdated.appointmenttime).toLocaleString("en-IN", {
+                  timeZone: "Asia/Kolkata",
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                });
+
+                // Send confirmation email to Patient with link
+                await sendAppointmentEmail({
+                  to: fullyUpdated.pasentmail,
+                  patientName: fullyUpdated.pasentname,
+                  doctorName: doctorObj.name,
+                  speciality: fullyUpdated.speciality,
+                  time: formattedTime,
+                  meetingLink: fullyUpdated.meetingLink,
+                });
+
+                // Trigger second SSE to update client with the newly generated meetingLink
+                notifySSEClients({ event: "update-appointment", data: fullyUpdated });
+
+                // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
+                const appTime = new Date(fullyUpdated.appointmenttime);
+                const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000);
+                if (reminderTime > new Date()) {
+                  console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${fullyUpdated._id}`);
+                  schedule.scheduleJob(fullyUpdated._id.toString(), reminderTime, async () => {
+                    console.log(`🔔 Executing scheduled 15-min email reminders for appointment: ${fullyUpdated._id}`);
+                    
+                    await sendReminderEmail({
+                      to: fullyUpdated.pasentmail,
+                      patientName: fullyUpdated.pasentname,
+                      doctorName: doctorObj.name,
+                      speciality: fullyUpdated.speciality,
+                      time: formattedTime,
+                      meetingLink: fullyUpdated.meetingLink || "",
+                      role: "patient"
+                    });
+
+                    if (doctorObj.email) {
+                      await sendReminderEmail({
+                        to: doctorObj.email,
+                        patientName: fullyUpdated.pasentname,
+                        doctorName: doctorObj.name,
+                        speciality: fullyUpdated.speciality,
+                        time: formattedTime,
+                        meetingLink: fullyUpdated.meetingLink || "",
+                        role: "doctor"
+                      });
+                    }
+                  });
+                }
+              }
+            } else {
+              console.error("❌ Google Calendar API failed to return meeting link.");
+            }
+          }
+        } catch (err: any) {
+          console.error("❌ Background Google Meet/Email generation error:", err.message);
+        }
+      });
+    } else {
+      // If already approved but prescription updated, send prescription email
+      if (prescription && updatedAppointment.assignedDoctor) {
+        const doctorObj = updatedAppointment.assignedDoctor as any;
+        setImmediate(async () => {
+          try {
             await sendPrescriptionEmail({
               to: updatedAppointment.pasentmail,
               patientName: updatedAppointment.pasentname,
               doctorName: doctorObj.name,
-              prescription: updatedAppointment.prescription || ""
+              prescription: prescription
             });
+          } catch (emailError) {
+            console.error("❌ Background Prescription Email Sending Failed:", emailError);
           }
-        } catch (emailError) {
-          console.error("❌ Background Email Sending Failed:", emailError);
-        }
-      });
-
-      // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
-      try {
-        if (updatedAppointment.meetingLink) {
-          const appTime = new Date(updatedAppointment.appointmenttime);
-          const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000); // 15 minutes before
-
-          if (reminderTime > new Date()) {
-            console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
-            
-            schedule.scheduleJob(updatedAppointment._id.toString(), reminderTime, async () => {
-              console.log(`🔔 Executing scheduled 15-min email reminders for appointment: ${updatedAppointment._id}`);
-              
-              // Send email alert to Patient
-              await sendReminderEmail({
-                to: updatedAppointment.pasentmail,
-                patientName: updatedAppointment.pasentname,
-                doctorName: doctorObj.name,
-                speciality: updatedAppointment.speciality,
-                time: formattedTime,
-                meetingLink: updatedAppointment.meetingLink || "",
-                role: "patient"
-              });
-
-              // Send email alert to Doctor
-              if (doctorObj.email) {
-                await sendReminderEmail({
-                  to: doctorObj.email,
-                  patientName: updatedAppointment.pasentname,
-                  doctorName: doctorObj.name,
-                  speciality: updatedAppointment.speciality,
-                  time: formattedTime,
-                  meetingLink: updatedAppointment.meetingLink || "",
-                  role: "doctor"
-                });
-              }
-            });
-          } else {
-            console.log(`⚠️ Reminder time ${reminderTime} is in the past. Skipping schedule.`);
-          }
-        }
-      } catch (emailError) {
-        // மெயில் அனுப்ப முடியவில்லை என்றாலும் லாக் மட்டும் காட்டிவிட்டு சர்வர் தொடர்ந்து ஓடும்
-        console.error("❌ Email Sending / Scheduling Failed but Appointment is saved:", emailError);
+        });
       }
     }
 
-    // 5. Send Missed Appointment Notification if status is missed (Wrapped in Try-Catch)
+    // 5. Send Missed Appointment Notification if status is missed
     if (status === "missed") {
       const doctorObj = updatedAppointment.assignedDoctor as any;
       const doctorName = doctorObj ? doctorObj.name : "Assigned Specialist";
@@ -415,7 +438,6 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       setImmediate(async () => {
         try {
           console.log("✉️ Sending missed appointment email in background...");
-          // Email to Patient
           await sendMissedAppointmentEmail({
             to: updatedAppointment.pasentmail,
             patientName: updatedAppointment.pasentname,
@@ -428,10 +450,6 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
         }
       });
     }
-
-
-    // Trigger SSE notification
-    notifySSEClients({ event: "update-appointment", data: updatedAppointment });
 
     res.status(200).json({ message: "Appointment updated successfully", data: updatedAppointment });
   } catch (error: any) {

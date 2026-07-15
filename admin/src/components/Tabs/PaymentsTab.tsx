@@ -13,6 +13,7 @@ interface PaymentsTabProps {
 const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [specialityFilter, setSpecialityFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedCardFilter, setSelectedCardFilter] = useState("all"); // 'all', 'today', 'week', 'month'
   const [copiedId, setCopiedId] = useState<string | null>(null);
   
@@ -30,7 +31,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
   // Reset pagination to first page when any filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, specialityFilter, selectedCardFilter, startDate, endDate, rowsPerPage]);
+  }, [searchTerm, specialityFilter, statusFilter, selectedCardFilter, startDate, endDate, rowsPerPage]);
 
   // Extract paid or failed appointments list
   const paidAppointments = appointments.filter((app: any) => app.paymentStatus === "paid" || app.paymentStatus === "failed");
@@ -173,17 +174,21 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
 
   // 3. Further filter the list by the selected top card filter
   const finalPayments = baseFilteredAppointments.filter((app: any) => {
-    if (selectedCardFilter === "all") return true;
-
+    // Check card filter first
+    let matchesCard = true;
     const appDate = new Date(app.createdAt || app.appointmenttime);
     if (selectedCardFilter === "today") {
-      return appDate >= startOfToday;
+      matchesCard = appDate >= startOfToday;
     } else if (selectedCardFilter === "week") {
-      return appDate >= startOfWeek;
+      matchesCard = appDate >= startOfWeek;
     } else if (selectedCardFilter === "month") {
-      return appDate >= startOfMonth;
+      matchesCard = appDate >= startOfMonth;
     }
-    return true;
+
+    // Check payment status filter
+    const matchesStatus = statusFilter === "all" || app.paymentStatus === statusFilter;
+
+    return matchesCard && matchesStatus;
   });
 
   // 4. Pagination calculations
@@ -227,6 +232,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
   const clearFilters = () => {
     setSearchTerm("");
     setSpecialityFilter("all");
+    setStatusFilter("all");
     setSelectedCardFilter("all");
     setStartDate("");
     setEndDate("");
@@ -584,7 +590,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
             </div>
 
             <div style={{ display: "flex", gap: "12px" }}>
-              {(searchTerm || specialityFilter !== "all" || selectedCardFilter !== "all" || startDate || endDate) && (
+              {(searchTerm || specialityFilter !== "all" || statusFilter !== "all" || selectedCardFilter !== "all" || startDate || endDate) && (
                 <button
                   onClick={clearFilters}
                   style={{
@@ -698,15 +704,35 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                 }}
               >
                 <option value="all">All Specialities</option>
-                {specialities.map((spec: any, idx) => {
-                  const rev = specialtyRevenueMap[spec] || 0;
-                  const pct = totalRevenue > 0 ? (rev / totalRevenue) * 100 : 0;
-                  return (
-                    <option key={idx} value={spec}>
-                      {spec} (₹{rev.toLocaleString()} • {pct.toFixed(0)}%)
-                    </option>
-                  );
-                })}
+                {specialities.map((spec: any, idx) => (
+                  <option key={idx} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Payment Status Dropdown Filter */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Filter size={14} color="#64748B" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1.5px solid #E2E8F0",
+                  fontSize: "13.5px",
+                  fontWeight: "600",
+                  color: "#0F172A",
+                  backgroundColor: "#FFFFFF",
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                <option value="all">All Statuses</option>
+                <option value="paid">Paid</option>
+                <option value="failed">Failed</option>
               </select>
             </div>
           </div>

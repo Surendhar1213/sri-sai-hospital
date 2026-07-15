@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import Facilities from "./Facilities/Facilities";
 import About from "./About/About";
-import Specialities from "./Specialities/Specialities";
-import Gallery from "./Gallery/Gallery";
 import Heroslider from "./Heroslider/Heroslider";
-import Appointment from "./Appointment/Appointment";
 import Special from "./Special/Special";
+
+// Lazy load below-the-fold components to improve performance
+const Specialities = lazy(() => import("./Specialities/Specialities"));
+const Appointment = lazy(() => import("./Appointment/Appointment"));
+const Facilities = lazy(() => import("./Facilities/Facilities"));
+const Gallery = lazy(() => import("./Gallery/Gallery"));
 
 const Home = () => {
   const location = useLocation();
@@ -37,10 +39,18 @@ const Home = () => {
       <Heroslider />
       <About />
       <Special />
-      <Specialities />
-      <Appointment />
-      <Facilities />
-      <Gallery />
+      <Suspense fallback={
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "50px 0" }}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      }>
+        <Specialities />
+        <Appointment />
+        <Facilities />
+        <Gallery />
+      </Suspense>
     </div>
   );
 };
