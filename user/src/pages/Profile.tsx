@@ -259,8 +259,8 @@ const Profile = () => {
         }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#3F59FF" }}></span>
-              <span style={{ fontSize: "13px", fontWeight: "700", color: "#3F59FF", letterSpacing: "1.2px", textTransform: "uppercase" }}>Sri Sai Subhramaniya Hospital</span>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#4A65FF" }}></span>
+              <span style={{ fontSize: "13px", fontWeight: "700", color: "#4A65FF", letterSpacing: "1.2px", textTransform: "uppercase" }}>Sri Sai Subhramaniya Hospital</span>
             </div>
             <h1 style={{ fontSize: "30px", fontWeight: "700", color: "#0F2239", margin: 0, letterSpacing: "-0.3px" }}>Patient Dashboard</h1>
           </div>
@@ -277,7 +277,7 @@ const Profile = () => {
               border: "1px solid #E2E8F0",
               fontSize: "15px",
               fontWeight: "700",
-              color: "#3F59FF",
+              color: "#4A65FF",
               cursor: "pointer",
               transition: "all 0.2s ease"
             }}
@@ -315,14 +315,14 @@ const Profile = () => {
                 width: "56px",
                 height: "56px",
                 borderRadius: "50%",
-                background: "linear-gradient(135deg, #3F59FF 0%, #31B0FF 100%)",
+                background: "linear-gradient(135deg, #4A65FF 0%, #31B0FF 100%)",
                 color: "#FFFFFF",
                 fontSize: "20px",
                 fontWeight: "700",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(63, 89, 255, 0.1)",
+                boxShadow: "0 4px 12px rgba(74, 101, 255, 0.1)",
                 border: "2px solid #FFFFFF"
               }}>
                 {userName.charAt(0).toUpperCase()}
@@ -355,8 +355,8 @@ const Profile = () => {
                       padding: "12px 18px",
                       border: "none",
                       borderRadius: "12px",
-                      backgroundColor: isActive ? "rgba(63, 89, 255, 0.08)" : "transparent",
-                      color: isActive ? "#3F59FF" : "#72849B",
+                      backgroundColor: isActive ? "rgba(74, 101, 255, 0.08)" : "transparent",
+                      color: isActive ? "#4A65FF" : "#72849B",
                       fontSize: "16px",
                       fontWeight: "700",
                       cursor: "pointer",
@@ -501,9 +501,9 @@ const Profile = () => {
           }
         }
         .home-btn:hover {
-          background-color: #3F59FF !important;
+          background-color: #4A65FF !important;
           color: #FFFFFF !important;
-          border-color: #3F59FF !important;
+          border-color: #4A65FF !important;
         }
         .skeleton {
           background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
@@ -617,7 +617,7 @@ const Profile = () => {
                 <button
                   onClick={() => window.print()}
                   style={{
-                    background: "#3F59FF",
+                    background: "#4A65FF",
                     border: "none",
                     color: "#FFFFFF",
                     padding: "8px 16px",
@@ -795,9 +795,9 @@ const Profile = () => {
                   <div style={{
                     width: "80px",
                     height: "35px",
-                    border: "1.5px dashed rgba(63, 89, 255, 0.4)",
+                    border: "1.5px dashed rgba(74, 101, 255, 0.4)",
                     borderRadius: "8px",
-                    color: "#3F59FF",
+                    color: "#4A65FF",
                     fontSize: "11px",
                     fontWeight: "800",
                     display: "flex",

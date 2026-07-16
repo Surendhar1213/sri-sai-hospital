@@ -140,7 +140,12 @@ const Login = () => {
 
               {/* Password */}
               <div className="user-auth-field">
-                <label className="user-auth-label">Password</label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                  <label className="user-auth-label" style={{ marginBottom: 0 }}>Password</label>
+                  <Link to="/forgot-password" className="user-auth-link" style={{ fontSize: "0.82rem" }}>
+                    Forgot Password?
+                  </Link>
+                </div>
                 <div className="user-auth-input-wrap">
                   <span className="user-auth-input-icon">
                     <FaLock size={14} />

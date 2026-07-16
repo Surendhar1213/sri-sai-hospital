@@ -81,26 +81,170 @@ export const sendAppointmentEmail = async (options: AppointmentMailOptions) => {
   }
 };
 
+// HTML escaping helper function to prevent HTML/XSS injection in emails
+const escapeHtml = (text: string): string => {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 // 2. Function to send Doctor's Prescription Email
 export const sendPrescriptionEmail = async (options: PrescriptionMailOptions) => {
   const { to, patientName, doctorName, prescription } = options;
+  const escapedPatientName = escapeHtml(patientName || "");
+  const escapedDoctorName = escapeHtml(doctorName || "");
+  
+  let isStructured = false;
+  let medicinesList: any[] = [];
+  let adviceNotes = prescription || "";
+  let prescriptionHtml = "";
+
+  try {
+    const parsed = JSON.parse(prescription || "");
+    if (parsed && (Array.isArray(parsed.medicines) || parsed.notes !== undefined)) {
+      isStructured = true;
+      medicinesList = parsed.medicines || [];
+      adviceNotes = parsed.notes || "";
+    }
+  } catch (e) {
+    // Not JSON
+  }
+
+  if (isStructured) {
+    let tableRows = "";
+    if (medicinesList.length > 0) {
+      tableRows = medicinesList.map(med => {
+        const morningBadge = med.morning 
+          ? `<span style="background-color: #FEF3C7; color: #D97706; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-right: 4px; display: inline-block;">Morning</span>`
+          : `<span style="background-color: #F1F5F9; color: #94A3B8; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-right: 4px; display: inline-block; text-decoration: line-through;">Morning</span>`;
+        
+        const noonBadge = med.noon 
+          ? `<span style="background-color: #E0F2FE; color: #0284C7; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-right: 4px; display: inline-block;">Noon</span>`
+          : `<span style="background-color: #F1F5F9; color: #94A3B8; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-right: 4px; display: inline-block; text-decoration: line-through;">Noon</span>`;
+          
+        const nightBadge = med.night 
+          ? `<span style="background-color: #EEF2FF; color: #4F46E5; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block;">Night</span>`
+          : `<span style="background-color: #F1F5F9; color: #94A3B8; padding: 4px 8px; border-radius: 6px; font-size: 11px; display: inline-block; text-decoration: line-through;">Night</span>`;
+
+        let timingBadge = "";
+        if (med.timing === "before") {
+          timingBadge = `<span style="background-color: #D1FAE5; color: #059669; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block;">🍽 Before Food</span>`;
+        } else if (med.timing === "after") {
+          timingBadge = `<span style="background-color: #DBEAFE; color: #2563EB; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block;">🍽 After Food</span>`;
+        } else {
+          timingBadge = `<span style="background-color: #FEF3C7; color: #D97706; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block;">⚠ SOS</span>`;
+        }
+
+        return `
+          <tr style="border-bottom: 1px solid #e2e8f0; font-size: 13px;">
+            <td style="padding: 14px 10px; font-weight: bold; color: #060F2D;">🔹 ${escapeHtml(med.name || "")}</td>
+            <td style="padding: 14px 10px; white-space: nowrap;">${morningBadge}${noonBadge}${nightBadge}</td>
+            <td style="padding: 14px 10px; text-align: center;">${timingBadge}</td>
+            <td style="padding: 14px 10px; color: #475569; font-weight: 600; text-align: right; white-space: nowrap;">📅 ${escapeHtml(med.duration || "")}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    prescriptionHtml = `
+      <div style="margin: 20px 0;">
+        ${tableRows ? `
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <thead>
+              <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 12px; color: #475569;">
+                <th style="padding: 12px 10px; font-weight: 700;">Medicine Name</th>
+                <th style="padding: 12px 10px; font-weight: 700;">Dosage (M-N-N)</th>
+                <th style="padding: 12px 10px; text-align: center; font-weight: 700;">Timing</th>
+                <th style="padding: 12px 10px; text-align: right; font-weight: 700;">Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        ` : `<p style="color: #64748b; font-style: italic;">No specific medicines listed.</p>`}
+        
+        ${adviceNotes ? `
+          <div style="margin-top: 24px;">
+            <strong style="font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Advice & Instructions:</strong>
+            <div style="background-color: #F8FAF9; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; font-size: 13.5px; color: #334155; white-space: pre-line; line-height: 1.6; margin-top: 8px;">
+              ${escapeHtml(adviceNotes)}
+            </div>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  } else {
+    prescriptionHtml = `
+      <div style="background-color: #f1f5f9; border-left: 4px solid #4A65FF; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; font-size: 14px; color: #1e293b; margin: 20px 0;">
+        ${escapeHtml(prescription || "")}
+      </div>
+    `;
+  }
 
   const mailOptions = {
     from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
     to,
     subject: "💊 Medical Prescription - Srisai Subhramaniya Hospitals",
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-        <h2 style="color: #0d9488; text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 10px;">Srisai Subhramaniya Hospitals</h2>
-        <p>Dear <strong>${patientName}</strong>,</p>
-        <p>Your specialist <strong>${doctorName}</strong> has written your medical prescription details below:</p>
-        
-        <div style="background-color: #f1f5f9; border-left: 4px solid #0d9488; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; font-size: 14px; color: #1e293b; margin: 20px 0;">
-          ${prescription}
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; overflow: hidden; box-shadow: 0 4px 12px rgba(6, 15, 45, 0.05);">
+        <!-- Header Banner -->
+        <div style="background-color: #060F2D; padding: 24px; color: #FFFFFF; text-align: left;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td>
+                <h2 style="margin: 0; font-size: 22px; font-weight: 850; letter-spacing: 0.5px; color: #FFFFFF; font-family: 'Arial Black', Arial, sans-serif;">SRI SAI HOSPITAL</h2>
+                <span style="font-size: 11px; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; font-weight: bold;">CLINICAL CONSULTATION SLIP</span>
+              </td>
+            </tr>
+          </table>
         </div>
         
-        <p>Please follow the dosage instructions as mentioned in the prescription card. Take care of your health!</p>
-        <p style="margin-top: 25px; text-align: center; color: #94a3b8; font-size: 11px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+        <!-- Content Area -->
+        <div style="padding: 24px;">
+          <!-- Patient & Doctor Info Table -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13.5px; color: #475569;">
+            <tr>
+              <td style="width: 50%; padding-bottom: 12px; vertical-align: top;">
+                <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; display: block; margin-bottom: 4px;">Patient Details</span>
+                <strong style="font-size: 15px; color: #060F2D; display: block; margin-bottom: 2px;">${escapedPatientName}</strong>
+              </td>
+              <td style="width: 50%; padding-bottom: 12px; text-align: right; vertical-align: top;">
+                <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; display: block; margin-bottom: 4px;">Consultant Doctor</span>
+                <strong style="font-size: 15px; color: #060F2D; display: block; margin-bottom: 2px;">Dr. ${escapedDoctorName}</strong>
+              </td>
+            </tr>
+          </table>
+
+          <div style="border-top: 1px dashed #e2e8f0; margin-bottom: 24px;"></div>
+
+          <h3 style="font-size: 12px; color: #4A65FF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; font-weight: 700; margin-top: 0;">Rx Prescriptions</h3>
+          
+          ${prescriptionHtml}
+          
+          <div style="border-top: 1px dashed #e2e8f0; margin-top: 30px; margin-bottom: 20px;"></div>
+
+          <!-- Doctor Signature & Verification Footer -->
+          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <tr>
+              <td style="vertical-align: bottom; padding-bottom: 10px;">
+                <span style="font-size: 11px; color: #94a3b8;">Prescription Issued:</span>
+                <strong style="font-size: 12.5px; color: #475569; display: block; margin-top: 2px;">${new Date().toLocaleDateString("en-IN", { dateStyle: "long" })}</strong>
+              </td>
+              <td style="text-align: right; vertical-align: bottom;">
+                <div style="width: 150px; border-bottom: 1px solid #cbd5e1; margin-left: auto; margin-bottom: 6px;"></div>
+                <span style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 8px;">Doctor's Signature</span>
+                <span style="color: #4A65FF; font-weight: 700; font-size: 12px; letter-spacing: 0.5px;">Sri Sai Hospital Telehealth Verified</span>
+              </td>
+            </tr>
+          </table>
+          
+          <p style="margin-top: 30px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #f1f5f9; padding-top: 15px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+        </div>
       </div>
     `,
   };
@@ -462,4 +606,55 @@ export const sendMissedAppointmentEmail = async (options: MissedMailOptions) => 
     return false;
   }
 };
+
+// 7. Function to send Password Reset OTP Email
+interface ResetOTPMailOptions {
+  to: string;
+  patientName: string;
+  otp: string;
+}
+
+export const sendResetOTPEmail = async (options: ResetOTPMailOptions) => {
+  const { to, patientName, otp } = options;
+
+  const mailOptions = {
+    from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "🔒 Password Reset Verification Code - Srisai Subhramaniya Hospitals",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="display: inline-block; background-color: #3f59ff; color: white; font-size: 24px; font-weight: bold; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; text-align: center;">🔒</div>
+          <h2 style="color: #0d9488; margin: 10px 0 0 0;">Reset Your Password</h2>
+          <p style="color: #64748b; font-size: 14px; margin: 5px 0 0 0;">Srisai Subhramaniya Hospitals</p>
+        </div>
+
+        <p>Dear <strong>${patientName}</strong>,</p>
+        <p>We received a request to reset the password for your patient portal account. Use the following verification code (OTP) to proceed with your password reset. This code is valid for <strong>10 minutes</strong>.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="display: inline-block; padding: 15px 35px; background-color: #f1f5f9; border: 2px dashed #3f59ff; border-radius: 10px; font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #3f59ff;">
+            ${otp}
+          </div>
+        </div>
+
+        <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 6px; font-size: 13px; color: #b45309; text-align: center;">
+          ⚠️ <strong>Security Notice:</strong> If you did not request a password reset, please ignore this email or contact support if you have security concerns. Do not share this code with anyone.
+        </div>
+
+        <p style="margin-top: 25px; text-align: center; color: #94a3b8; font-size: 11px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+      </div>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`📧 Reset Password OTP Email sent successfully to ${to}:`, info.messageId);
+    return true;
+  } catch (error) {
+    console.error(`❌ Error sending Reset Password OTP email to ${to}:`, error);
+    return false;
+  }
+};
+
 

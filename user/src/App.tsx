@@ -26,6 +26,8 @@ const Facilities = lazy(() => import("./components/Facilities/Facilities"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Profile = lazy(() => import("./pages/Profile"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -93,6 +95,8 @@ function App() {
             {/* ✅ Auth Pages — Login & Register */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
             {/* ✅ User Profile / Dashboard Page */}
             <Route path="/profile" element={<Profile />} />

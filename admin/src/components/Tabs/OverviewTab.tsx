@@ -654,13 +654,11 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                   fontWeight: "600",
                   color: "#0F172A",
                   cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.25s ease",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgba(63, 89, 255, 0.04)";
-                  e.currentTarget.style.borderColor = "#3F59FF";
+                  e.currentTarget.style.backgroundColor = "rgba(74, 101, 255, 0.04)";
+                  e.currentTarget.style.borderColor = "#4A65FF";
                   e.currentTarget.style.transform = "translateX(2px)";
                 }}
                 onMouseOut={(e) => {
@@ -693,8 +691,8 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                   boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgba(63, 89, 255, 0.04)";
-                  e.currentTarget.style.borderColor = "#3F59FF";
+                  e.currentTarget.style.backgroundColor = "rgba(74, 101, 255, 0.04)";
+                  e.currentTarget.style.borderColor = "#4A65FF";
                   e.currentTarget.style.transform = "translateX(2px)";
                 }}
                 onMouseOut={(e) => {

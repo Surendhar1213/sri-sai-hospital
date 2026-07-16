@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
+import { sendResetOTPEmail } from "../config/emailService.js";
 
 // ─────────────────────────────────────────
 // REGISTER — New patient create பண்ண
@@ -184,3 +185,132 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
+// ─────────────────────────────────────────
+// FORGOT PASSWORD — Generate OTP and email it
+// ─────────────────────────────────────────
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: "Please provide your email address" });
+      return;
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(404).json({ message: "No account found with this email address" });
+      return;
+    }
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    user.resetPasswordOTP = otp;
+    user.resetPasswordOTPExpires = otpExpires;
+    await user.save();
+
+    const emailSent = await sendResetOTPEmail({
+      to: user.email,
+      patientName: user.name,
+      otp,
+    });
+
+    if (!emailSent) {
+      res.status(500).json({ message: "Failed to send reset code. Please try again." });
+      return;
+    }
+
+    res.status(200).json({ message: "Verification code sent to your email address" });
+
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ─────────────────────────────────────────
+// RESET PASSWORD — Verify OTP and set new password
+// ─────────────────────────────────────────
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      res.status(400).json({ message: "Please provide all required fields" });
+      return;
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    // Check if OTP matches and is not expired
+    if (!user.resetPasswordOTP || user.resetPasswordOTP !== otp) {
+      res.status(400).json({ message: "Invalid verification code" });
+      return;
+    }
+
+    if (!user.resetPasswordOTPExpires || new Date() > user.resetPasswordOTPExpires) {
+      res.status(400).json({ message: "Verification code has expired. Please request a new one." });
+      return;
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+
+    // Clear reset password fields
+    user.resetPasswordOTP = null as any;
+    user.resetPasswordOTPExpires = null as any;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully! Please login with your new password." });
+
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ─────────────────────────────────────────
+// VERIFY OTP — Verify OTP correctness
+// ─────────────────────────────────────────
+export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      res.status(400).json({ message: "Please provide email and verification code" });
+      return;
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    // Check if OTP matches and is not expired
+    if (!user.resetPasswordOTP || user.resetPasswordOTP !== otp) {
+      res.status(400).json({ message: "Invalid verification code" });
+      return;
+    }
+
+    if (!user.resetPasswordOTPExpires || new Date() > user.resetPasswordOTPExpires) {
+      res.status(400).json({ message: "Verification code has expired. Please request a new one." });
+      return;
+    }
+
+    res.status(200).json({ message: "Verification successful" });
+
+  } catch (error) {
+    console.error("Verify OTP Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+

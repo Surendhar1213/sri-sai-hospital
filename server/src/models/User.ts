@@ -56,6 +56,16 @@ const UserSchema = new Schema(
       type: String,
       default: "user",
     },
+
+    // Reset password fields
+    resetPasswordOTP: {
+      type: String,
+      default: null,
+    },
+    resetPasswordOTPExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true } // createdAt, updatedAt auto add ஆகும்
 );

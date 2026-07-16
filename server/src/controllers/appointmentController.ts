@@ -241,6 +241,33 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
     const { id } = req.params;
     const { status, assignedDoctor, prescription, paymentStatus } = req.body; // prescription details handling parameters
 
+    // Validate prescription structure if provided
+    if (prescription !== undefined && prescription !== "") {
+      try {
+        const parsed = JSON.parse(prescription);
+        if (parsed) {
+          if (typeof parsed !== "object" || (parsed.medicines && !Array.isArray(parsed.medicines))) {
+            res.status(400).json({ message: "Invalid prescription format. 'medicines' must be an array." });
+            return;
+          }
+          if (parsed.medicines && Array.isArray(parsed.medicines)) {
+            for (const med of parsed.medicines) {
+              if (!med.name || typeof med.name !== "string" || med.name.trim() === "") {
+                res.status(400).json({ message: "Invalid medicine item. 'name' is required and must be a non-empty string." });
+                return;
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // If it is invalid JSON, reject if it looks like malformed JSON, otherwise allow plain text
+        if (prescription.trim().startsWith("{") || prescription.trim().startsWith("[")) {
+          res.status(400).json({ message: "Malformed JSON format in prescription payload." });
+          return;
+        }
+      }
+    }
+
     // 1. Existing appointment query parameters get pannanum
     const appointment = await Appointment.findById(id);
     if (!appointment) {
@@ -266,6 +293,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
     }
 
     let meetingLink = appointment.meetingLink;
+    let linkGeneratedThisSession = false;
 
     // இதைச் சேர்க்கவும் (Debug Log):
     console.log("🔍 DEBUG CHECK:", {
@@ -275,7 +303,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       shouldEnterBlock: (status === "approved" && assignedDoctor && !meetingLink)
     });
 
-        // 2. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
+    // 2. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
     if (status === "approved" && assignedDoctor && !meetingLink) {
       // Find Doctor details (especially doctor email)
       const doctorDetails = await Doctor.findById(assignedDoctor);
@@ -293,6 +321,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
 
         if (generatedLink) {
           meetingLink = generatedLink; 
+          linkGeneratedThisSession = true;
           console.log(`🔗 Generated Google Meet Link: ${meetingLink}`);
         } else {
           console.error("❌ Google Calendar API failed to return meeting link.");
@@ -301,12 +330,13 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       }
     }
 
-    // 3. DB values update panrom (without blocking on Google Calendar API)
+    // 3. DB values update panrom
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       { 
         status, 
         assignedDoctor, 
+        meetingLink, // <-- Save the meeting link here synchronously!
         prescription: prescription !== undefined ? prescription : appointment.prescription,
         paymentStatus: paymentStatus !== undefined ? paymentStatus : appointment.paymentStatus
       },
@@ -321,89 +351,62 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
     // Trigger initial SSE notification so client gets the status update instantly
     notifySSEClients({ event: "update-appointment", data: updatedAppointment });
 
-    // 4. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
-    if (status === "approved" && assignedDoctor && !appointment.meetingLink) {
+    // 4. Send email & schedule reminders if a new link was generated
+    if (linkGeneratedThisSession && updatedAppointment.meetingLink) {
       setImmediate(async () => {
         try {
-          const doctorDetails = await Doctor.findById(assignedDoctor);
-          if (doctorDetails) {
-            console.log(`📅 Background Scheduling Google Meet: Patient(${appointment.pasentmail}) with Doctor(${doctorDetails.email})`);
-            
-            const generatedLink = await createMeetEvent({
-              patientEmail: appointment.pasentmail,
-              doctorEmail: doctorDetails.email,
-              speciality: appointment.speciality,
-              startTime: new Date(appointment.appointmenttime),
+          const doctorObj = updatedAppointment.assignedDoctor as any;
+          if (doctorObj) {
+            const formattedTime = new Date(updatedAppointment.appointmenttime).toLocaleString("en-IN", {
+              timeZone: "Asia/Kolkata",
+              dateStyle: "medium",
+              timeStyle: "short",
             });
 
-            if (generatedLink) {
-              const fullyUpdated = await Appointment.findByIdAndUpdate(
-                id,
-                { meetingLink: generatedLink },
-                { returnDocument: "after" }
-              ).populate("assignedDoctor", "name email speciality");
+            // Send confirmation email to Patient with link
+            await sendAppointmentEmail({
+              to: updatedAppointment.pasentmail,
+              patientName: updatedAppointment.pasentname,
+              doctorName: doctorObj.name,
+              speciality: updatedAppointment.speciality,
+              time: formattedTime,
+              meetingLink: updatedAppointment.meetingLink,
+            });
 
-              if (fullyUpdated) {
-                console.log(`🔗 Generated Google Meet Link & Updated DB: ${generatedLink}`);
+            // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
+            const appTime = new Date(updatedAppointment.appointmenttime);
+            const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000);
+            if (reminderTime > new Date()) {
+              console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
+              schedule.scheduleJob(updatedAppointment._id.toString(), reminderTime, async () => {
+                console.log(`🔔 Executing scheduled 15-min email reminders for appointment: ${updatedAppointment._id}`);
                 
-                const doctorObj = fullyUpdated.assignedDoctor as any;
-                const formattedTime = new Date(fullyUpdated.appointmenttime).toLocaleString("en-IN", {
-                  timeZone: "Asia/Kolkata",
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                });
-
-                // Send confirmation email to Patient with link
-                await sendAppointmentEmail({
-                  to: fullyUpdated.pasentmail,
-                  patientName: fullyUpdated.pasentname,
+                await sendReminderEmail({
+                  to: updatedAppointment.pasentmail,
+                  patientName: updatedAppointment.pasentname,
                   doctorName: doctorObj.name,
-                  speciality: fullyUpdated.speciality,
+                  speciality: updatedAppointment.speciality,
                   time: formattedTime,
-                  meetingLink: fullyUpdated.meetingLink,
+                  meetingLink: updatedAppointment.meetingLink || "",
+                  role: "patient"
                 });
 
-                // Trigger second SSE to update client with the newly generated meetingLink
-                notifySSEClients({ event: "update-appointment", data: fullyUpdated });
-
-                // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
-                const appTime = new Date(fullyUpdated.appointmenttime);
-                const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000);
-                if (reminderTime > new Date()) {
-                  console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${fullyUpdated._id}`);
-                  schedule.scheduleJob(fullyUpdated._id.toString(), reminderTime, async () => {
-                    console.log(`🔔 Executing scheduled 15-min email reminders for appointment: ${fullyUpdated._id}`);
-                    
-                    await sendReminderEmail({
-                      to: fullyUpdated.pasentmail,
-                      patientName: fullyUpdated.pasentname,
-                      doctorName: doctorObj.name,
-                      speciality: fullyUpdated.speciality,
-                      time: formattedTime,
-                      meetingLink: fullyUpdated.meetingLink || "",
-                      role: "patient"
-                    });
-
-                    if (doctorObj.email) {
-                      await sendReminderEmail({
-                        to: doctorObj.email,
-                        patientName: fullyUpdated.pasentname,
-                        doctorName: doctorObj.name,
-                        speciality: fullyUpdated.speciality,
-                        time: formattedTime,
-                        meetingLink: fullyUpdated.meetingLink || "",
-                        role: "doctor"
-                      });
-                    }
+                if (doctorObj.email) {
+                  await sendReminderEmail({
+                    to: doctorObj.email,
+                    patientName: updatedAppointment.pasentname,
+                    doctorName: doctorObj.name,
+                    speciality: updatedAppointment.speciality,
+                    time: formattedTime,
+                    meetingLink: updatedAppointment.meetingLink || "",
+                    role: "doctor"
                   });
                 }
-              }
-            } else {
-              console.error("❌ Google Calendar API failed to return meeting link.");
+              });
             }
           }
         } catch (err: any) {
-          console.error("❌ Background Google Meet/Email generation error:", err.message);
+          console.error("❌ Background email/reminder processing error:", err.message);
         }
       });
     } else {

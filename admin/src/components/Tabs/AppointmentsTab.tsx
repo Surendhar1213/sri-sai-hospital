@@ -1,10 +1,16 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Calendar,
   X,
   ChevronLeft,
   ChevronRight,
   Search,
+  Pill,
+  Utensils,
+  AlertCircle,
+  Trash2,
+  Edit2,
+  Clock
 } from "lucide-react";
 
 interface Doctor {
@@ -87,6 +93,130 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   handleQuickCancel,
   handleTogglePaymentStatus,
 }) => {
+  // Local prescription builder states
+  const [localMedicines, setLocalMedicines] = useState<any[]>([]);
+  const [localNotes, setLocalNotes] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const medInputRef = useRef<HTMLInputElement>(null);
+
+  // Temp states for adding a new medicine row
+  const [tempMedName, setTempMedName] = useState("");
+  const [tempMorning, setTempMorning] = useState(false);
+  const [tempNoon, setTempNoon] = useState(false);
+  const [tempNight, setTempNight] = useState(false);
+  const [tempIsSos, setTempIsSos] = useState(false);
+  const [tempTiming, setTempTiming] = useState<"before" | "after" | "sos">("after");
+  const [tempDuration, setTempDuration] = useState("5 Days");
+
+  // Sync when selectedAppointment opens
+  useEffect(() => {
+    if (selectedAppointment) {
+      try {
+        const parsed = JSON.parse(selectedAppointment.prescription || "");
+        if (parsed && (Array.isArray(parsed.medicines) || parsed.notes !== undefined)) {
+          setLocalMedicines(parsed.medicines || []);
+          setLocalNotes(parsed.notes || "");
+          return;
+        }
+      } catch (e) {
+        // Fallback for old plain text prescription
+      }
+      setLocalMedicines([]);
+      setLocalNotes(selectedAppointment.prescription || "");
+    } else {
+      setLocalMedicines([]);
+      setLocalNotes("");
+    }
+    // Reset temp inputs
+    setTempMedName("");
+    setTempMorning(false);
+    setTempNoon(false);
+    setTempNight(false);
+    setTempIsSos(false);
+    setTempTiming("after");
+    setTempDuration("5 Days");
+    setEditingIndex(null);
+  }, [selectedAppointment]);
+
+  // Sync back to Dashboard state when local values change
+  useEffect(() => {
+    if (selectedAppointment) {
+      setManagePrescription(JSON.stringify({
+        medicines: localMedicines,
+        notes: localNotes
+      }));
+    }
+  }, [localMedicines, localNotes, setManagePrescription, selectedAppointment]);
+
+  const addMedicine = () => {
+    if (!tempMedName.trim()) return;
+    const newMed = {
+      name: tempMedName.trim(),
+      morning: tempIsSos ? false : tempMorning,
+      noon: tempIsSos ? false : tempNoon,
+      night: tempIsSos ? false : tempNight,
+      isSos: tempIsSos,
+      timing: tempTiming,
+      duration: tempDuration || "5 Days"
+    };
+    if (editingIndex !== null) {
+      const updated = [...localMedicines];
+      updated[editingIndex] = newMed;
+      setLocalMedicines(updated);
+      setEditingIndex(null);
+    } else {
+      setLocalMedicines([...localMedicines, newMed]);
+    }
+    setTempMedName("");
+    setTempMorning(false);
+    setTempNoon(false);
+    setTempNight(false);
+    setTempIsSos(false);
+    setTempTiming("after");
+    setTempDuration("5 Days");
+    
+    // Auto focus back to input
+    setTimeout(() => {
+      medInputRef.current?.focus();
+    }, 50);
+  };
+
+  const editMedicine = (index: number) => {
+    const med = localMedicines[index];
+    if (!med) return;
+    setTempMedName(med.name);
+    setTempMorning(med.morning || false);
+    setTempNoon(med.noon || false);
+    setTempNight(med.night || false);
+    setTempIsSos(med.isSos || false);
+    setTempTiming(med.timing || "after");
+    setTempDuration(med.duration || "5 Days");
+    setEditingIndex(index);
+    
+    // Focus input
+    setTimeout(() => {
+      medInputRef.current?.focus();
+    }, 50);
+  };
+
+  const removeMedicine = (index: number) => {
+    setLocalMedicines(localMedicines.filter((_, idx) => idx !== index));
+    if (editingIndex === index) {
+      setEditingIndex(null);
+      setTempMedName("");
+      setTempMorning(false);
+      setTempNoon(false);
+      setTempNight(false);
+      setTempIsSos(false);
+      setTempTiming("after");
+      setTempDuration("5 Days");
+    }
+    setTimeout(() => {
+      medInputRef.current?.focus();
+    }, 50);
+  };
+
   // Local filter states
   const [appointmentSearchText, setAppointmentSearchText] = useState("");
   const [appointmentSpecialityFilter, setAppointmentSpecialityFilter] = useState("All");
@@ -243,7 +373,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                 fontWeight: "600",
                 cursor: "pointer",
                 backgroundColor: appointmentViewMode === "table" ? "#FFFFFF" : "transparent",
-                color: appointmentViewMode === "table" ? "#3F59FF" : "#64748B",
+                color: appointmentViewMode === "table" ? "#4A65FF" : "#64748B",
                 boxShadow: appointmentViewMode === "table" ? "0 2px 8px rgba(0, 0, 0, 0.05)" : "none",
               }}
             >
@@ -259,7 +389,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                 fontWeight: "600",
                 cursor: "pointer",
                 backgroundColor: appointmentViewMode === "calendar" ? "#FFFFFF" : "transparent",
-                color: appointmentViewMode === "calendar" ? "#3F59FF" : "#64748B",
+                color: appointmentViewMode === "calendar" ? "#4A65FF" : "#64748B",
                 boxShadow: appointmentViewMode === "calendar" ? "0 2px 8px rgba(0, 0, 0, 0.05)" : "none",
               }}
             >
@@ -460,7 +590,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
             style={{
               marginTop: "16px",
               padding: "10px 24px",
-              backgroundColor: "#3F59FF",
+              backgroundColor: "#4A65FF",
               color: "#FFFFFF",
               border: "none",
               borderRadius: "8px",
@@ -515,8 +645,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                   style={{
                     padding: "12px 10px",
                     borderRadius: "10px",
-                    backgroundColor: isToday ? "rgba(63, 89, 255, 0.04)" : "#FFFFFF",
-                    border: isToday ? "1.5px solid #3F59FF" : "1px solid #E2E8F0",
+                    backgroundColor: isToday ? "rgba(74, 101, 255, 0.04)" : "#FFFFFF",
+                    border: isToday ? "1.5px solid #4A65FF" : "1px solid #E2E8F0",
                     cursor: "pointer",
                     display: "flex",
                     flexDirection: "column",
@@ -525,18 +655,18 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                     minHeight: "85px",
                     transition: "all 0.2s ease",
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(63, 89, 255, 0.08)")}
+                  onMouseOver={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(74, 101, 255, 0.08)")}
                   onMouseOut={(e) => (e.currentTarget.style.boxShadow = "none")}
                 >
-                  <span style={{ fontSize: "14px", fontWeight: "700", color: isToday ? "#3F59FF" : "#0F172A" }}>{day}</span>
+                  <span style={{ fontSize: "14px", fontWeight: "700", color: isToday ? "#4A65FF" : "#0F172A" }}>{day}</span>
                   {dayBookings.length > 0 && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
                       <span style={{
                         fontSize: "10px",
                         padding: "2px 6px",
                         borderRadius: "6px",
-                        backgroundColor: "rgba(63, 89, 255, 0.08)",
-                        color: "#3F59FF",
+                        backgroundColor: "rgba(74, 101, 255, 0.08)",
+                        color: "#4A65FF",
                         fontWeight: "800",
                         display: "inline-block",
                         textAlign: "center",
@@ -569,7 +699,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
         <div style={{ overflowX: "auto" }}>
           {filteredAppointments.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px", color: "#616161" }}>
-              <Calendar size={40} color="#3F59FF" style={{ marginBottom: "12px" }} />
+              <Calendar size={40} color="#4A65FF" style={{ marginBottom: "12px" }} />
               <p style={{ fontWeight: "600", color: "#060F2D" }}>No appointments matched your query filter.</p>
               <span style={{ fontSize: "13px", color: "#cbd5e1" }}>Reset filter dropdown selectors to list all details.</span>
             </div>
@@ -655,8 +785,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                 width: "32px",
                                 height: "32px",
                                 borderRadius: "50%",
-                                backgroundColor: isMatchedBySearch ? "rgba(63, 89, 255, 0.12)" : "rgba(63, 89, 255, 0.06)",
-                                color: "#3F59FF",
+                                backgroundColor: isMatchedBySearch ? "rgba(74, 101, 255, 0.12)" : "rgba(74, 101, 255, 0.06)",
+                                color: "#4A65FF",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -695,12 +825,12 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "6px",
-                                color: "#3F59FF",
+                                color: "#4A65FF",
                                 textDecoration: "none",
                                 marginTop: "6px",
                                 fontSize: "12px",
                                 fontWeight: "700",
-                                backgroundColor: "rgba(63, 89, 255, 0.08)",
+                                backgroundColor: "rgba(74, 101, 255, 0.08)",
                                 padding: "4px 8px",
                                 borderRadius: "6px",
                                 transition: "all 0.2s",
@@ -840,12 +970,12 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                 Cancel
                               </button>
                             )}
-                            {app.status === "completed" && app.prescription && (
+                            {/* {app.status === "completed" && app.prescription && (
                               <button
                                 onClick={() => setPrintPrescriptionAppointment(app)}
                                 style={{
                                   padding: "6px 12px",
-                                  backgroundColor: "#3F59FF",
+                                  backgroundColor: "#4A65FF",
                                   border: "none",
                                   borderRadius: "8px",
                                   fontSize: "12px",
@@ -856,7 +986,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               >
                                 Prescription
                               </button>
-                            )}
+                            )} */}
                           </div>
                         </td>
                       </tr>
@@ -913,7 +1043,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           height: "36px",
                           borderRadius: "8px",
                           border: p === activeAppPageBounded ? "none" : "1.5px solid #e2e8f0",
-                          backgroundColor: p === activeAppPageBounded ? "#3F59FF" : "#FFFFFF",
+                          backgroundColor: p === activeAppPageBounded ? "#4A65FF" : "#FFFFFF",
                           color: p === activeAppPageBounded ? "#FFFFFF" : "#060F2D",
                           fontSize: "14px",
                           fontWeight: "700",
@@ -979,6 +1109,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
               backgroundColor: "#FFFFFF",
               width: "100%",
               maxWidth: "560px",
+              maxHeight: "90vh",
+              overflowY: "auto",
               borderRadius: "24px",
               padding: "36px",
               boxShadow: "0 24px 60px rgba(6, 15, 45, 0.15)",
@@ -1074,28 +1206,276 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                 </select>
               </div>
 
-              {/* Prescription / Notes Textarea */}
+              {/* Structured Prescription Builder */}
               {manageStatus === "completed" && (
-                <div>
-                  <label style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", display: "block", marginBottom: "8px" }}>
-                    Prescription / Consultation Notes
+                <div style={{ display: "flex", flexDirection: "column", gap: "14px", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "14px", backgroundColor: "#f8fafc" }}>
+                  <label style={{ fontSize: "15px", fontWeight: "800", color: "#060F2D" }}>
+                    📋 Prescription Builder
                   </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Type advice dosage, diagnostic findings, or session notes here..."
-                    value={managePrescription}
-                    onChange={(e) => setManagePrescription(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "14px",
-                      borderRadius: "10px",
-                      border: "1.5px solid #cbd5e1",
-                      fontSize: "15px",
-                      outline: "none",
-                      resize: "none",
-                      fontFamily: "inherit",
-                    }}
-                  />
+
+                  {/* List of current medicines (Compact Container) */}
+                  {localMedicines.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", textTransform: "uppercase" }}>Added Medicines</span>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px", maxHeight: "150px", overflowY: "auto", paddingRight: "4px" }}>
+                        {localMedicines.map((med, index) => {
+                          const dosageStr = med.isSos ? "SOS (As Needed)" : `${med.morning ? "1" : "0"}-${med.noon ? "1" : "0"}-${med.night ? "1" : "0"}`;
+                          const timingStr = med.timing === "before" ? "BF (Before Food)" : med.timing === "sos" ? "SOS (As Needed)" : "AF (After Food)";
+                          const durationStr = med.duration ? (med.duration.toLowerCase().includes("day") ? med.duration.replace(/days?/i, "D") : med.duration.toLowerCase().includes("week") ? med.duration.replace(/weeks?/i, "W") : med.duration) : "";
+                          
+                          return (
+                            <div key={index} style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              backgroundColor: editingIndex === index ? "#EFF6FF" : "#ffffff",
+                              padding: "6px 10px",
+                              borderRadius: "6px",
+                              border: editingIndex === index ? "1px dashed #3B82F6" : "1px solid #e2e8f0",
+                              fontSize: "12.5px"
+                            }}>
+                              <div style={{ flex: 1, minWidth: 0, paddingRight: "8px" }}>
+                                <div style={{ fontWeight: "700", color: "#0F172A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "6px" }}>
+                                  <Pill size={13} color="#4A65FF" /> {med.name}
+                                </div>
+                                <div style={{ fontSize: "11px", color: "#64748B", marginTop: "3px", display: "flex", gap: "6px", alignItems: "center" }}>
+                                  <span style={{ backgroundColor: "#F1F5F9", padding: "2px 6px", borderRadius: "4px", color: "#334155", fontWeight: "700" }}>{dosageStr}</span>
+                                  <span style={{ color: "#cbd5e1" }}>|</span>
+                                  <span style={{ color: med.timing === "before" ? "#10B981" : med.timing === "sos" ? "#F59E0B" : "#3B82F6", fontWeight: "700" }}>{timingStr}</span>
+                                  <span style={{ color: "#cbd5e1" }}>|</span>
+                                  <span style={{ fontWeight: "700", color: "#475569" }}>{durationStr}</span>
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                                <button
+                                  type="button"
+                                  onClick={() => editMedicine(index)}
+                                  style={{ border: "none", background: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px" }}
+                                  title="Edit Medicine"
+                                >
+                                  <Edit2 size={13} color="#3B82F6" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeMedicine(index)}
+                                  style={{ border: "none", background: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px" }}
+                                  title="Remove Medicine"
+                                >
+                                  <Trash2 size={13} color="#EF4444" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Add New Medicine Form Row */}
+                  <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", textTransform: "uppercase" }}>
+                        {editingIndex !== null ? "✏️ Edit Medicine" : "Add Medicine"}
+                      </span>
+                      {editingIndex !== null && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingIndex(null);
+                            setTempMedName("");
+                            setTempMorning(false);
+                            setTempNoon(false);
+                            setTempNight(false);
+                            setTempIsSos(false);
+                            setTempTiming("after");
+                            setTempDuration("5 Days");
+                          }}
+                          style={{ border: "none", background: "none", color: "#EF4444", fontSize: "11px", cursor: "pointer", fontWeight: "700" }}
+                        >
+                          Cancel Edit
+                        </button>
+                      )}
+                    </div>
+
+                    <input
+                      ref={medInputRef}
+                      type="text"
+                      placeholder="e.g. Paracetamol 650mg, Insulin"
+                      value={tempMedName}
+                      onChange={(e) => setTempMedName(e.target.value)}
+                      style={{ padding: "10px 12px", borderRadius: "8px", border: "1.5px solid #cbd5e1", fontSize: "13px", outline: "none", transition: "border-color 0.2s" }}
+                    />
+                    
+                    {/* Dosage One-Click Presets */}
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", marginBottom: "4px" }}>DOSAGE PRESET</div>
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        {[
+                          { label: "1-0-1", act: () => { setTempMorning(true); setTempNoon(false); setTempNight(true); setTempIsSos(false); } },
+                          { label: "1-1-1", act: () => { setTempMorning(true); setTempNoon(true); setTempNight(true); setTempIsSos(false); } },
+                          { label: "1-0-0", act: () => { setTempMorning(true); setTempNoon(false); setTempNight(false); setTempIsSos(false); } },
+                          { label: "0-0-1", act: () => { setTempMorning(false); setTempNoon(false); setTempNight(true); setTempIsSos(false); } },
+                          { label: "SOS (As Needed)", act: () => { setTempMorning(false); setTempNoon(false); setTempNight(false); setTempIsSos(true); setTempTiming("sos"); } }
+                        ].map((btn) => {
+                          const isSelected = btn.label.startsWith("SOS") 
+                            ? tempIsSos 
+                            : (!tempIsSos && tempMorning === (btn.label === "1-0-1" || btn.label === "1-1-1" || btn.label === "1-0-0") && tempNoon === (btn.label === "1-1-1") && tempNight === (btn.label === "1-0-1" || btn.label === "1-1-1" || btn.label === "0-0-1"));
+                          
+                          return (
+                            <button
+                              key={btn.label}
+                              type="button"
+                              onClick={btn.act}
+                              style={{
+                                padding: "6px 12px",
+                                fontSize: "11.5px",
+                                fontWeight: "700",
+                                border: "1.5px solid " + (isSelected ? "#4A65FF" : "#CBD5E1"),
+                                backgroundColor: isSelected ? "#4A65FF" : "#FFFFFF",
+                                color: isSelected ? "#FFFFFF" : "#475569",
+                                borderRadius: "14px",
+                                cursor: "pointer",
+                                transition: "all 0.15s"
+                              }}
+                            >
+                              {btn.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Manual checkboxes (for custom dosage) */}
+                    {!tempIsSos && (
+                      <div style={{ display: "flex", gap: "10px", alignItems: "center", backgroundColor: "#ffffff", padding: "6px 10px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+                        <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748B" }}>Custom Check:</span>
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: "3px", fontSize: "11.5px", cursor: "pointer" }}>
+                          <input type="checkbox" checked={tempMorning} onChange={(e) => setTempMorning(e.target.checked)} />
+                          Morning
+                        </label>
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: "3px", fontSize: "11.5px", cursor: "pointer" }}>
+                          <input type="checkbox" checked={tempNoon} onChange={(e) => setTempNoon(e.target.checked)} />
+                          Noon
+                        </label>
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: "3px", fontSize: "11.5px", cursor: "pointer" }}>
+                          <input type="checkbox" checked={tempNight} onChange={(e) => setTempNight(e.target.checked)} />
+                          Night
+                        </label>
+                      </div>
+                    )}
+
+                    {/* Food & Duration Layout */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", alignItems: "start" }}>
+                      {/* Food Chips */}
+                      <div>
+                        <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", marginBottom: "4px" }}>FOOD TIMING</div>
+                        <div style={{ display: "flex", gap: "4px" }}>
+                          {[
+                            { val: "before", label: "BF (Before Food)" },
+                            { val: "after", label: "AF (After Food)" },
+                            { val: "sos", label: "SOS (As Needed)" }
+                          ].map((chip) => {
+                            const isSelected = tempTiming === chip.val;
+                            return (
+                              <button
+                                key={chip.val}
+                                type="button"
+                                onClick={() => setTempTiming(chip.val as any)}
+                                style={{
+                                  flex: 1,
+                                  padding: "6px 4px",
+                                  fontSize: "11px",
+                                  fontWeight: "700",
+                                  border: "1.5px solid " + (isSelected ? (chip.val === "before" ? "#10B981" : chip.val === "sos" ? "#F59E0B" : "#3B82F6") : "#CBD5E1"),
+                                  backgroundColor: isSelected ? (chip.val === "before" ? "#10B981" : chip.val === "sos" ? "#F59E0B" : "#3B82F6") : "#FFFFFF",
+                                  color: isSelected ? "#FFFFFF" : "#475569",
+                                  borderRadius: "6px",
+                                  cursor: "pointer",
+                                  textAlign: "center",
+                                  transition: "all 0.15s"
+                                }}
+                              >
+                                {chip.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Duration Chips */}
+                      <div>
+                        <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", marginBottom: "4px" }}>DURATION</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                          <input
+                            type="text"
+                            placeholder="e.g. 5 Days"
+                            value={tempDuration}
+                            onChange={(e) => setTempDuration(e.target.value)}
+                            style={{ width: "100%", padding: "6px 8px", borderRadius: "6px", border: "1.5px solid #cbd5e1", fontSize: "12px", outline: "none" }}
+                          />
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "2px" }}>
+                            {["3", "5", "7", "10", "15", "30"].map((day) => {
+                              const isSelected = tempDuration === `${day} Days`;
+                              return (
+                                <button
+                                  key={day}
+                                  type="button"
+                                  onClick={() => setTempDuration(`${day} Days`)}
+                                  style={{
+                                    padding: "3px 0",
+                                    fontSize: "9.5px",
+                                    fontWeight: "700",
+                                    border: "1px solid " + (isSelected ? "#4A65FF" : "#CBD5E1"),
+                                    backgroundColor: isSelected ? "#4A65FF" : "#FFFFFF",
+                                    color: isSelected ? "#FFFFFF" : "#475569",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                    textAlign: "center"
+                                  }}
+                                >
+                                  {day}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={addMedicine}
+                      disabled={!tempMedName.trim()}
+                      style={{
+                        padding: "8px",
+                        backgroundColor: tempMedName.trim() ? "#10B981" : "#cbd5e1",
+                        color: "#FFFFFF",
+                        border: "none",
+                        borderRadius: "6px",
+                        fontWeight: "700",
+                        cursor: tempMedName.trim() ? "pointer" : "not-allowed",
+                        fontSize: "12px",
+                        textAlign: "center",
+                        marginTop: "4px"
+                      }}
+                    >
+                      {editingIndex !== null ? "💾 Update Medicine" : "➕ Add Medicine"}
+                    </button>
+                  </div>
+
+                  {/* General Advice / Notes */}
+                  <div style={{ borderTop: "1px dashed #cbd5e1", paddingTop: "10px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <label style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", textTransform: "uppercase" }}>
+                      General Advice / Diagnostic Notes
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Diet instructions, advice, etc..."
+                      value={localNotes}
+                      onChange={(e) => setLocalNotes(e.target.value)}
+                      style={{ width: "100%", padding: "8px 10px", borderRadius: "6px", border: "1.5px solid #cbd5e1", fontSize: "12.5px", outline: "none", resize: "vertical", fontFamily: "inherit" }}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -1137,14 +1517,14 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                 style={{
                   marginTop: "16px",
                   padding: "16px",
-                  backgroundColor: "#3F59FF",
+                  backgroundColor: "#4A65FF",
                   color: "#FFFFFF",
                   border: "none",
                   borderRadius: "12px",
                   fontWeight: "700",
                   cursor: (isSavingAppointment || ((manageStatus === "approved" || manageStatus === "completed") && !manageDoctor)) ? "not-allowed" : "pointer",
                   fontSize: "15px",
-                  boxShadow: "0 8px 20px rgba(63, 89, 255, 0.2)",
+                  boxShadow: "0 8px 20px rgba(74, 101, 255, 0.2)",
                   transition: "all 0.2s",
                   opacity: (isSavingAppointment || ((manageStatus === "approved" || manageStatus === "completed") && !manageDoctor)) ? 0.6 : 1,
                 }}
@@ -1241,7 +1621,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                   <button
                     onClick={() => window.print()}
                     style={{
-                      background: "#3F59FF",
+                      background: "#4A65FF",
                       border: "none",
                       color: "#FFFFFF",
                       padding: "8px 16px",
@@ -1292,30 +1672,147 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                   </div>
                 </div>
 
-                {/* Prescription Text */}
-                <div style={{ marginBottom: "28px" }}>
-                  <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#3F59FF", fontWeight: "700", letterSpacing: "1px" }}>Rx Prescriptions / Notes</span>
-                  <div style={{
-                    marginTop: "8px",
-                    padding: "20px",
-                    backgroundColor: "#F8FAFC",
-                    border: "1px solid #E2E8F0",
-                    borderRadius: "8px",
-                    fontSize: "14.5px",
-                    lineHeight: "1.6",
-                    whiteSpace: "pre-line",
-                    color: "#060F2D",
-                    minHeight: "150px",
-                    textAlign: "left"
-                  }}>
-                    {printPrescriptionAppointment.prescription}
+                {/* Prescription Text / Structured Table */}
+                {(() => {
+                  let isStructured = false;
+                  let medicinesList: any[] = [];
+                  let adviceNotes = printPrescriptionAppointment.prescription || "";
+
+                  try {
+                    const parsed = JSON.parse(printPrescriptionAppointment.prescription || "");
+                    if (parsed && (Array.isArray(parsed.medicines) || parsed.notes !== undefined)) {
+                      isStructured = true;
+                      medicinesList = parsed.medicines || [];
+                      adviceNotes = parsed.notes || "";
+                    }
+                  } catch (e) {
+                    // Not structured JSON, fallback to plain text
+                  }
+
+                  return (
+                    <div style={{ marginBottom: "28px", textAlign: "left" }}>
+                      <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#4A65FF", fontWeight: "700", letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
+                        Rx Prescriptions
+                      </span>
+                      {isStructured ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                          {/* Medicines Table */}
+                          {medicinesList.length > 0 ? (
+                            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #E2E8F0" }}>
+                              <thead>
+                                <tr style={{ backgroundColor: "#F8FAFC", borderBottom: "2px solid #E2E8F0", textAlign: "left", fontSize: "12px", color: "#475569" }}>
+                                  <th style={{ padding: "10px 12px", fontWeight: "700" }}>Medicine Name</th>
+                                  <th style={{ padding: "10px 12px", fontWeight: "700" }}>Dosage (M-N-N)</th>
+                                  <th style={{ padding: "10px 12px", fontWeight: "700" }}>Timing</th>
+                                  <th style={{ padding: "10px 12px", fontWeight: "700" }}>Duration</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {medicinesList.map((med, idx) => (
+                                  <tr key={idx} style={{ borderBottom: "1px solid #E2E8F0", fontSize: "13px", color: "#0F172A", backgroundColor: idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC" }}>
+                                      <td style={{ padding: "12px", fontWeight: "700" }}>
+                                        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                          <Pill size={14} color="#4A65FF" /> {med.name}
+                                        </span>
+                                      </td>
+                                      <td style={{ padding: "12px" }}>
+                                        {med.isSos ? (
+                                          <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: "#FEF3C7", color: "#D97706", fontWeight: "bold", fontSize: "10px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                            <AlertCircle size={10} /> SOS / As Needed
+                                          </span>
+                                        ) : (
+                                          <div style={{ display: "flex", gap: "6px" }}>
+                                            <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.morning ? "#FEF3C7" : "#F3F4F6", color: med.morning ? "#D97706" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Morning</span>
+                                            <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.noon ? "#FFE4E6" : "#F3F4F6", color: med.noon ? "#E11D48" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Noon</span>
+                                            <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.night ? "#DBEAFE" : "#F3F4F6", color: med.night ? "#2563EB" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Night</span>
+                                          </div>
+                                        )}
+                                      </td>
+                                      <td style={{ padding: "12px" }}>
+                                        <span style={{
+                                          padding: "4px 8px",
+                                          borderRadius: "6px",
+                                          fontWeight: "700",
+                                          fontSize: "11px",
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          gap: "4px",
+                                          color: med.timing === "before" ? "#10B981" : med.timing === "sos" ? "#F59E0B" : "#3B82F6",
+                                          backgroundColor: med.timing === "before" ? "rgba(16, 185, 129, 0.1)" : med.timing === "sos" ? "rgba(245, 158, 11, 0.1)" : "rgba(59, 130, 246, 0.1)"
+                                        }}>
+                                          {med.timing === "before" ? (
+                                            <>
+                                              <Utensils size={10} /> Before Food
+                                            </>
+                                          ) : med.timing === "sos" ? (
+                                            <>
+                                              <AlertCircle size={10} /> SOS
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Utensils size={10} /> After Food
+                                            </>
+                                          )}
+                                        </span>
+                                      </td>
+                                      <td style={{ padding: "12px", fontWeight: "600", color: "#475569" }}>
+                                        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                          <Calendar size={13} color="#64748B" /> {med.duration}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          ) : (
+                            <div style={{ padding: "16px", textAlign: "center", border: "1px solid #E2E8F0", borderRadius: "8px", color: "#64748B", fontSize: "13px" }}>
+                              No specific medicines listed.
+                            </div>
+                          )}
+
+                          {/* Advice / Notes */}
+                          {adviceNotes && (
+                            <div>
+                              <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#64748B", fontWeight: "700", letterSpacing: "0.5px", display: "block", marginBottom: "6px" }}>
+                                Advice & Instructions
+                              </span>
+                              <div style={{ padding: "16px", backgroundColor: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "8px", fontSize: "14px", color: "#334155", whiteSpace: "pre-line", lineHeight: "1.6" }}>
+                                {adviceNotes}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        /* Legacy plain text fallback */
+                        <div style={{
+                          padding: "20px",
+                          backgroundColor: "#F8FAFC",
+                          border: "1px solid #E2E8F0",
+                          borderRadius: "8px",
+                          fontSize: "14.5px",
+                          lineHeight: "1.6",
+                          whiteSpace: "pre-line",
+                          color: "#060F2D",
+                          minHeight: "150px",
+                        }}>
+                          {adviceNotes}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Doctor's Signature Block */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "40px", marginBottom: "15px" }}>
+                  <div style={{ textAlign: "center", borderTop: "1px solid #cbd5e1", width: "180px", paddingTop: "6px" }}>
+                    <span style={{ fontSize: "11px", color: "#64748B", fontWeight: "bold" }}>Doctor's Signature</span>
                   </div>
                 </div>
 
                 {/* Footer details */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", color: "#72849B", borderTop: "1px solid #F1F5F9", paddingTop: "20px" }}>
                   <span>Date: {new Date(printPrescriptionAppointment.appointmenttime).toLocaleDateString("en-IN", { dateStyle: "long" })}</span>
-                  <span style={{ color: "#3F59FF", fontWeight: "700" }}>Sri Sai Hospital Telehealth Verified</span>
+                  <span style={{ color: "#4A65FF", fontWeight: "700" }}>Sri Sai Hospital Telehealth Verified</span>
                 </div>
               </div>
             </div>

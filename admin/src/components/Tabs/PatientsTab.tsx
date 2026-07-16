@@ -196,7 +196,7 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
             style={{
               marginTop: "16px",
               padding: "10px 24px",
-              backgroundColor: "#3F59FF",
+              backgroundColor: "#4A65FF",
               color: "#FFFFFF",
               border: "none",
               borderRadius: "8px",
@@ -209,7 +209,7 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
         </div>
       ) : filteredPatients.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px", color: "#616161" }}>
-          <Users size={40} color="#3F59FF" style={{ marginBottom: "12px" }} />
+          <Users size={40} color="#4A65FF" style={{ marginBottom: "12px" }} />
           <p style={{ fontWeight: "600", color: "#060F2D" }}>No registered patient accounts found.</p>
           <span style={{ fontSize: "13px", color: "#cbd5e1" }}>Sign-ups from client applications will map here.</span>
         </div>
@@ -263,8 +263,8 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
                               width: "32px",
                               height: "32px",
                               borderRadius: "50%",
-                              backgroundColor: "rgba(63, 89, 255, 0.06)",
-                              color: "#3F59FF",
+                              backgroundColor: "rgba(74, 101, 255, 0.06)",
+                              color: "#4A65FF",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -305,8 +305,8 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
                         <button
                           style={{
                             border: "none",
-                            background: "rgba(63, 89, 255, 0.05)",
-                            color: "#3F59FF",
+                            background: "rgba(74, 101, 255, 0.05)",
+                            color: "#4A65FF",
                             padding: "6px 12px",
                             borderRadius: "6px",
                             cursor: "pointer",
@@ -384,8 +384,8 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
                         width: "36px",
                         height: "36px",
                         borderRadius: "8px",
-                        border: isActive ? "1.5px solid #3F59FF" : "1.5px solid #E2E8F0",
-                        backgroundColor: isActive ? "#3F59FF" : "#FFFFFF",
+                        border: isActive ? "1.5px solid #4A65FF" : "1.5px solid #E2E8F0",
+                        backgroundColor: isActive ? "#4A65FF" : "#FFFFFF",
                         color: isActive ? "#FFFFFF" : "#0F172A",
                         fontWeight: "700",
                         fontSize: "13px",
@@ -578,7 +578,7 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
                   width: "100%",
                   padding: "14px 20px",
                   borderRadius: "12px",
-                  backgroundColor: "#3F59FF",
+                  backgroundColor: "#4A65FF",
                   color: "#FFFFFF",
                   border: "none",
                   fontSize: "14px",
@@ -586,10 +586,10 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
                   cursor: "pointer",
                   marginTop: "32px",
                   transition: "background 0.2s ease",
-                  boxShadow: "0 4px 12px rgba(63, 89, 255, 0.15)",
+                  boxShadow: "0 4px 12px rgba(74, 101, 255, 0.15)",
                 }}
                 onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#2B44E3")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#3F59FF")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#4A65FF")}
               >
                 Close Profile Registry
               </button>

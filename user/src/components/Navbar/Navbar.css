@@ -133,7 +133,7 @@
     font-family: inherit;
     font-weight: bold;
     font-size: 18px;
-    color: #3F59FF;
+    color: #4A65FF;
     position: absolute;
     left: 0;
     top: 8px;
@@ -803,8 +803,8 @@ blockquote p:has(cite),
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background-color: rgba(63, 89, 255, 0.08) !important;
-    color: #3F59FF !important;
+    background-color: rgba(74, 101, 255, 0.08) !important;
+    color: #4A65FF !important;
     border-radius: 50% !important;
     cursor: pointer !important;
     font-size: 14px !important;

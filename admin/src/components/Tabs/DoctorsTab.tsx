@@ -153,13 +153,13 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
         .doctor-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 12px 28px rgba(6, 15, 45, 0.08) !important;
-          border-color: #3F59FF !important;
+          border-color: #4A65FF !important;
         }
         .filter-select {
           transition: all 0.2s ease;
         }
         .filter-select:hover {
-          border-color: #3F59FF !important;
+          border-color: #4A65FF !important;
         }
         .action-btn {
           transition: all 0.2s ease;
@@ -206,7 +206,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
             setIsAddDoctorModalOpen(true);
           }}
           style={{
-            backgroundColor: "#3F59FF",
+            backgroundColor: "#4A65FF",
             color: "#FFFFFF",
             border: "none",
             padding: "12px 24px",
@@ -217,11 +217,11 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            boxShadow: "0 8px 24px rgba(63, 89, 255, 0.2)",
+            boxShadow: "0 8px 24px rgba(74, 101, 255, 0.2)",
             transition: "all 0.2s ease"
           }}
           onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#2b45eb")}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#3F59FF")}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#4A65FF")}
         >
           <Plus size={16} strokeWidth={2.5} />
           <span>Register New Doctor</span>
@@ -244,7 +244,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
             borderRadius: "14px",
             boxShadow: "0 8px 24px rgba(6, 15, 45, 0.02)",
             border: "1px solid #e2e8f0",
-            borderTop: "3px solid #3F59FF",
+            borderTop: "3px solid #4A65FF",
             display: "flex",
             alignItems: "center",
             gap: "16px"
@@ -255,8 +255,8 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
               width: "44px",
               height: "44px",
               borderRadius: "10px",
-              backgroundColor: "rgba(63, 89, 255, 0.06)",
-              color: "#3F59FF",
+              backgroundColor: "rgba(74, 101, 255, 0.06)",
+              color: "#4A65FF",
               display: "flex",
               alignItems: "center",
               justifyContent: "center"
@@ -373,7 +373,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
               outline: "none",
               transition: "all 0.2s"
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#3F59FF")}
+            onFocus={(e) => (e.target.style.borderColor = "#4A65FF")}
             onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
           />
         </div>
@@ -449,7 +449,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
               style={{
                 marginTop: "16px",
                 padding: "10px 24px",
-                backgroundColor: "#3F59FF",
+                backgroundColor: "#4A65FF",
                 color: "#FFFFFF",
                 border: "none",
                 borderRadius: "8px",
@@ -470,7 +470,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
               border: "1.5px dashed #cbd5e1"
             }}
           >
-            <Stethoscope size={40} color="#3F59FF" style={{ margin: "0 auto 16px" }} />
+            <Stethoscope size={40} color="#4A65FF" style={{ margin: "0 auto 16px" }} />
             <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#0F172A" }}>No matches found</h3>
             <p style={{ fontSize: "13px", color: "#64748B", marginTop: "4px" }}>
               Try adjusting your filters or search query to find matching doctor profiles.
@@ -509,8 +509,8 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                           style={{
                             fontSize: "11px",
                             fontWeight: "800",
-                            color: "#3F59FF",
-                            backgroundColor: "rgba(63, 89, 255, 0.08)",
+                            color: "#4A65FF",
+                            backgroundColor: "rgba(74, 101, 255, 0.08)",
                             padding: "3px 8px",
                             borderRadius: "6px",
                             display: "inline-block",
@@ -568,7 +568,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                         <strong>Experience:</strong> <span style={{ color: "#334155" }}>{doc.experience} Years</span>
                       </div>
                       <div>
-                        <strong>Timings:</strong> <span style={{ color: "#3F59FF", fontWeight: "600" }}>{doc.timing}</span>
+                        <strong>Timings:</strong> <span style={{ color: "#4A65FF", fontWeight: "600" }}>{doc.timing}</span>
                       </div>
                     </div>
                   </div>
@@ -593,7 +593,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                       }}
                       className="action-btn"
                       style={{
-                        backgroundColor: "#3F59FF",
+                        backgroundColor: "#4A65FF",
                         color: "#FFFFFF",
                         border: "none",
                         padding: "6px 12px",
@@ -604,7 +604,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                         display: "flex",
                         alignItems: "center",
                         gap: "6px",
-                        boxShadow: "0 3px 8px rgba(63, 89, 255, 0.15)"
+                        boxShadow: "0 3px 8px rgba(74, 101, 255, 0.15)"
                       }}
                     >
                       <Calendar size={13} />
@@ -713,7 +713,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                         height: "36px",
                         borderRadius: "8px",
                         border: p === activePage ? "none" : "1.5px solid #e2e8f0",
-                        backgroundColor: p === activePage ? "#3F59FF" : "#FFFFFF",
+                        backgroundColor: p === activePage ? "#4A65FF" : "#FFFFFF",
                         color: p === activePage ? "#FFFFFF" : "#060F2D",
                         fontSize: "14px",
                         fontWeight: "700",
@@ -934,14 +934,14 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                 style={{
                   marginTop: "16px",
                   padding: "16px",
-                  backgroundColor: "#3F59FF",
+                  backgroundColor: "#4A65FF",
                   color: "#FFFFFF",
                   border: "none",
                   borderRadius: "12px",
                   fontWeight: "700",
                   cursor: "pointer",
                   fontSize: "15px",
-                  boxShadow: "0 8px 20px rgba(63, 89, 255, 0.2)",
+                  boxShadow: "0 8px 20px rgba(74, 101, 255, 0.2)",
                   transition: "all 0.2s"
                 }}
               >
@@ -1131,14 +1131,14 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                 style={{
                   marginTop: "16px",
                   padding: "16px",
-                  backgroundColor: "#3F59FF",
+                  backgroundColor: "#4A65FF",
                   color: "#FFFFFF",
                   border: "none",
                   borderRadius: "12px",
                   fontWeight: "700",
                   cursor: "pointer",
                   fontSize: "15px",
-                  boxShadow: "0 8px 20px rgba(63, 89, 255, 0.2)",
+                  boxShadow: "0 8px 20px rgba(74, 101, 255, 0.2)",
                   transition: "all 0.2s"
                 }}
               >
@@ -1224,7 +1224,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
               <button
                 type="submit"
                 style={{
-                  backgroundColor: "#3F59FF",
+                  backgroundColor: "#4A65FF",
                   color: "#FFFFFF",
                   border: "none",
                   padding: "12px 20px",
@@ -1232,7 +1232,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
                   fontWeight: "700",
                   fontSize: "13.5px",
                   cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(63, 89, 255, 0.2)"
+                  boxShadow: "0 4px 12px rgba(74, 101, 255, 0.2)"
                 }}
               >
                 Block Date

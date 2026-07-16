@@ -146,7 +146,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       const pendingIds = appointments
         .filter((app) => app.status === "pending")
         .map((app) => app._id);
-      
+
       if (pendingIds.length > 0) {
         setSeenAppointments((prev) => {
           const updated = [...new Set([...prev, ...pendingIds])];
@@ -294,7 +294,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
   const handleQuickCancel = async (appId: string) => {
     const originalAppointments = [...appointments];
-    
+
     // Optimistic update
     setAppointments((prev) =>
       prev.map((app) => (app._id === appId ? { ...app, status: "cancelled" } : app))
@@ -415,10 +415,25 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         return;
       }
 
+      const data = await response.json();
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.message || "Failed to update appointment");
       }
+      
+      if (data.data) {
+        // Find if doctors array has the doctor object to populate properly if populated details are expected
+        let updatedItem = data.data;
+        if (updatedItem.assignedDoctor && typeof updatedItem.assignedDoctor === "string") {
+          const docObj = doctors.find(d => d._id === updatedItem.assignedDoctor);
+          if (docObj) {
+            updatedItem.assignedDoctor = docObj;
+          }
+        }
+        setAppointments((prev) =>
+          prev.map((app) => (app._id === selectedAppointment._id ? updatedItem : app))
+        );
+      }
+
       triggerToast("✅ Appointment updated successfully!");
     } catch (err: any) {
       setAppointments(originalAppointments);
@@ -448,8 +463,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     };
 
     eventSource.onerror = (err) => {
-      console.warn("SSE EventSource error, closing connection:", err);
-      eventSource.close();
+      console.warn("SSE EventSource error:", err);
     };
 
     return () => {
@@ -474,7 +488,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
 
     const updatedBlocked = [...currentBlocked, blockDateInput].sort();
-    
+
     try {
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const response = await fetch(`${backendUrl}/api/doctor/update/${selectedDoctorForBlocking._id}`, {
@@ -766,11 +780,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 width: "40px",
                 height: "40px",
                 borderRadius: "12px",
-                backgroundColor: "#3F59FF",
+                backgroundColor: "#4A65FF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 8px 20px rgba(63, 89, 255, 0.3)",
+                boxShadow: "0 8px 20px rgba(74, 101, 255, 0.3)",
               }}
             >
               <Stethoscope size={20} color="#FFFFFF" />
@@ -808,8 +822,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     padding: "14px 18px",
                     borderRadius: "12px",
                     border: "none",
-                    backgroundColor: isActive ? "rgba(63, 89, 255, 0.15)" : "transparent",
-                    color: isActive ? "#3F59FF" : "#94A3B8",
+                    backgroundColor: isActive ? "rgba(74, 101, 255, 0.15)" : "transparent",
+                    color: isActive ? "#4A65FF" : "#94A3B8",
                     cursor: "pointer",
                     fontSize: "14px",
                     fontWeight: isActive ? "700" : "600",
@@ -871,7 +885,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 width: "36px",
                 height: "36px",
                 borderRadius: "50%",
-                backgroundColor: "#3F59FF",
+                backgroundColor: "#4A65FF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -944,7 +958,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 triggerToast("🔔 Displaying all new pending appointment logs!");
               }}
               style={{
-                background: "#F2F3FE",
+                background: "#EEF1FF",
                 border: "none",
                 cursor: "pointer",
                 width: "42px",
@@ -958,7 +972,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
               onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              <Bell size={20} color="#3F59FF" />
+              <Bell size={20} color="#4A65FF" />
             </button>
             {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length > 0 && (
               <span

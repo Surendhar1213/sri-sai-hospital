@@ -187,7 +187,7 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <>
                   <li style={{ borderTop: "1px solid #eee", paddingTop: "10px" }}>
-                    <Link to="/profile" onClick={toggleMobileMenu} style={{ color: "#3F59FF", fontWeight: "700" }}>
+                    <Link to="/profile" onClick={toggleMobileMenu} style={{ color: "#4A65FF", fontWeight: "700" }}>
                       My Dashboard ({userName.charAt(0).toUpperCase()})
                     </Link>
                   </li>
@@ -199,7 +199,7 @@ const Navbar = () => {
                 </>
               ) : (
                 <li style={{ borderTop: "1px solid #eee", paddingTop: "10px" }}>
-                  <Link to="/login" onClick={toggleMobileMenu} style={{ color: "#3F59FF", fontWeight: "700" }}>
+                  <Link to="/login" onClick={toggleMobileMenu} style={{ color: "#4A65FF", fontWeight: "700" }}>
                     Log In / Register
                   </Link>
                 </li>

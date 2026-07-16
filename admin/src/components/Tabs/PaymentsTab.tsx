@@ -136,7 +136,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
   const getSpecialtyColor = (spec: string) => {
     const hash = spec.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const colors = [
-      { text: "#3F59FF", bg: "rgba(63, 89, 255, 0.08)" }, // Blue
+      { text: "#4A65FF", bg: "rgba(74, 101, 255, 0.08)" }, // Blue
       { text: "#10B981", bg: "rgba(16, 185, 129, 0.08)" }, // Green
       { text: "#D97706", bg: "rgba(217, 119, 6, 0.08)" }, // Amber
       { text: "#7C3AED", bg: "rgba(124, 58, 237, 0.08)" }, // Purple
@@ -445,7 +445,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
               <h4 style={{ fontSize: "15px", fontWeight: "700", color: "#060F2D", margin: 0, fontFamily: "'Outfit', sans-serif" }}>Revenue Collection Trend</h4>
               <span style={{ fontSize: "11px", color: "#64748B" }}>Daily collection rate for last 7 days</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: "700", color: "#3F59FF" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", fontWeight: "700", color: "#4A65FF" }}>
               <TrendingUp size={14} />
               <span>₹{totalRevenue.toLocaleString()} Total</span>
             </div>
@@ -455,8 +455,8 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
             <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width="100%" height="100%">
               <defs>
                 <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3F59FF" stopOpacity="0.25"/>
-                  <stop offset="100%" stopColor="#3F59FF" stopOpacity="0.00"/>
+                  <stop offset="0%" stopColor="#4A65FF" stopOpacity="0.25"/>
+                  <stop offset="100%" stopColor="#4A65FF" stopOpacity="0.00"/>
                 </linearGradient>
               </defs>
               
@@ -481,12 +481,12 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
               {areaPath && <path d={areaPath} fill="url(#chartGradient)" />}
               
               {/* Line path */}
-              {linePath && <path d={linePath} fill="none" stroke="#3F59FF" strokeWidth="2.5" strokeLinecap="round" />}
+              {linePath && <path d={linePath} fill="none" stroke="#4A65FF" strokeWidth="2.5" strokeLinecap="round" />}
               
               {/* Markers & Labels */}
               {points.map((p, idx) => (
                 <g key={idx}>
-                  <circle cx={p.x} cy={p.y} r="4" fill="#FFFFFF" stroke="#3F59FF" strokeWidth="2" />
+                  <circle cx={p.x} cy={p.y} r="4" fill="#FFFFFF" stroke="#4A65FF" strokeWidth="2" />
                   {p.amount > 0 && (
                     <text 
                       x={p.x} 
@@ -585,7 +585,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                 Transactions & Collections Log
               </h3>
               <span style={{ fontSize: "12.5px", color: "#64748B", display: "block", marginTop: "2px" }}>
-                Auditing <strong style={{ color: "#3F59FF" }}>{finalPayments.length}</strong> payments under current filters
+                Auditing <strong style={{ color: "#4A65FF" }}>{finalPayments.length}</strong> payments under current filters
               </span>
             </div>
 
@@ -898,8 +898,8 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                             onClick={() => setSelectedReceipt(app)}
                             style={{
                               padding: "8px 12px",
-                              backgroundColor: "rgba(63, 89, 255, 0.08)",
-                              color: "#3F59FF",
+                              backgroundColor: "rgba(74, 101, 255, 0.08)",
+                              color: "#4A65FF",
                               border: "none",
                               borderRadius: "8px",
                               cursor: "pointer",
@@ -909,12 +909,12 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                               justifyContent: "center"
                             }}
                             onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "#3F59FF";
+                              e.currentTarget.style.backgroundColor = "#4A65FF";
                               e.currentTarget.style.color = "#FFFFFF";
                             }}
                             onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor = "rgba(63, 89, 255, 0.08)";
-                              e.currentTarget.style.color = "#3F59FF";
+                              e.currentTarget.style.backgroundColor = "rgba(74, 101, 255, 0.08)";
+                              e.currentTarget.style.color = "#4A65FF";
                             }}
                             title="Print Paid Receipt"
                           >
@@ -990,7 +990,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                   transition: "all 0.2s"
                 }}
                 onMouseOver={(e) => {
-                  if (currentPage !== 1) e.currentTarget.style.borderColor = "#3F59FF";
+                  if (currentPage !== 1) e.currentTarget.style.borderColor = "#4A65FF";
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.borderColor = "#E2E8F0";
@@ -1009,8 +1009,8 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                       width: "36px",
                       height: "36px",
                       borderRadius: "10px",
-                      border: isCurrent ? "1.5px solid #3F59FF" : "1.5px solid #E2E8F0",
-                      backgroundColor: isCurrent ? "#3F59FF" : "#FFFFFF",
+                      border: isCurrent ? "1.5px solid #4A65FF" : "1.5px solid #E2E8F0",
+                      backgroundColor: isCurrent ? "#4A65FF" : "#FFFFFF",
                       color: isCurrent ? "#FFFFFF" : "#0F172A",
                       fontWeight: "700",
                       fontSize: "13px",
@@ -1018,7 +1018,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                       transition: "all 0.2s"
                     }}
                     onMouseOver={(e) => {
-                      if (!isCurrent) e.currentTarget.style.borderColor = "#3F59FF";
+                      if (!isCurrent) e.currentTarget.style.borderColor = "#4A65FF";
                     }}
                     onMouseOut={(e) => {
                       if (!isCurrent) e.currentTarget.style.borderColor = "#E2E8F0";
@@ -1046,7 +1046,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                   transition: "all 0.2s"
                 }}
                 onMouseOver={(e) => {
-                  if (currentPage !== totalPages) e.currentTarget.style.borderColor = "#3F59FF";
+                  if (currentPage !== totalPages) e.currentTarget.style.borderColor = "#4A65FF";
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.borderColor = "#E2E8F0";
@@ -1151,7 +1151,7 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
-                    backgroundColor: "#3F59FF",
+                    backgroundColor: "#4A65FF",
                     color: "#FFFFFF",
                     border: "none",
                     padding: "8px 16px",
@@ -1337,9 +1337,9 @@ const PaymentsTab: React.FC<PaymentsTabProps> = ({ appointments, triggerToast })
                   <div style={{
                     width: "80px",
                     height: "35px",
-                    border: "1.5px dashed rgba(63, 89, 255, 0.4)",
+                    border: "1.5px dashed rgba(74, 101, 255, 0.4)",
                     borderRadius: "8px",
-                    color: "#3F59FF",
+                    color: "#4A65FF",
                     fontSize: "11px",
                     fontWeight: "800",
                     display: "flex",

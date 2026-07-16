@@ -315,7 +315,7 @@ const Appointment = () => {
             const token = localStorage.getItem("userToken") || "";
             const bookingResponse = await fetch(`${backendUrl}/api/appointments`, {
               method: "POST",
-              headers: { 
+              headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
               },
@@ -361,7 +361,7 @@ const Appointment = () => {
           contact: formData.pasentnumber,
         },
         theme: {
-          color: "#3F59FF",
+          color: "#4A65FF",
         },
         modal: {
           ondismiss: async function () {
@@ -371,7 +371,7 @@ const Appointment = () => {
               const token = localStorage.getItem("userToken") || "";
               await fetch(`${backendUrl}/api/appointments`, {
                 method: "POST",
-                headers: { 
+                headers: {
                   "Content-Type": "application/json",
                   "Authorization": `Bearer ${token}`
                 },
@@ -598,8 +598,8 @@ const Appointment = () => {
                                     padding: "10px 20px",
                                     borderRadius: "10px",
                                     border: "1.5px solid",
-                                    borderColor: isBooked ? "#E2E8F0" : isSelected ? "#3F59FF" : "#CBD5E1",
-                                    backgroundColor: isBooked ? "#F1F5F9" : isSelected ? "#3F59FF" : "#FFFFFF",
+                                    borderColor: isBooked ? "#E2E8F0" : isSelected ? "#4A65FF" : "#CBD5E1",
+                                    backgroundColor: isBooked ? "#F1F5F9" : isSelected ? "#4A65FF" : "#FFFFFF",
                                     color: isBooked ? "#94A3B8" : isSelected ? "#FFFFFF" : "#0F172A",
                                     cursor: isBooked ? "not-allowed" : "pointer",
                                     fontWeight: "600",
@@ -705,7 +705,7 @@ const Appointment = () => {
               style={{
                 width: "100%",
                 padding: "12px 24px",
-                backgroundColor: "#3F59FF",
+                backgroundColor: "#4A65FF",
                 color: "#FFFFFF",
                 border: "none",
                 borderRadius: "12px",
@@ -715,7 +715,7 @@ const Appointment = () => {
                 transition: "background-color 0.2s"
               }}
               onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#2B44DD"}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#3F59FF"}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#4A65FF"}
             >
               Got it, Thanks!
             </button>
