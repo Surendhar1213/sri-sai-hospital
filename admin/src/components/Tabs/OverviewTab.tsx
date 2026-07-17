@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { 
-  Calendar, Stethoscope, Video, Link2, Copy, Send, 
+import {
+  Calendar, Stethoscope, Video, Link2, Copy, Send,
   CheckCircle2, ShieldAlert, Search, Filter, RefreshCw
 } from "lucide-react";
 
@@ -22,7 +22,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [specialityFilter, setSpecialityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  
+
   // Extract unique specialties from current appointments
   const uniqueSpecialities = useMemo(() => {
     const specs = appointments.map((app: any) => app.speciality).filter(Boolean);
@@ -32,7 +32,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   // Handle Search and Filter logic dynamically
   const filteredAppointments = useMemo(() => {
     return appointments.filter((app: any) => {
-      const matchSearch = 
+      const matchSearch =
         (app.pasentname || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (app.pasentnumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (app.pasentmail || "").toLowerCase().includes(searchQuery.toLowerCase());
@@ -81,7 +81,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      
+
       {/* Premium Telehealth Welcome Banner */}
       <div
         style={{
@@ -112,12 +112,12 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         ></div>
 
         <div>
-          <span style={{ 
-            fontSize: "11px", 
-            fontWeight: "800", 
-            backgroundColor: "rgba(14, 165, 233, 0.2)", 
-            color: "#38BDF8", 
-            padding: "4px 12px", 
+          <span style={{
+            fontSize: "11px",
+            fontWeight: "800",
+            backgroundColor: "rgba(14, 165, 233, 0.2)",
+            color: "#38BDF8",
+            padding: "4px 12px",
             borderRadius: "12px",
             letterSpacing: "1px",
             textTransform: "uppercase"
@@ -146,32 +146,44 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
       {/* Telehealth Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
         {[
-          { 
-            label: "Today's Tele-Consultations", 
-            value: todayCount.toString(), 
-            subtext: `${appointments.length} total bookings logged`, 
-            targetTab: "appointments", 
-            color: "#0EA5E9", 
-            bg: "linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%)", 
-            icon: <Calendar size={22} /> 
+          {
+            label: "Today's Consultations",
+            value: todayCount.toString(),
+            subtext: `${appointments.length} total bookings`,
+            targetTab: "appointments",
+            color: "#0EA5E9",
+            badge: "↑ 14.2%",
+            badgeBg: "#E0F2FE",
+            badgeColor: "#0369A1",
+            sparklinePath: "M0,25 Q15,5 30,18 T60,8 T90,20 T100,12",
+            sparklineFill: "rgba(14, 165, 233, 0.05)",
+            icon: <Calendar size={18} />
           },
-          { 
-            label: "Active Video consultation rooms", 
-            value: activeLinksCount.toString(), 
-            subtext: "Live online consultation links active", 
-            targetTab: "appointments", 
-            color: "#6366F1", 
-            bg: "linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%)", 
-            icon: <Video size={22} /> 
+          {
+            label: "Active Video Rooms",
+            value: activeLinksCount.toString(),
+            subtext: "Live online session links",
+            targetTab: "appointments",
+            color: "#6366F1",
+            badge: "Live Now",
+            badgeBg: "#EEF2FF",
+            badgeColor: "#4338CA",
+            sparklinePath: "M0,20 Q15,22 30,8 T60,18 T90,5 T100,15",
+            sparklineFill: "rgba(99, 102, 241, 0.05)",
+            icon: <Video size={18} />
           },
-          { 
-            label: "On-Duty Specialists", 
-            value: doctors.length ? doctors.length.toString() : "0", 
-            subtext: "Click to manage doctors roster", 
-            targetTab: "doctors", 
-            color: "#10B981", 
-            bg: "linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%)", 
-            icon: <Stethoscope size={22} /> 
+          {
+            label: "On-Duty Specialists",
+            value: doctors.length ? doctors.length.toString() : "0",
+            subtext: "Active medical roster",
+            targetTab: "doctors",
+            color: "#10B981",
+            badge: "100% Online",
+            badgeBg: "#D1FAE5",
+            badgeColor: "#047857",
+            sparklinePath: "M0,15 Q15,12 30,14 T60,10 T90,8 T100,5",
+            sparklineFill: "rgba(16, 185, 129, 0.05)",
+            icon: <Stethoscope size={18} />
           },
         ].map((card, i) => (
           <div
@@ -179,49 +191,65 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             onClick={() => setActiveTab(card.targetTab)}
             style={{
               backgroundColor: "#FFFFFF",
-              padding: "28px",
-              borderRadius: "20px",
-              boxShadow: "0 10px 30px rgba(6, 15, 45, 0.02)",
-              border: "1.5px solid rgba(6, 15, 45, 0.04)",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              borderRadius: "16px",
+              boxShadow: "0 4px 18px rgba(6, 15, 45, 0.03)",
+              border: "1px solid #E2E8F0",
               cursor: "pointer",
-              transition: "all 0.25s ease-in-out",
+              transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              position: "relative"
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = "0 16px 36px rgba(14, 165, 233, 0.12)";
+              e.currentTarget.style.boxShadow = "0 12px 24px rgba(6, 15, 45, 0.08)";
               e.currentTarget.style.borderColor = card.color;
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 10px 30px rgba(6, 15, 45, 0.02)";
-              e.currentTarget.style.borderColor = "rgba(6, 15, 45, 0.04)";
+              e.currentTarget.style.boxShadow = "0 4px 18px rgba(6, 15, 45, 0.03)";
+              e.currentTarget.style.borderColor = "#E2E8F0";
             }}
           >
-            <div>
-              <span style={{ fontSize: "14px", color: "#64748B", fontWeight: "600" }}>{card.label}</span>
-              <div style={{ fontSize: "32px", fontWeight: "800", color: "#060F2D", marginTop: "10px", fontFamily: "'Outfit', sans-serif" }}>
-                {card.value}
+            {/* Header info */}
+            <div style={{ padding: "24px 24px 8px 24px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "13.5px", color: "#64748B", fontWeight: "600" }}>{card.label}</span>
+                <span style={{
+                  fontSize: "11px",
+                  fontWeight: "750",
+                  backgroundColor: card.badgeBg,
+                  color: card.badgeColor,
+                  padding: "4px 10px",
+                  borderRadius: "20px"
+                }}>
+                  {card.badge}
+                </span>
               </div>
-              <span style={{ fontSize: "12px", color: card.color, display: "block", marginTop: "6px", fontWeight: "600" }}>
-                {card.subtext} →
-              </span>
+
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginTop: "14px" }}>
+                <span style={{ fontSize: "36px", fontWeight: "800", color: "#0F172A", fontFamily: "'Outfit', sans-serif" }}>
+                  {card.value}
+                </span>
+                <span style={{ fontSize: "12px", color: "#64748B", fontWeight: "500" }}>
+                  {card.subtext}
+                </span>
+              </div>
             </div>
-            <div
-              style={{
-                width: "50px",
-                height: "50px",
-                borderRadius: "12px",
-                background: card.bg,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: card.color,
-              }}
-            >
-              {card.icon}
+
+            {/* Sparkline chart at the bottom */}
+            <div style={{ marginTop: "auto", width: "100%", height: "45px", position: "relative" }}>
+              <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "100%", display: "block" }}>
+                <defs>
+                  <linearGradient id={`grad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={card.color} stopOpacity="0.2" />
+                    <stop offset="100%" stopColor={card.color} stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path d={`${card.sparklinePath} L100,30 L0,30 Z`} fill={`url(#grad-${i})`} />
+                <path d={card.sparklinePath} fill="none" stroke={card.color} strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </div>
           </div>
         ))}
@@ -229,7 +257,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
 
       {/* Roster Overview Grid */}
       <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: "24px" }}>
-        
+
         {/* Recent Telehealth Sessions Roster Widget */}
         <div
           style={{
@@ -294,13 +322,13 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
           </div>
 
           {/* Interactive Filters Area */}
-          <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: "1.5fr 1fr 1fr", 
-            gap: "12px", 
-            marginBottom: "20px", 
-            backgroundColor: "#F8FAFC", 
-            padding: "16px", 
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1.5fr 1fr 1fr",
+            gap: "12px",
+            marginBottom: "20px",
+            backgroundColor: "#F8FAFC",
+            padding: "16px",
             borderRadius: "14px",
             border: "1px solid #E2E8F0"
           }}>
@@ -396,13 +424,13 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                     };
                     const styles = getStatusStyles(app.status);
                     return (
-                      <tr 
-                        key={app._id || idx} 
+                      <tr
+                        key={app._id || idx}
                         style={{ borderBottom: "1px solid #F1F5F9", fontSize: "14px", color: "#0F172A", transition: "background-color 0.2s" }}
                         className="interactive-row"
                       >
                         {/* Patient Linkable profile */}
-                        <td 
+                        <td
                           style={{ padding: "16px 8px", cursor: "pointer" }}
                           onClick={() => {
                             setActiveTab("patients");
@@ -416,7 +444,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                         </td>
 
                         {/* Speciality Linkable field */}
-                        <td 
+                        <td
                           style={{ padding: "16px 8px", color: "#475569", fontWeight: "500", cursor: "pointer" }}
                           onClick={() => {
                             setActiveTab("doctors");
@@ -483,7 +511,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                         </td>
 
                         {/* Status badge */}
-                        <td 
+                        <td
                           style={{ padding: "16px 8px", cursor: "pointer" }}
                           onClick={() => {
                             setActiveTab("appointments");
@@ -524,7 +552,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
 
         {/* Clinical Operations Center / Live Telehealth Monitor */}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          
+
           {/* Active Consultation Monitor */}
           <div
             style={{
@@ -546,12 +574,12 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <h4 style={{ fontSize: "15px", fontWeight: "750", color: "#060F2D" }}>Tele-Consult Monitor</h4>
-              <span style={{ 
-                fontSize: "11px", 
-                fontWeight: "800", 
-                color: "#10B981", 
-                backgroundColor: "rgba(16, 185, 129, 0.08)", 
-                padding: "4px 10px", 
+              <span style={{
+                fontSize: "11px",
+                fontWeight: "800",
+                color: "#10B981",
+                backgroundColor: "rgba(16, 185, 129, 0.08)",
+                padding: "4px 10px",
                 borderRadius: "20px",
                 display: "flex",
                 alignItems: "center",
@@ -561,7 +589,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                 Live
               </span>
             </div>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "14px", borderLeft: "3.5px solid #0EA5E9", paddingLeft: "14px", margin: "14px 0" }}>
               <div>
                 <span style={{ fontSize: "11px", color: "#64748B", textTransform: "uppercase", fontWeight: "700" }}>Active Google Meet Link</span>
@@ -631,7 +659,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             }}
           >
             <h4 style={{ fontSize: "15px", fontWeight: "750", color: "#060F2D", marginBottom: "16px" }}>Clinical Quick Actions</h4>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <button
                 onClick={() => {
@@ -654,7 +682,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                   fontWeight: "600",
                   color: "#0F172A",
                   cursor: "pointer",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.01)"
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = "rgba(74, 101, 255, 0.04)";

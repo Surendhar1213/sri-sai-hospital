@@ -175,7 +175,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
     setTempIsSos(false);
     setTempTiming("after");
     setTempDuration("5 Days");
-    
+
     // Auto focus back to input
     setTimeout(() => {
       medInputRef.current?.focus();
@@ -193,7 +193,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
     setTempTiming(med.timing || "after");
     setTempDuration(med.duration || "5 Days");
     setEditingIndex(index);
-    
+
     // Focus input
     setTimeout(() => {
       medInputRef.current?.focus();
@@ -970,7 +970,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                 Cancel
                               </button>
                             )}
-                            {/* {app.status === "completed" && app.prescription && (
+                            {app.status === "completed" && app.prescription && (
                               <button
                                 onClick={() => setPrintPrescriptionAppointment(app)}
                                 style={{
@@ -986,7 +986,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               >
                                 Prescription
                               </button>
-                            )} */}
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1222,7 +1222,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           const dosageStr = med.isSos ? "SOS (As Needed)" : `${med.morning ? "1" : "0"}-${med.noon ? "1" : "0"}-${med.night ? "1" : "0"}`;
                           const timingStr = med.timing === "before" ? "BF (Before Food)" : med.timing === "sos" ? "SOS (As Needed)" : "AF (After Food)";
                           const durationStr = med.duration ? (med.duration.toLowerCase().includes("day") ? med.duration.replace(/days?/i, "D") : med.duration.toLowerCase().includes("week") ? med.duration.replace(/weeks?/i, "W") : med.duration) : "";
-                          
+
                           return (
                             <div key={index} style={{
                               display: "flex",
@@ -1305,7 +1305,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       onChange={(e) => setTempMedName(e.target.value)}
                       style={{ padding: "10px 12px", borderRadius: "8px", border: "1.5px solid #cbd5e1", fontSize: "13px", outline: "none", transition: "border-color 0.2s" }}
                     />
-                    
+
                     {/* Dosage One-Click Presets */}
                     <div>
                       <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", marginBottom: "4px" }}>DOSAGE PRESET</div>
@@ -1317,10 +1317,10 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                           { label: "0-0-1", act: () => { setTempMorning(false); setTempNoon(false); setTempNight(true); setTempIsSos(false); } },
                           { label: "SOS (As Needed)", act: () => { setTempMorning(false); setTempNoon(false); setTempNight(false); setTempIsSos(true); setTempTiming("sos"); } }
                         ].map((btn) => {
-                          const isSelected = btn.label.startsWith("SOS") 
-                            ? tempIsSos 
+                          const isSelected = btn.label.startsWith("SOS")
+                            ? tempIsSos
                             : (!tempIsSos && tempMorning === (btn.label === "1-0-1" || btn.label === "1-1-1" || btn.label === "1-0-0") && tempNoon === (btn.label === "1-1-1") && tempNight === (btn.label === "1-0-1" || btn.label === "1-1-1" || btn.label === "0-0-1"));
-                          
+
                           return (
                             <button
                               key={btn.label}
@@ -1710,57 +1710,57 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               <tbody>
                                 {medicinesList.map((med, idx) => (
                                   <tr key={idx} style={{ borderBottom: "1px solid #E2E8F0", fontSize: "13px", color: "#0F172A", backgroundColor: idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC" }}>
-                                      <td style={{ padding: "12px", fontWeight: "700" }}>
-                                        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                                          <Pill size={14} color="#4A65FF" /> {med.name}
+                                    <td style={{ padding: "12px", fontWeight: "700" }}>
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                        <Pill size={14} color="#4A65FF" /> {med.name}
+                                      </span>
+                                    </td>
+                                    <td style={{ padding: "12px" }}>
+                                      {med.isSos ? (
+                                        <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: "#FEF3C7", color: "#D97706", fontWeight: "bold", fontSize: "10px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                          <AlertCircle size={10} /> SOS / As Needed
                                         </span>
-                                      </td>
-                                      <td style={{ padding: "12px" }}>
-                                        {med.isSos ? (
-                                          <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: "#FEF3C7", color: "#D97706", fontWeight: "bold", fontSize: "10px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                                            <AlertCircle size={10} /> SOS / As Needed
-                                          </span>
+                                      ) : (
+                                        <div style={{ display: "flex", gap: "6px" }}>
+                                          <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.morning ? "#FEF3C7" : "#F3F4F6", color: med.morning ? "#D97706" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Morning</span>
+                                          <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.noon ? "#FFE4E6" : "#F3F4F6", color: med.noon ? "#E11D48" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Noon</span>
+                                          <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.night ? "#DBEAFE" : "#F3F4F6", color: med.night ? "#2563EB" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Night</span>
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td style={{ padding: "12px" }}>
+                                      <span style={{
+                                        padding: "4px 8px",
+                                        borderRadius: "6px",
+                                        fontWeight: "700",
+                                        fontSize: "11px",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                        color: med.timing === "before" ? "#10B981" : med.timing === "sos" ? "#F59E0B" : "#3B82F6",
+                                        backgroundColor: med.timing === "before" ? "rgba(16, 185, 129, 0.1)" : med.timing === "sos" ? "rgba(245, 158, 11, 0.1)" : "rgba(59, 130, 246, 0.1)"
+                                      }}>
+                                        {med.timing === "before" ? (
+                                          <>
+                                            <Utensils size={10} /> Before Food
+                                          </>
+                                        ) : med.timing === "sos" ? (
+                                          <>
+                                            <AlertCircle size={10} /> SOS
+                                          </>
                                         ) : (
-                                          <div style={{ display: "flex", gap: "6px" }}>
-                                            <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.morning ? "#FEF3C7" : "#F3F4F6", color: med.morning ? "#D97706" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Morning</span>
-                                            <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.noon ? "#FFE4E6" : "#F3F4F6", color: med.noon ? "#E11D48" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Noon</span>
-                                            <span style={{ padding: "2px 6px", borderRadius: "4px", backgroundColor: med.night ? "#DBEAFE" : "#F3F4F6", color: med.night ? "#2563EB" : "#9CA3AF", fontWeight: "bold", fontSize: "10px" }}>Night</span>
-                                          </div>
+                                          <>
+                                            <Utensils size={10} /> After Food
+                                          </>
                                         )}
-                                      </td>
-                                      <td style={{ padding: "12px" }}>
-                                        <span style={{
-                                          padding: "4px 8px",
-                                          borderRadius: "6px",
-                                          fontWeight: "700",
-                                          fontSize: "11px",
-                                          display: "inline-flex",
-                                          alignItems: "center",
-                                          gap: "4px",
-                                          color: med.timing === "before" ? "#10B981" : med.timing === "sos" ? "#F59E0B" : "#3B82F6",
-                                          backgroundColor: med.timing === "before" ? "rgba(16, 185, 129, 0.1)" : med.timing === "sos" ? "rgba(245, 158, 11, 0.1)" : "rgba(59, 130, 246, 0.1)"
-                                        }}>
-                                          {med.timing === "before" ? (
-                                            <>
-                                              <Utensils size={10} /> Before Food
-                                            </>
-                                          ) : med.timing === "sos" ? (
-                                            <>
-                                              <AlertCircle size={10} /> SOS
-                                            </>
-                                          ) : (
-                                            <>
-                                              <Utensils size={10} /> After Food
-                                            </>
-                                          )}
-                                        </span>
-                                      </td>
-                                      <td style={{ padding: "12px", fontWeight: "600", color: "#475569" }}>
-                                        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                                          <Calendar size={13} color="#64748B" /> {med.duration}
-                                        </span>
-                                      </td>
-                                    </tr>
+                                      </span>
+                                    </td>
+                                    <td style={{ padding: "12px", fontWeight: "600", color: "#475569" }}>
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                        <Calendar size={13} color="#64748B" /> {med.duration}
+                                      </span>
+                                    </td>
+                                  </tr>
                                 ))}
                               </tbody>
                             </table>

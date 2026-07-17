@@ -419,7 +419,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       if (!response.ok) {
         throw new Error(data.message || "Failed to update appointment");
       }
-      
+
       if (data.data) {
         // Find if doctors array has the doctor object to populate properly if populated details are expected
         let updatedItem = data.data;

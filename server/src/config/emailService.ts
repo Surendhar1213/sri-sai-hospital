@@ -22,21 +22,27 @@ interface AppointmentMailOptions {
   speciality: string;
   time: string;
   meetingLink?: string | undefined;
+  appointmentId?: string;
 }
-
 
 interface PrescriptionMailOptions {
   to: string;
   patientName: string;
   doctorName: string;
   prescription: string;
+  appointmentId?: string;
+  patientPhone?: string;
+  patientAge?: number | string;
+  patientGender?: string;
+  patientBloodGroup?: string;
+  doctorSpeciality?: string;
 }
 
 // 1. Function to send Appointment Booking Email with Google Meet details
 export const sendAppointmentEmail = async (options: AppointmentMailOptions) => {
-  const { to, patientName, doctorName, speciality, time, meetingLink } = options;
+  const { to, patientName, doctorName, speciality, time, meetingLink, appointmentId } = options;
 
-  const mailOptions = {
+  const mailOptions: any = {
     from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
     to,
     subject: "🏥 Appointment Confirmed - Srisai Subhramaniya Hospitals",
@@ -48,35 +54,50 @@ export const sendAppointmentEmail = async (options: AppointmentMailOptions) => {
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr>
-            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Specialist:</td>
-            <td style="padding: 8px 0; color: #1e293b;">${doctorName} (${speciality})</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f9fafb; font-weight: bold; width: 35%;">Doctor</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">Dr. ${doctorName}</td>
           </tr>
           <tr>
-            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Date & Time:</td>
-            <td style="padding: 8px 0; color: #1e293b;">${time}</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f9fafb; font-weight: bold;">Speciality</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${speciality}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f9fafb; font-weight: bold;">Time Slot</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;">${time}</td>
           </tr>
           ${meetingLink ? `
           <tr>
-            <td style="padding: 8px 0; color: #475569; font-weight: bold;">Video Consultation:</td>
-            <td style="padding: 8px 0;"><a href="${meetingLink}" target="_blank" style="color: #0d9488; font-weight: bold; text-decoration: none;">Join Google Meet Link 🌐</a></td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f9fafb; font-weight: bold;">Meeting Link</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;"><a href="${meetingLink}" style="color: #0d9488; font-weight: bold; text-decoration: none;">Join Video Consultation</a></td>
           </tr>
           ` : ""}
         </table>
         
-        <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; font-size: 13px; color: #64748b;">
-          Note: If you have chosen virtual consultation, please click the Google Meet link above at the scheduled time to connect with the specialist.
+        <div style="background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 15px; border-radius: 6px; margin: 20px 0;">
+          <p style="margin: 0; color: #166534; font-size: 14px;"><strong>Consultation Guidelines:</strong> Please log in 5 minutes prior to your meeting time. Ensure a stable internet connection and a quiet space for your online consultation.</p>
         </div>
-        <p style="margin-top: 25px; text-align: center; color: #94a3b8; font-size: 11px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
+        
+        <p>Thank you for choosing Sri Sai Hospital.</p>
+        <p style="color: #64748b; font-size: 12px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 30px;">&copy; Srisai Subhramaniya Hospitals. All rights reserved.</p>
       </div>
     `,
   };
+
+  if (appointmentId) {
+    const threadMessageId = `<appointment-${appointmentId}@srisaihospital.com>`;
+    mailOptions.messageId = threadMessageId;
+    mailOptions.headers = {
+      "In-Reply-To": threadMessageId,
+      "References": threadMessageId,
+    };
+  }
 
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("📧 Appointment Confirmation Email sent successfully:", info.messageId);
     return true;
   } catch (error) {
-    console.error("❌ Error sending Appointment Confirmation email:", error);
+    console.error("❌ Error sending booking email:", error);
     return false;
   }
 };
@@ -94,7 +115,18 @@ const escapeHtml = (text: string): string => {
 
 // 2. Function to send Doctor's Prescription Email
 export const sendPrescriptionEmail = async (options: PrescriptionMailOptions) => {
-  const { to, patientName, doctorName, prescription } = options;
+  const { 
+    to, 
+    patientName, 
+    doctorName, 
+    prescription, 
+    appointmentId,
+    patientPhone,
+    patientAge,
+    patientGender,
+    patientBloodGroup,
+    doctorSpeciality
+  } = options;
   const escapedPatientName = escapeHtml(patientName || "");
   const escapedDoctorName = escapeHtml(doctorName || "");
   
@@ -140,53 +172,45 @@ export const sendPrescriptionEmail = async (options: PrescriptionMailOptions) =>
         }
 
         return `
-          <tr style="border-bottom: 1px solid #e2e8f0; font-size: 13px;">
-            <td style="padding: 14px 10px; font-weight: bold; color: #060F2D;">🔹 ${escapeHtml(med.name || "")}</td>
-            <td style="padding: 14px 10px; white-space: nowrap;">${morningBadge}${noonBadge}${nightBadge}</td>
-            <td style="padding: 14px 10px; text-align: center;">${timingBadge}</td>
-            <td style="padding: 14px 10px; color: #475569; font-weight: 600; text-align: right; white-space: nowrap;">📅 ${escapeHtml(med.duration || "")}</td>
+          <tr style="border-bottom: 1px solid #F1F5F9;">
+            <td style="padding: 12px; font-weight: bold; color: #060F2D;">${escapeHtml(med.name)}</td>
+            <td style="padding: 12px;">${morningBadge}${noonBadge}${nightBadge}</td>
+            <td style="padding: 12px;">${timingBadge}</td>
+            <td style="padding: 12px; font-weight: bold; color: #475569;">${escapeHtml(med.duration || "")}</td>
           </tr>
         `;
       }).join("");
     }
 
     prescriptionHtml = `
-      <div style="margin: 20px 0;">
-        ${tableRows ? `
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-            <thead>
-              <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; font-size: 12px; color: #475569;">
-                <th style="padding: 12px 10px; font-weight: 700;">Medicine Name</th>
-                <th style="padding: 12px 10px; font-weight: 700;">Dosage (M-N-N)</th>
-                <th style="padding: 12px 10px; text-align: center; font-weight: 700;">Timing</th>
-                <th style="padding: 12px 10px; text-align: right; font-weight: 700;">Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tableRows}
-            </tbody>
-          </table>
-        ` : `<p style="color: #64748b; font-style: italic;">No specific medicines listed.</p>`}
-        
-        ${adviceNotes ? `
-          <div style="margin-top: 24px;">
-            <strong style="font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Advice & Instructions:</strong>
-            <div style="background-color: #F8FAF9; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; font-size: 13.5px; color: #334155; white-space: pre-line; line-height: 1.6; margin-top: 8px;">
-              ${escapeHtml(adviceNotes)}
-            </div>
-          </div>
-        ` : ""}
-      </div>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+        <thead>
+          <tr style="background-color: #F8FAFC; border-bottom: 2px solid #E2E8F0; text-align: left; font-size: 12px; text-transform: uppercase; color: #64748B; font-weight: bold;">
+            <th style="padding: 12px;">Medicine</th>
+            <th style="padding: 12px;">Dosage</th>
+            <th style="padding: 12px;">Timing</th>
+            <th style="padding: 12px;">Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows || `<tr><td colspan="4" style="padding: 16px; text-align: center; color: #94A3B8;">No medicines listed.</td></tr>`}
+        </tbody>
+      </table>
+
+      ${adviceNotes ? `
+        <div style="margin-top: 24px;">
+          <span style="font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: bold; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Advice & Instructions</span>
+          <div style="padding: 16px; background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 13.5px; color: #334155; white-space: pre-wrap; line-height: 1.6;">${escapeHtml(adviceNotes)}</div>
+        </div>
+      ` : ""}
     `;
   } else {
     prescriptionHtml = `
-      <div style="background-color: #f1f5f9; border-left: 4px solid #4A65FF; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; font-size: 14px; color: #1e293b; margin: 20px 0;">
-        ${escapeHtml(prescription || "")}
-      </div>
+      <div style="background-color: #f1f5f9; border-left: 4px solid #4A65FF; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; font-size: 14px; color: #1e293b; margin: 20px 0;">${escapeHtml(prescription || "")}</div>
     `;
   }
 
-  const mailOptions = {
+  const mailOptions: any = {
     from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
     to,
     subject: "💊 Medical Prescription - Srisai Subhramaniya Hospitals",
@@ -212,10 +236,19 @@ export const sendPrescriptionEmail = async (options: PrescriptionMailOptions) =>
               <td style="width: 50%; padding-bottom: 12px; vertical-align: top;">
                 <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; display: block; margin-bottom: 4px;">Patient Details</span>
                 <strong style="font-size: 15px; color: #060F2D; display: block; margin-bottom: 2px;">${escapedPatientName}</strong>
+                ${patientPhone ? `<span style="display: block; margin-bottom: 2px; color: #64748B;">Phone: ${escapeHtml(patientPhone)}</span>` : ""}
+                ${(patientAge || patientGender || patientBloodGroup) ? `
+                  <span style="display: block; color: #64748B;">
+                    ${patientAge ? `Age: ${escapeHtml(patientAge.toString())}` : ""} 
+                    ${patientGender ? ` &nbsp;Gender: ${escapeHtml(patientGender)}` : ""} 
+                    ${(patientBloodGroup && patientBloodGroup !== "Unknown") ? ` &nbsp;Blood: ${escapeHtml(patientBloodGroup)}` : ""}
+                  </span>
+                ` : ""}
               </td>
               <td style="width: 50%; padding-bottom: 12px; text-align: right; vertical-align: top;">
                 <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; display: block; margin-bottom: 4px;">Consultant Doctor</span>
                 <strong style="font-size: 15px; color: #060F2D; display: block; margin-bottom: 2px;">Dr. ${escapedDoctorName}</strong>
+                ${doctorSpeciality ? `<span style="display: block; color: #64748B;">${escapeHtml(doctorSpeciality)}</span>` : ""}
               </td>
             </tr>
           </table>
@@ -248,6 +281,16 @@ export const sendPrescriptionEmail = async (options: PrescriptionMailOptions) =>
       </div>
     `,
   };
+
+  // Enable threading in email clients (Gmail/Outlook) by supplying fixed Message-ID/In-Reply-To/References based on Appointment ID
+  if (appointmentId) {
+    const threadMessageId = `<prescription-${appointmentId}@srisaihospital.com>`;
+    mailOptions.messageId = threadMessageId;
+    mailOptions.headers = {
+      "In-Reply-To": threadMessageId,
+      "References": threadMessageId,
+    };
+  }
 
   try {
     const info = await transporter.sendMail(mailOptions);

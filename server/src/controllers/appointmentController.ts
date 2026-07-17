@@ -3,6 +3,7 @@ import Appointment from "../models/Appointment.js";
 import schedule from "node-schedule";
 
 import { Doctor } from "../models/Doctor.js"; // Named import syntax (with curly braces)
+import { User } from "../models/User.js";
 // 
 import { createMeetEvent } from "../config/googleCalendar.js"; 
 import { sendAppointmentEmail, sendPrescriptionEmail, sendBookingReceiptEmail, sendDoctorNotificationEmail, sendBookingFailureEmail, sendReminderEmail, sendMissedAppointmentEmail } from "../config/emailService.js";
@@ -371,6 +372,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
               speciality: updatedAppointment.speciality,
               time: formattedTime,
               meetingLink: updatedAppointment.meetingLink,
+              appointmentId: updatedAppointment._id.toString()
             });
 
             // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
@@ -409,23 +411,35 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
           console.error("❌ Background email/reminder processing error:", err.message);
         }
       });
-    } else {
-      // If already approved but prescription updated, send prescription email
-      if (prescription && updatedAppointment.assignedDoctor) {
-        const doctorObj = updatedAppointment.assignedDoctor as any;
-        setImmediate(async () => {
-          try {
-            await sendPrescriptionEmail({
-              to: updatedAppointment.pasentmail,
-              patientName: updatedAppointment.pasentname,
-              doctorName: doctorObj.name,
-              prescription: prescription
-            });
-          } catch (emailError) {
-            console.error("❌ Background Prescription Email Sending Failed:", emailError);
-          }
-        });
-      }
+    }
+
+    // 5. Send prescription email only if the appointment is marked as completed AND prescription was actually updated/added
+    const isPrescriptionChanged = prescription !== undefined && prescription !== "" && prescription !== appointment.prescription;
+    const isCompleted = status === "completed" || (status === undefined && appointment.status === "completed");
+
+    if (isCompleted && isPrescriptionChanged && updatedAppointment.assignedDoctor) {
+      const doctorObj = updatedAppointment.assignedDoctor as any;
+      setImmediate(async () => {
+        try {
+          // Fetch additional patient details (age, gender, bloodGroup) from User model
+          const patientUser = await User.findOne({ email: updatedAppointment.pasentmail.toLowerCase() });
+
+          await sendPrescriptionEmail({
+            to: updatedAppointment.pasentmail,
+            patientName: updatedAppointment.pasentname,
+            doctorName: doctorObj.name,
+            prescription: prescription,
+            appointmentId: updatedAppointment._id.toString(),
+            patientPhone: updatedAppointment.pasentnumber || (patientUser ? (patientUser as any).phone : ""),
+            patientAge: patientUser ? (patientUser as any).age : undefined,
+            patientGender: patientUser ? (patientUser as any).gender : undefined,
+            patientBloodGroup: patientUser ? (patientUser as any).bloodGroup : undefined,
+            doctorSpeciality: doctorObj.speciality || updatedAppointment.speciality
+          });
+        } catch (emailError) {
+          console.error("❌ Background Prescription Email Sending Failed:", emailError);
+        }
+      });
     }
 
     // 5. Send Missed Appointment Notification if status is missed
