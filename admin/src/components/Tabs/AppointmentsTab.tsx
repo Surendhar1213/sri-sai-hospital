@@ -9,8 +9,7 @@ import {
   Utensils,
   AlertCircle,
   Trash2,
-  Edit2,
-  Clock
+  Edit2
 } from "lucide-react";
 
 interface Doctor {
@@ -82,7 +81,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   setManageStatus,
   manageDoctor,
   setManageDoctor,
-  managePrescription,
+  managePrescription: _managePrescription,
   setManagePrescription,
   managePaymentStatus,
   setManagePaymentStatus,
@@ -295,35 +294,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
     appointmentCustomDate,
   ]);
 
-  // Helper function to highlight matching search term
-  const highlightText = (text: string, search: string) => {
-    if (!text) return "";
-    if (!search || !search.trim()) return text;
-    const cleanSearch = search.trim();
-    const parts = text.split(new RegExp(`(${cleanSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi'));
-    return (
-      <>
-        {parts.map((part, index) =>
-          part.toLowerCase() === cleanSearch.toLowerCase() ? (
-            <mark
-              key={index}
-              style={{
-                backgroundColor: "#FEF08A",
-                color: "#854D0E",
-                padding: "1px 2px",
-                borderRadius: "4px",
-                fontWeight: "bold",
-              }}
-            >
-              {part}
-            </mark>
-          ) : (
-            part
-          )
-        )}
-      </>
-    );
-  };
+
 
   // Client-side pagination
   const totalAppointmentPages = Math.ceil(filteredAppointments.length / appointmentsPerPage) || 1;

@@ -110,7 +110,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [manageDoctor, setManageDoctor] = useState("");
   const [managePrescription, setManagePrescription] = useState("");
   const [managePaymentStatus, setManagePaymentStatus] = useState("pending");
-  const [isSavingAppointment, setIsSavingAppointment] = useState(false);
+  const [isSavingAppointment, _setIsSavingAppointment] = useState(false);
+
+  
 
   // Doctor slot blocking states
   const [selectedDoctorForBlocking, setSelectedDoctorForBlocking] = useState<any | null>(null);

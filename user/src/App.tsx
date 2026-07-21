@@ -42,8 +42,25 @@ function ScrollToTop() {
   return null;
 }
 
+// Admin subfolder redirect helper
+const AdminRedirect = () => {
+  useEffect(() => {
+    // Force browser to load the actual static HTML file of Admin App in public_html/admin
+    window.location.href = "/admin/index.html";
+  }, []);
+  return (
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading Admin...</span>
+      </div>
+    </div>
+  );
+};
+
+
 // Fallback loader while lazy components are downloading
 const PageLoader = () => (
+
   <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
     <div className="spinner-border text-primary" role="status">
       <span className="visually-hidden">Loading...</span>
@@ -100,12 +117,19 @@ function App() {
 
             {/* ✅ User Profile / Dashboard Page */}
             <Route path="/profile" element={<Profile />} />
+
+            {/* ✅ Admin Redirect Fallback Routes */}
+            <Route path="/admin" element={<AdminRedirect />} />
+            <Route path="/admin/*" element={<AdminRedirect />} />
           </Route>
         </Routes>
       </Suspense>
+
+
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </BrowserRouter>
   );
+
 
 }
 

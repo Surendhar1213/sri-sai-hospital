@@ -307,10 +307,10 @@ interface DoctorMailOptions {
   to: string;
   doctorName: string;
   patientName: string;
-  patientPhone: string;
+  patientPhone?: string | undefined;
   speciality: string;
   time: string;
-  meetingLink?: string;
+  meetingLink?: string | undefined;
 }
 
 export const sendDoctorNotificationEmail = async (options: DoctorMailOptions) => {

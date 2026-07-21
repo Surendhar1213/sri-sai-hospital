@@ -13,9 +13,7 @@ oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN || "",
 });
 
-
 const calendar = google.calendar({ version: "v3", auth: oauth2Client });
-
 
 interface MeetEventOptions {
   patientEmail: string;
@@ -57,12 +55,11 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
         },
       },
     },
-    // Google Calendar notifications
     reminders: {
       useDefault: false,
       overrides: [
-        { method: "email", minutes: 30 }, // 30 minutes before Email alert
-        { method: "popup", minutes: 15 }  // 15 minutes before Mobile/Browser Pop-up
+        { method: "email", minutes: 30 },
+        { method: "popup", minutes: 15 }
       ],
     },
   };
@@ -72,8 +69,8 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
       const response = await calendar.events.insert({
         calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
         requestBody: event,
-        conferenceDataVersion: 1, // Google meet link vara this is mukkiyam ithuu
-        sendUpdates: "all", // email moolam calendar anupa uses!
+        conferenceDataVersion: 1,
+        sendUpdates: "all",
       });
 
       const meetLink = response.data.hangoutLink;
@@ -89,9 +86,9 @@ export const createMeetEvent = async (options: MeetEventOptions) => {
 
   const timeoutPromise = new Promise<null>((resolve) => {
     setTimeout(() => {
-      console.warn("⚠️ Google Calendar API request timed out after 4 seconds.");
+      console.warn("⚠️ Google Calendar API request timed out after 6 seconds.");
       resolve(null);
-    }, 4000);
+    }, 6000);
   });
 
   return Promise.race([apiCall(), timeoutPromise]);
