@@ -2,8 +2,6 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Calendar,
   X,
-  ChevronLeft,
-  ChevronRight,
   Search,
   Pill,
   Utensils,
