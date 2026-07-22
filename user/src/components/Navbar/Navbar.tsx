@@ -491,7 +491,7 @@ const Navbar = () => {
                             </span>
                           </button>
                           {/* Premium User Avatar - Direct Link to /profile */}
-                          {/* {isLoggedIn && (
+                          {isLoggedIn && (
                             <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: 0, margin: 0 }}>
                               <Link
                                 to="/profile"
@@ -545,8 +545,9 @@ const Navbar = () => {
                                 </div>
                               </Link>
                             </div>
-                          )} */}
+                          )}
                         </div>
+
                       </div>
                     </div>
                   </div>

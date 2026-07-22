@@ -2,13 +2,20 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaLock,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Lock,
+  Eye,
+  EyeOff,
+  PlusCircle,
+  ArrowRight,
+  ShieldCheck,
+  Stethoscope,
+  Droplet,
+  Users
+} from "lucide-react";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -34,10 +41,10 @@ const Register: React.FC = () => {
   const location = useLocation();
   const from = (location.state as any)?.from || "/";
 
-  // Input change handle பண்ண
+  // Input change handle
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     let { name, value } = e.target;
-    
+
     if (name === "phone") {
       value = value.replace(/\D/g, "");
       if (value.length > 0 && !/^[6-9]/.test(value)) {
@@ -48,7 +55,7 @@ const Register: React.FC = () => {
         setPhoneError("");
       }
     }
-    
+
     if (name === "age") {
       value = value.replace(/\D/g, "");
       const ageNum = Number(value);
@@ -115,7 +122,6 @@ const Register: React.FC = () => {
     if (formData.password !== formData.confirmPassword) {
       const msg = "Passwords do not match";
       setError(msg);
-      // ⚠️ WARNING TOAST (Color: Orange/Yellow)
       toast.warning("⚠️ " + msg);
       return;
     }
@@ -124,7 +130,6 @@ const Register: React.FC = () => {
     if (formData.password.length < 6) {
       const msg = "Password must be at least 6 characters";
       setError(msg);
-      // ⚠️ WARNING TOAST
       toast.warning("⚠️ " + msg);
       return;
     }
@@ -154,17 +159,13 @@ const Register: React.FC = () => {
       }
 
       setSuccess("Account created successfully! Redirecting to login...");
-
-      // 🎉 REGISTER SUCCESS TOAST (Color: Green)
       toast.success("🎉 Account created successfully! Please login to continue.");
 
       setTimeout(() => navigate("/login", { state: { from } }), 2000);
 
-
     } catch (err: any) {
       const errMsg = err.message || "Connection error. Please try again.";
       setError(errMsg);
-      // ❌ ERROR TOAST
       toast.error("❌ " + errMsg);
     } finally {
       setIsLoading(false);
@@ -173,37 +174,79 @@ const Register: React.FC = () => {
 
   return (
     <div className="user-auth-page">
-      {/* Decorative Background Blobs */}
-      <div className="user-auth-blob user-auth-blob-1"></div>
-      <div className="user-auth-blob user-auth-blob-2"></div>
-
       <div className="user-auth-wrapper user-auth-wrapper-register">
         {/* Left Side: Brand Promo panel */}
         <div className="user-auth-left">
           <div className="user-auth-brand">
-            <div className="user-auth-brand-icon">
-              <span style={{ fontSize: "20px" }}>🏥</span>
+            <div className="user-auth-brand-logo-container">
+              <div className="user-auth-logo-circle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4V20M4 12H20" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="user-auth-brand-details">
+                <span className="user-auth-brand-name">Sri Sai Hospital</span>
+                <span className="user-auth-brand-sub">Care • Compassion • Cure</span>
+              </div>
             </div>
-            <span className="user-auth-brand-name">Sri Sai Hospital</span>
           </div>
           <h2 className="user-auth-left-title">Join Our Community</h2>
+          <div className="user-auth-title-line" />
           <p className="user-auth-left-desc">
             Create your patient profile to get started with advanced healthcare services, easy appointment booking, and instant access to your records.
           </p>
 
           <div className="user-auth-features">
             <div className="user-auth-feature-item">
-              <span className="user-auth-feature-icon">👨‍⚕️</span>
+              <div className="user-auth-feature-icon-circle">
+                <Stethoscope size={18} />
+              </div>
               <span>Consult Top Specialists</span>
             </div>
             <div className="user-auth-feature-item">
-              <span className="user-auth-feature-icon">📅</span>
+              <div className="user-auth-feature-icon-circle">
+                <Calendar size={18} />
+              </div>
               <span>Online Appointment Booking</span>
             </div>
             <div className="user-auth-feature-item">
-              <span className="user-auth-feature-icon">🔒</span>
+              <div className="user-auth-feature-icon-circle">
+                <ShieldCheck size={18} />
+              </div>
               <span>Secure & Confidential Records</span>
             </div>
+          </div>
+
+          {/* Hospital Building Vector Outline SVG */}
+          <div className="user-auth-hospital-svg-wrap">
+            <svg className="user-auth-hospital-svg" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="10" y1="110" x2="290" y2="110" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" />
+              <path d="M 40 110 L 40 95" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <circle cx="40" cy="85" r="12" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
+              <path d="M 40 73 L 40 97" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <path d="M 260 110 L 260 95" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <circle cx="260" cy="85" r="10" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
+              <path d="M 25 45 Q 35 35 45 45 Q 55 45 50 55 L 20 55 Q 15 50 25 45 Z" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+              <path d="M 245 35 Q 252 27 260 35 Q 268 35 264 42 L 240 42 Q 236 38 245 35 Z" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+              <rect x="110" y="40" width="80" height="70" rx="4" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" />
+              <rect x="80" y="60" width="30" height="50" rx="3" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <rect x="190" y="60" width="30" height="50" rx="3" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <path d="M 140 110 L 140 95 Q 140 90 145 90 L 155 90 Q 160 90 160 95 L 160 110" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" />
+              <rect x="122" y="52" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="144" y="52" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="166" y="52" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="122" y="68" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="144" y="68" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="166" y="68" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="122" y="84" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="166" y="84" width="12" height="8" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="88" y="70" width="14" height="10" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="88" y="88" width="14" height="10" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="198" y="70" width="14" height="10" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="198" y="88" width="14" height="10" rx="1.5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect x="145" y="22" width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)" />
+              <path d="M 150 16 L 150 28 M 144 22 L 156 22" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
           </div>
         </div>
 
@@ -211,9 +254,24 @@ const Register: React.FC = () => {
         <div className="user-auth-right">
           <div className="user-auth-card user-auth-card-register">
             {/* Header */}
-            <div className="user-auth-card-header">
-              <h2 className="user-auth-card-title">Patient Registration</h2>
-              <p className="user-auth-card-subtitle">Create your Sri Sai Hospital account</p>
+            <div className="user-auth-header-container">
+              <div className="user-auth-header-icon-box">
+                <User size={26} />
+              </div>
+              <div className="user-auth-header-text">
+                <h2 className="user-auth-header-title">
+                  Patient <span>Registration</span>
+                </h2>
+                <p className="user-auth-header-subtitle">Create your Sri Sai Hospital account</p>
+              </div>
+            </div>
+
+            {/* Plus divider */}
+            <div className="user-auth-center-divider">
+              <div className="user-auth-center-line" />
+              <div className="user-auth-center-badge">
+                <PlusCircle size={20} />
+              </div>
             </div>
 
             {/* Error Message */}
@@ -238,13 +296,13 @@ const Register: React.FC = () => {
                   <label className="user-auth-label">Full Name *</label>
                   <div className="user-auth-input-wrap">
                     <span className="user-auth-input-icon">
-                      <FaUser size={13} />
+                      <User size={18} />
                     </span>
                     <input
                       type="text"
                       name="name"
                       className="user-auth-input"
-                      placeholder="Your full name"
+                      placeholder="Enter your full name"
                       value={formData.name}
                       onChange={handleChange}
                       required
@@ -263,13 +321,13 @@ const Register: React.FC = () => {
                   <label className="user-auth-label">Email Address *</label>
                   <div className="user-auth-input-wrap">
                     <span className="user-auth-input-icon">
-                      <FaEnvelope size={13} />
+                      <Mail size={18} />
                     </span>
                     <input
                       type="email"
                       name="email"
                       className="user-auth-input"
-                      placeholder="Your email address"
+                      placeholder="Enter your email address"
                       value={formData.email}
                       onChange={handleChange}
                       required
@@ -283,13 +341,13 @@ const Register: React.FC = () => {
                   <label className="user-auth-label">Phone Number *</label>
                   <div className="user-auth-input-wrap">
                     <span className="user-auth-input-icon">
-                      <FaPhone size={13} />
+                      <Phone size={18} />
                     </span>
                     <input
                       type="tel"
                       name="phone"
                       className="user-auth-input"
-                      placeholder="Phone number"
+                      placeholder="Enter your phone number"
                       value={formData.phone}
                       onChange={handleChange}
                       required
@@ -308,12 +366,14 @@ const Register: React.FC = () => {
                 <div className="user-auth-field">
                   <label className="user-auth-label">Age *</label>
                   <div className="user-auth-input-wrap">
-                    <span className="user-auth-input-icon" style={{ fontSize: "12px" }}>🎂</span>
+                    <span className="user-auth-input-icon">
+                      <Calendar size={18} />
+                    </span>
                     <input
                       type="number"
                       name="age"
                       className="user-auth-input"
-                      placeholder="Your age"
+                      placeholder="Enter your age"
                       value={formData.age}
                       onChange={handleChange}
                       min="1"
@@ -333,7 +393,9 @@ const Register: React.FC = () => {
                 <div className="user-auth-field">
                   <label className="user-auth-label">Gender *</label>
                   <div className="user-auth-input-wrap">
-                    <span className="user-auth-input-icon" style={{ fontSize: "12px" }}>🚻</span>
+                    <span className="user-auth-input-icon">
+                      <Users size={18} />
+                    </span>
                     <select
                       name="gender"
                       className="user-auth-input user-auth-select"
@@ -354,7 +416,9 @@ const Register: React.FC = () => {
                 <div className="user-auth-field">
                   <label className="user-auth-label">Blood Group</label>
                   <div className="user-auth-input-wrap">
-                    <span className="user-auth-input-icon" style={{ fontSize: "12px" }}>🩸</span>
+                    <span className="user-auth-input-icon">
+                      <Droplet size={18} />
+                    </span>
                     <select
                       name="bloodGroup"
                       className="user-auth-input user-auth-select"
@@ -362,7 +426,7 @@ const Register: React.FC = () => {
                       onChange={handleChange}
                       disabled={!formData.gender}
                     >
-                      <option value="Unknown">Unknown</option>
+                      <option value="Unknown">Select blood group</option>
                       <option value="A+">A+</option>
                       <option value="A-">A-</option>
                       <option value="B+">B+</option>
@@ -380,13 +444,13 @@ const Register: React.FC = () => {
                   <label className="user-auth-label">Password *</label>
                   <div className="user-auth-input-wrap">
                     <span className="user-auth-input-icon">
-                      <FaLock size={13} />
+                      <Lock size={18} />
                     </span>
                     <input
                       type={showPassword ? "text" : "password"}
                       name="password"
                       className="user-auth-input user-auth-input-padded"
-                      placeholder="Min 6 characters"
+                      placeholder="Create a password"
                       value={formData.password}
                       onChange={handleChange}
                       required
@@ -399,7 +463,7 @@ const Register: React.FC = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       disabled={!formData.gender}
                     >
-                      {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
@@ -409,13 +473,13 @@ const Register: React.FC = () => {
                   <label className="user-auth-label">Confirm Password *</label>
                   <div className="user-auth-input-wrap">
                     <span className="user-auth-input-icon">
-                      <FaLock size={13} />
+                      <Lock size={18} />
                     </span>
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       className="user-auth-input user-auth-input-padded"
-                      placeholder="Re-enter password"
+                      placeholder="Confirm your password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       required
@@ -427,7 +491,7 @@ const Register: React.FC = () => {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       disabled={!formData.password}
                     >
-                      {showConfirmPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
@@ -440,7 +504,9 @@ const Register: React.FC = () => {
                     <span>Creating Account...</span>
                   </>
                 ) : (
-                  <>✅ Create Account</>
+                  <>
+                    <ArrowRight size={18} /> Create Account
+                  </>
                 )}
               </button>
             </form>

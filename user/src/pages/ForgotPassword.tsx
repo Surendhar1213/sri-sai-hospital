@@ -19,10 +19,10 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -143,7 +143,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    
+
     if (otp.length !== 6 || isNaN(Number(otp))) {
       setError("Please enter a valid 6-digit OTP code");
       toast.error("Please enter a valid 6-digit OTP code");
@@ -212,7 +212,7 @@ const ForgotPassword = () => {
 
       setSuccess("Password reset successful! Redirecting you to login...");
       toast.success("Password reset successful!");
-      
+
       // Navigate to login after 3 seconds
       setTimeout(() => {
         navigate("/login");
@@ -261,7 +261,7 @@ const ForgotPassword = () => {
               <span>Encrypted Password Updates</span>
             </div>
           </div>
-          
+
           {/* Custom Recovery Step Indicators */}
           <div className="register-step-indicator" style={{ marginTop: "2.5rem" }}>
             <div className={`register-step ${step >= 1 ? "register-step-active" : ""}`}>

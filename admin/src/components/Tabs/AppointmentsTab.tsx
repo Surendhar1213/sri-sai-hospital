@@ -978,75 +978,145 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                     marginTop: "16px",
                   }}
                 >
-                  <span style={{ fontSize: "14px", color: "#616161" }}>
-                    Showing page <strong>{activeAppPageBounded}</strong> of {totalAppointmentPages} ({filteredAppointments.length} appointments total)
+                  <span style={{ fontSize: "13px", color: "#64748B", fontFamily: "'Onest', sans-serif", fontWeight: "500" }}>
+                    Showing {indexOfFirstApp + 1} to {Math.min(indexOfLastApp, filteredAppointments.length)} of {filteredAppointments.length} entries
                   </span>
 
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                    <button
+                      disabled={activeAppPageBounded === 1}
+                      onClick={() => setAppointmentCurrentPage(1)}
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "8px",
+                        border: "1.5px solid #F1F5F9",
+                        backgroundColor: "#FFFFFF",
+                        color: activeAppPageBounded === 1 ? "#cbd5e1" : "#64748B",
+                        fontSize: "13px",
+                        fontWeight: "700",
+                        cursor: activeAppPageBounded === 1 ? "not-allowed" : "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        outline: "none",
+                        transition: "all 0.2s",
+                      }}
+                      title="First Page"
+                    >
+                      «
+                    </button>
                     <button
                       disabled={activeAppPageBounded === 1}
                       onClick={() => setAppointmentCurrentPage(activeAppPageBounded - 1)}
                       style={{
-                        padding: "8px 16px",
+                        width: "36px",
+                        height: "36px",
                         borderRadius: "8px",
-                        border: "1.5px solid #e2e8f0",
-                        backgroundColor: activeAppPageBounded === 1 ? "#F9FAFB" : "#FFFFFF",
-                        color: activeAppPageBounded === 1 ? "#cbd5e1" : "#060F2D",
-                        fontSize: "14px",
-                        fontWeight: "600",
+                        border: "1.5px solid #F1F5F9",
+                        backgroundColor: "#FFFFFF",
+                        color: activeAppPageBounded === 1 ? "#cbd5e1" : "#64748B",
+                        fontSize: "13px",
+                        fontWeight: "700",
                         cursor: activeAppPageBounded === 1 ? "not-allowed" : "pointer",
                         display: "flex",
                         alignItems: "center",
-                        gap: "6px",
+                        justifyContent: "center",
                         outline: "none",
                         transition: "all 0.2s",
                       }}
+                      title="Previous Page"
                     >
-                      <ChevronLeft size={16} /> Prev
+                      ‹
                     </button>
 
-                    {Array.from({ length: totalAppointmentPages }, (_, i) => i + 1).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => setAppointmentCurrentPage(p)}
-                        style={{
-                          width: "36px",
-                          height: "36px",
-                          borderRadius: "8px",
-                          border: p === activeAppPageBounded ? "none" : "1.5px solid #e2e8f0",
-                          backgroundColor: p === activeAppPageBounded ? "#4A65FF" : "#FFFFFF",
-                          color: p === activeAppPageBounded ? "#FFFFFF" : "#060F2D",
-                          fontSize: "14px",
-                          fontWeight: "700",
-                          cursor: "pointer",
-                          outline: "none",
-                          transition: "all 0.2s",
-                        }}
-                      >
-                        {p}
-                      </button>
-                    ))}
+                    {Array.from({ length: totalAppointmentPages }, (_, i) => i + 1).map((p) => {
+                      // Only show current, first, last, and surrounding pages to match premium pagination look
+                      if (
+                        p === 1 ||
+                        p === totalAppointmentPages ||
+                        Math.abs(p - activeAppPageBounded) <= 1
+                      ) {
+                        return (
+                          <button
+                            key={p}
+                            onClick={() => setAppointmentCurrentPage(p)}
+                            style={{
+                              width: "36px",
+                              height: "36px",
+                              borderRadius: "8px",
+                              border: p === activeAppPageBounded ? "none" : "1.5px solid #F1F5F9",
+                              backgroundColor: p === activeAppPageBounded ? "#0EA5E9" : "#FFFFFF",
+                              color: p === activeAppPageBounded ? "#FFFFFF" : "#64748B",
+                              fontSize: "13px",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              outline: "none",
+                              transition: "all 0.2s",
+                            }}
+                          >
+                            {p}
+                          </button>
+                        );
+                      }
+                      if (
+                        p === 2 && activeAppPageBounded > 3
+                      ) {
+                        return <span key="dots-start" style={{ color: "#94A3B8", padding: "0 4px", fontSize: "13px" }}>...</span>;
+                      }
+                      if (
+                        p === totalAppointmentPages - 1 && activeAppPageBounded < totalAppointmentPages - 2
+                      ) {
+                        return <span key="dots-end" style={{ color: "#94A3B8", padding: "0 4px", fontSize: "13px" }}>...</span>;
+                      }
+                      return null;
+                    })}
 
                     <button
                       disabled={activeAppPageBounded === totalAppointmentPages}
                       onClick={() => setAppointmentCurrentPage(activeAppPageBounded + 1)}
                       style={{
-                        padding: "8px 16px",
+                        width: "36px",
+                        height: "36px",
                         borderRadius: "8px",
-                        border: "1.5px solid #e2e8f0",
-                        backgroundColor: activeAppPageBounded === totalAppointmentPages ? "#F9FAFB" : "#FFFFFF",
-                        color: activeAppPageBounded === totalAppointmentPages ? "#cbd5e1" : "#060F2D",
-                        fontSize: "14px",
-                        fontWeight: "600",
+                        border: "1.5px solid #F1F5F9",
+                        backgroundColor: "#FFFFFF",
+                        color: activeAppPageBounded === totalAppointmentPages ? "#cbd5e1" : "#64748B",
+                        fontSize: "13px",
+                        fontWeight: "700",
                         cursor: activeAppPageBounded === totalAppointmentPages ? "not-allowed" : "pointer",
                         display: "flex",
                         alignItems: "center",
-                        gap: "6px",
+                        justifyContent: "center",
                         outline: "none",
                         transition: "all 0.2s",
                       }}
+                      title="Next Page"
                     >
-                      Next <ChevronRight size={16} />
+                      ›
+                    </button>
+                    <button
+                      disabled={activeAppPageBounded === totalAppointmentPages}
+                      onClick={() => setAppointmentCurrentPage(totalAppointmentPages)}
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "8px",
+                        border: "1.5px solid #F1F5F9",
+                        backgroundColor: "#FFFFFF",
+                        color: activeAppPageBounded === totalAppointmentPages ? "#cbd5e1" : "#64748B",
+                        fontSize: "13px",
+                        fontWeight: "700",
+                        cursor: activeAppPageBounded === totalAppointmentPages ? "not-allowed" : "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        outline: "none",
+                        transition: "all 0.2s",
+                      }}
+                      title="Last Page"
+                    >
+                      »
                     </button>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, CreditCard } from "lucide-react";
+import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, CreditCard, ChevronDown, Search, Menu } from "lucide-react";
 import OverviewTab from "../components/Tabs/OverviewTab";
 import DoctorsTab from "../components/Tabs/DoctorsTab";
 import PatientsTab from "../components/Tabs/PatientsTab";
@@ -458,9 +458,27 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       try {
         const parsed = JSON.parse(event.data);
         console.log("⚡ SSE Real-Time Event:", parsed);
-        fetchAppointments();
+
+        if (parsed.event === "new-appointment") {
+          setAppointments((prev) => [parsed.data, ...prev]);
+          triggerToast("🔔 New Appointment booked by patient!");
+        } else if (parsed.event === "update-appointment") {
+          let updatedItem = parsed.data;
+          if (updatedItem.assignedDoctor && typeof updatedItem.assignedDoctor === "string") {
+            const docObj = doctors.find((d: any) => d._id === updatedItem.assignedDoctor);
+            if (docObj) {
+              updatedItem.assignedDoctor = docObj;
+            }
+          }
+          setAppointments((prev) =>
+            prev.map((app) => (app._id === updatedItem._id ? updatedItem : app))
+          );
+        } else {
+          fetchAppointments();
+        }
       } catch (err) {
-        // ignore
+        console.error("Error handling SSE real-time message:", err);
+        fetchAppointments();
       }
     };
 
@@ -471,7 +489,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     return () => {
       eventSource.close();
     };
-  }, []);
+  }, [doctors]);
 
   const handleBlockDateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -824,8 +842,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     padding: "14px 18px",
                     borderRadius: "12px",
                     border: "none",
-                    backgroundColor: isActive ? "rgba(74, 101, 255, 0.15)" : "transparent",
-                    color: isActive ? "#4A65FF" : "#94A3B8",
+                    backgroundColor: isActive ? "rgba(14, 165, 233, 0.12)" : "transparent",
+                    color: isActive ? "#0EA5E9" : "#94A3B8",
                     cursor: "pointer",
                     fontSize: "14px",
                     fontWeight: isActive ? "700" : "600",
@@ -935,8 +953,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <header
           style={{
             backgroundColor: "#FFFFFF",
-            padding: "24px 40px",
-            borderBottom: "1px solid rgba(6, 15, 45, 0.04)",
+            padding: "18px 40px",
+            borderBottom: "1.5px solid #F1F5F9",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -945,60 +963,143 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             zIndex: 100,
           }}
         >
-          <div>
-            <h2 style={{ fontSize: "22px", fontWeight: "800", color: "#060F2D", letterSpacing: "-0.5px" }}>
-              {getHeaderTitle()}
-            </h2>
-            <span style={{ fontSize: "12px", color: "#616161", marginTop: "2px", display: "block" }}>
-              Srisai Subhramaniya Hospitals Management Hub
-            </span>
-          </div>
-          <div style={{ position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             <button
-              onClick={() => {
-                setActiveTab("appointments");
-                triggerToast("🔔 Displaying all new pending appointment logs!");
-              }}
               style={{
-                background: "#EEF1FF",
+                background: "transparent",
                 border: "none",
                 cursor: "pointer",
-                width: "42px",
-                height: "42px",
-                borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.2s",
+                color: "#64748B",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              <Bell size={20} color="#4A65FF" />
+              <Menu size={22} />
             </button>
-            {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length > 0 && (
-              <span
+            <div>
+              <h2 style={{ fontSize: "20px", fontWeight: "800", color: "#060F2D", letterSpacing: "-0.5px", margin: 0 }}>
+                {getHeaderTitle()}
+              </h2>
+              <span style={{ fontSize: "12px", color: "#64748B", marginTop: "2px", display: "block", fontWeight: "500" }}>
+                Srisai Subhramaniya Hospitals Management Hub
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            {/* Search Input */}
+            <div style={{ position: "relative" }}>
+              <Search
+                size={16}
+                color="#94A3B8"
                 style={{
                   position: "absolute",
-                  top: "-4px",
-                  right: "-4px",
-                  backgroundColor: "#EF4444",
-                  color: "#FFFFFF",
-                  fontSize: "10px",
-                  fontWeight: "850",
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Search patient, doctor..."
+                style={{
+                  padding: "10px 16px 10px 40px",
+                  borderRadius: "10px",
+                  border: "1.5px solid #E2E8F0",
+                  fontSize: "13px",
+                  outline: "none",
+                  width: "240px",
+                  color: "#0F172A",
+                  fontFamily: "'Onest', sans-serif",
+                  backgroundColor: "#FCFDFD",
+                  transition: "all 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#4A65FF";
+                  e.currentTarget.style.backgroundColor = "#FFFFFF";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#E2E8F0";
+                  e.currentTarget.style.backgroundColor = "#FCFDFD";
+                }}
+              />
+            </div>
+
+            {/* Notification Bell */}
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={() => {
+                  setActiveTab("appointments");
+                  triggerToast("🔔 Displaying all new pending appointment logs!");
+                }}
+                style={{
+                  background: "#F1F5F9",
+                  border: "none",
+                  cursor: "pointer",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 2px 6px rgba(239, 68, 68, 0.4)",
-                  pointerEvents: "none",
+                  transition: "all 0.2s",
+                  position: "relative"
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#E2E8F0")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#F1F5F9")}
+              >
+                <Bell size={18} color="#0F172A" />
+                {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-2px",
+                      right: "-2px",
+                      backgroundColor: "#10B981",
+                      color: "#FFFFFF",
+                      fontSize: "9px",
+                      fontWeight: "850",
+                      width: "16px",
+                      height: "16px",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #FFFFFF",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* User Profile Info Card */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", borderLeft: "1.5px solid #F1F5F9", paddingLeft: "24px" }}>
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  backgroundColor: "#0EA5E9",
+                  color: "#FFFFFF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                  fontWeight: "800",
                 }}
               >
-                {appointments.filter((app) => app.status === "pending" && !seenAppointments.includes(app._id)).length}
-              </span>
-            )}
+                SA
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+                <span style={{ fontSize: "13px", fontWeight: "750", color: "#060F2D" }}>Super Admin</span>
+                <span style={{ fontSize: "11px", color: "#94A3B8", fontWeight: "600" }}>Administrator</span>
+              </div>
+              <ChevronDown size={14} color="#64748B" style={{ cursor: "pointer", marginLeft: "4px" }} />
+            </div>
           </div>
         </header>
 

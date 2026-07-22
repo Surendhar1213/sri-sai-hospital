@@ -15,6 +15,16 @@ const transporter = nodemailer.createTransport({
   socketTimeout: 5000,     // 5 seconds
 });
 
+// Verify connection configuration on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ SMTP Verification Failed: Email service won't send emails correctly in live!", error);
+  } else {
+    console.log("🚀 SMTP Verification Succeeded: Email service is ready to send notifications!");
+  }
+});
+
+
 interface AppointmentMailOptions {
   to: string;
   patientName: string;
@@ -699,5 +709,9 @@ export const sendResetOTPEmail = async (options: ResetOTPMailOptions) => {
     return false;
   }
 };
+
+
+
+
 
 
