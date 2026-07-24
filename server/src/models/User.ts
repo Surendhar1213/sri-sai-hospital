@@ -51,6 +51,18 @@ const UserSchema = new Schema(
       default: "Unknown",
     },
 
+    // Patient Address
+    address: {
+      type: String,
+      default: "",
+    },
+
+    // Patient Alternate Phone Number
+    alternatePhone: {
+      type: String,
+      default: "",
+    },
+
     // User role — always "user"
     role: {
       type: String,

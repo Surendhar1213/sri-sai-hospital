@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, getAllUsers, updateUserProfile, forgotPassword, resetPassword, verifyOTP } from "../controllers/userAuthController.js";
+import { registerUser, loginUser, getAllUsers, updateUserProfile, forgotPassword, resetPassword, verifyOTP, getUserProfile } from "../controllers/userAuthController.js";
 import { verifyAdminToken } from "../middlewares/authMiddleware.js";
 
 const router = Router();
@@ -19,6 +19,8 @@ router.post("/verify-otp", verifyOTP);
 // POST /api/user/reset-password — Reset password using OTP
 router.post("/reset-password", resetPassword);
 
+// GET /api/user/profile/:id — Fetch single patient profile details
+router.get("/profile/:id", getUserProfile);
 
 // GET /api/user/all — Admin show all patient list view
 router.get("/all", verifyAdminToken as any, getAllUsers);

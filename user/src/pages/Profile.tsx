@@ -46,12 +46,16 @@ const Profile = () => {
   const [userAge, setUserAge] = useState<number | string>("");
   const [userGender, setUserGender] = useState("");
   const [userBloodGroup, setUserBloodGroup] = useState("");
+  const [userAddress, setUserAddress] = useState("");
+  const [userAlternatePhone, setUserAlternatePhone] = useState("");
 
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [editAge, setEditAge] = useState<number | string>("");
   const [editGender, setEditGender] = useState("");
   const [editBloodGroup, setEditBloodGroup] = useState("");
+  const [editAddress, setEditAddress] = useState("");
+  const [editAlternatePhone, setEditAlternatePhone] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -66,8 +70,8 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userInfo");
+    window.dispatchEvent(new Event("storage"));
     navigate("/");
-    window.location.reload();
   };
 
   useEffect(() => {
@@ -89,12 +93,16 @@ const Profile = () => {
       setUserAge(user.age || "");
       setUserGender(user.gender || "");
       setUserBloodGroup(user.bloodGroup || "");
+      setUserAddress(user.address || "");
+      setUserAlternatePhone(user.alternatePhone || "");
 
       setEditName(user.name || "");
       setEditPhone(user.phone || "");
       setEditAge(user.age || "");
       setEditGender(user.gender || "");
       setEditBloodGroup(user.bloodGroup || "");
+      setEditAddress(user.address || "");
+      setEditAlternatePhone(user.alternatePhone || "");
     }
 
     // Read URL query parameter for tab selection
@@ -104,6 +112,53 @@ const Profile = () => {
       setActiveTab(tab);
     }
   }, [navigate]);
+
+  // Fetch latest profile details from server to keep sync
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUserProfile = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const token = localStorage.getItem("userToken");
+        const response = await fetch(`${backendUrl}/api/user/profile/${userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        if (response.ok && data.user) {
+          setUserName(data.user.name || "User");
+          setUserEmail(data.user.email || "");
+          setUserPhone(data.user.phone || "");
+          setUserAge(data.user.age || "");
+          setUserGender(data.user.gender || "");
+          setUserBloodGroup(data.user.bloodGroup || "");
+          setUserAddress(data.user.address || "");
+          setUserAlternatePhone(data.user.alternatePhone || "");
+
+          setEditName(data.user.name || "");
+          setEditPhone(data.user.phone || "");
+          setEditAge(data.user.age || "");
+          setEditGender(data.user.gender || "");
+          setEditBloodGroup(data.user.bloodGroup || "");
+          setEditAddress(data.user.address || "");
+          setEditAlternatePhone(data.user.alternatePhone || "");
+
+          // Update local cache
+          localStorage.setItem("userInfo", JSON.stringify(data.user));
+        } else if (response.status === 401) {
+          handleLogout();
+        }
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      }
+    };
+
+    fetchUserProfile();
+  }, [userId]);
 
   // Fetch appointments
   useEffect(() => {
@@ -188,7 +243,9 @@ const Profile = () => {
           phone: editPhone,
           age: Number(editAge),
           gender: editGender,
-          bloodGroup: editBloodGroup
+          bloodGroup: editBloodGroup,
+          address: editAddress,
+          alternatePhone: editAlternatePhone
         })
       });
       const data = await response.json();
@@ -198,6 +255,8 @@ const Profile = () => {
         setUserAge(data.user.age);
         setUserGender(data.user.gender);
         setUserBloodGroup(data.user.bloodGroup);
+        setUserAddress(data.user.address || "");
+        setUserAlternatePhone(data.user.alternatePhone || "");
         
         const userInfoObj = JSON.parse(localStorage.getItem("userInfo") || "{}");
         const updatedUserInfo = {
@@ -206,7 +265,9 @@ const Profile = () => {
           phone: data.user.phone,
           age: data.user.age,
           gender: data.user.gender,
-          bloodGroup: data.user.bloodGroup
+          bloodGroup: data.user.bloodGroup,
+          address: data.user.address || "",
+          alternatePhone: data.user.alternatePhone || ""
         };
         localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
         setIsEditing(false);
@@ -240,7 +301,7 @@ const Profile = () => {
   return (
     <div style={{
       minHeight: "100vh",
-      backgroundColor: "#FFFFFF",
+      backgroundColor: "#F4F7FC",
       fontFamily: "'Inter', sans-serif",
       color: "#4D5765",
       padding: "40px 20px"
@@ -329,7 +390,7 @@ const Profile = () => {
               </div>
               <div style={{ textAlign: "left" }}>
                 <h3 style={{ fontSize: "18px", fontWeight: "700", color: "#0F2239", margin: 0 }}>{userName}</h3>
-                <p style={{ margin: "2px 0 0 0", color: "#72849B", fontSize: "14px", fontWeight: "600" }}>{userEmail}</p>
+                <p style={{ margin: "2px 0 0 0", color: "#72849B", fontSize: "14px", fontWeight: "600", wordBreak: "break-all" }}>{userEmail}</p>
               </div>
             </div>
 
@@ -363,12 +424,64 @@ const Profile = () => {
                       textAlign: "left",
                       transition: "all 0.2s ease"
                     }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) e.currentTarget.style.backgroundColor = "rgba(74, 101, 255, 0.03)";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+                    }}
                   >
                     <span style={{ fontSize: "18px", display: "flex" }}>{tab.icon}</span>
                     {tab.label}
                   </button>
                 );
               })}
+
+              {/* Need Help Card */}
+              <div style={{
+                backgroundColor: "#F0F5FF",
+                borderRadius: "12px",
+                padding: "16px",
+                marginTop: "24px",
+                border: "1px solid #E0EBFF",
+                textAlign: "center"
+              }}>
+                <h4 style={{ margin: "0 0 4px 0", fontSize: "15px", fontWeight: "700", color: "#0F2239" }}>Need Help?</h4>
+                <p style={{ margin: "0 0 16px 0", fontSize: "12px", color: "#72849B", fontWeight: "600" }}>Contact our support team</p>
+                <a
+                  href="https://wa.me/919488339399"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid #E0EBFF",
+                    color: "#4A65FF",
+                    fontWeight: "700",
+                    fontSize: "13px",
+                    textDecoration: "none",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 4px rgba(74, 101, 255, 0.05)",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#4A65FF";
+                    e.currentTarget.style.color = "#FFFFFF";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#FFFFFF";
+                    e.currentTarget.style.color = "#4A65FF";
+                  }}
+                >
+                  Contact Support
+                </a>
+              </div>
 
               <button
                 onClick={handleLogout}
@@ -386,7 +499,7 @@ const Profile = () => {
                   fontWeight: "700",
                   cursor: "pointer",
                   textAlign: "left",
-                  marginTop: "24px",
+                  marginTop: "16px",
                   transition: "all 0.2s"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.04)"}
@@ -399,7 +512,9 @@ const Profile = () => {
           </div>
 
           {/* Right Detailed Panel */}
-          <div style={{
+          <div style={activeTab === "overview" ? {
+            minHeight: "540px",
+          } : {
             backgroundColor: "#FFFFFF",
             borderRadius: "16px",
             border: "1px solid #EBF1F9",
@@ -426,6 +541,7 @@ const Profile = () => {
                     appointments={appointments}
                     upcomingAppointment={upcomingAppointment}
                     handleJoinMeeting={handleJoinMeeting}
+                    setActiveTab={setActiveTab}
                   />
                 )}
 
@@ -433,6 +549,7 @@ const Profile = () => {
                   <AppointmentsTab
                     appointments={appointments}
                     handleJoinMeeting={handleJoinMeeting}
+                    setActiveTab={setActiveTab}
                   />
                 )}
 
@@ -464,6 +581,8 @@ const Profile = () => {
                     userAge={userAge}
                     userGender={userGender}
                     userBloodGroup={userBloodGroup}
+                    userAddress={userAddress}
+                    userAlternatePhone={userAlternatePhone}
                     editName={editName}
                     setEditName={setEditName}
                     editPhone={editPhone}
@@ -474,6 +593,10 @@ const Profile = () => {
                     setEditGender={setEditGender}
                     editBloodGroup={editBloodGroup}
                     setEditBloodGroup={setEditBloodGroup}
+                    editAddress={editAddress}
+                    setEditAddress={setEditAddress}
+                    editAlternatePhone={editAlternatePhone}
+                    setEditAlternatePhone={setEditAlternatePhone}
                     handleSaveProfile={handleSaveProfile}
                     isSaving={isSaving}
                   />

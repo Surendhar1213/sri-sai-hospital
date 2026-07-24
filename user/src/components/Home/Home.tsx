@@ -3,10 +3,10 @@ import { useLocation } from "react-router-dom";
 import About from "./About/About";
 import Heroslider from "./Heroslider/Heroslider";
 import Special from "./Special/Special";
+import Appointment from "./Appointment/Appointment";
+import Specialities from "./Specialities/Specialities";
 
 // Lazy load below-the-fold components to improve performance
-const Specialities = lazy(() => import("./Specialities/Specialities"));
-const Appointment = lazy(() => import("./Appointment/Appointment"));
 const Facilities = lazy(() => import("./Facilities/Facilities"));
 const Gallery = lazy(() => import("./Gallery/Gallery"));
 
@@ -15,22 +15,26 @@ const Home = () => {
 
   useEffect(() => {
     if (location.hash === "#appointment-section") {
-      setTimeout(() => {
+      let attempts = 0;
+      const scrollInterval = setInterval(() => {
         const element = document.getElementById("appointment-form-wrapper") || document.getElementById("appointment-section");
         if (element) {
           const headerHeight = 90; // Offset for sticky navbar
           const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({
-            top: elementPosition - headerHeight - 20,
-            behavior: "smooth",
-          });
-          // Focus the name input field inside the wrapper if it exists
+          window.scrollTo(0, elementPosition - headerHeight - 20);
+          
           const nameInput = document.getElementById("pasentname");
           if (nameInput) {
-            (nameInput as HTMLInputElement).focus();
+            nameInput.focus();
           }
         }
-      }, 200);
+        attempts++;
+        if (attempts >= 15) { // Poll for 4.5 seconds to fully cover slow-loading images/layout shifts
+          clearInterval(scrollInterval);
+        }
+      }, 300);
+
+      return () => clearInterval(scrollInterval);
     }
   }, [location]);
 

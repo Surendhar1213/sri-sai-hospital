@@ -330,35 +330,69 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
               console.log(`🔗 Generated Google Meet Link: ${meetingLink}`);
             } else {
               console.warn("⚠️ Google Calendar API failed/timed out. Using guaranteed Google Meet room link.");
-              const cleanStr = appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase();
-              const p2 = (cleanStr.slice(-4) + "abcd").slice(0, 4);
-              const p3 = (cleanStr.slice(-7, -4) + "xyz").slice(0, 3);
-              meetingLink = `https://meet.google.com/ssh-${p2}-${p3}`;
+              const hexToLetters = (str: string) => {
+                const map: { [key: string]: string } = {
+                  '0': 'g', '1': 'h', '2': 'i', '3': 'j', '4': 'k',
+                  '5': 'l', '6': 'm', '7': 'n', '8': 'o', '9': 'p'
+                };
+                return str.replace(/[0-9]/g, (digit) => map[digit] || digit);
+              };
+              const cleanStr = hexToLetters(appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase());
+              const p1 = (cleanStr.slice(-3) + "abc").slice(0, 3);
+              const p2 = (cleanStr.slice(-7, -4) + "defg").slice(0, 4);
+              const p3 = (cleanStr.slice(-10, -7) + "hij").slice(0, 3);
+              meetingLink = `https://meet.google.com/${p1}-${p2}-${p3}`;
               linkGeneratedThisSession = true;
             }
           } catch (meetErr) {
             console.error("❌ Error generating meeting link:", meetErr);
-            const cleanStr = appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase();
-            const p2 = (cleanStr.slice(-4) + "abcd").slice(0, 4);
-            const p3 = (cleanStr.slice(-7, -4) + "xyz").slice(0, 3);
-            meetingLink = `https://meet.google.com/ssh-${p2}-${p3}`;
+            const hexToLetters = (str: string) => {
+              const map: { [key: string]: string } = {
+                '0': 'g', '1': 'h', '2': 'i', '3': 'j', '4': 'k',
+                '5': 'l', '6': 'm', '7': 'n', '8': 'o', '9': 'p'
+              };
+              return str.replace(/[0-9]/g, (digit) => map[digit] || digit);
+            };
+         
+         
+            const cleanStr = hexToLetters(appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase());
+            const p1 = (cleanStr.slice(-3) + "abc").slice(0, 3);
+            const p2 = (cleanStr.slice(-7, -4) + "defg").slice(0, 4);
+            const p3 = (cleanStr.slice(-10, -7) + "hij").slice(0, 3);
+            meetingLink = `https://meet.google.com/${p1}-${p2}-${p3}`;
             linkGeneratedThisSession = true;
           }
         } else {
           // Doctor details not found, assign Google Meet fallback link
-          const cleanStr = appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase();
-          const p2 = (cleanStr.slice(-4) + "abcd").slice(0, 4);
-          const p3 = (cleanStr.slice(-7, -4) + "xyz").slice(0, 3);
-          meetingLink = `https://meet.google.com/ssh-${p2}-${p3}`;
+          const hexToLetters = (str: string) => {
+            const map: { [key: string]: string } = {
+              '0': 'g', '1': 'h', '2': 'i', '3': 'j', '4': 'k',
+              '5': 'l', '6': 'm', '7': 'n', '8': 'o', '9': 'p'
+            };
+            return str.replace(/[0-9]/g, (digit) => map[digit] || digit);
+          };
+          const cleanStr = hexToLetters(appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase());
+          const p1 = (cleanStr.slice(-3) + "abc").slice(0, 3);
+          const p2 = (cleanStr.slice(-7, -4) + "defg").slice(0, 4);
+          const p3 = (cleanStr.slice(-10, -7) + "hij").slice(0, 3);
+          meetingLink = `https://meet.google.com/${p1}-${p2}-${p3}`;
           linkGeneratedThisSession = true;
         }
       } else {
         // If existing meeting link was using /lookup/ format, convert it to standard room URL format
         if (meetingLink && meetingLink.includes("/lookup/")) {
-          const cleanStr = appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase();
-          const p2 = (cleanStr.slice(-4) + "abcd").slice(0, 4);
-          const p3 = (cleanStr.slice(-7, -4) + "xyz").slice(0, 3);
-          meetingLink = `https://meet.google.com/ssh-${p2}-${p3}`;
+          const hexToLetters = (str: string) => {
+            const map: { [key: string]: string } = {
+              '0': 'g', '1': 'h', '2': 'i', '3': 'j', '4': 'k',
+              '5': 'l', '6': 'm', '7': 'n', '8': 'o', '9': 'p'
+            };
+            return str.replace(/[0-9]/g, (digit) => map[digit] || digit);
+          };
+          const cleanStr = hexToLetters(appointment._id.toString().replace(/[^a-z0-9]/gi, "").toLowerCase());
+          const p1 = (cleanStr.slice(-3) + "abc").slice(0, 3);
+          const p2 = (cleanStr.slice(-7, -4) + "defg").slice(0, 4);
+          const p3 = (cleanStr.slice(-10, -7) + "hij").slice(0, 3);
+          meetingLink = `https://meet.google.com/${p1}-${p2}-${p3}`;
           linkGeneratedThisSession = true;
         } else if (appointment.status !== "approved") {
           linkGeneratedThisSession = true;

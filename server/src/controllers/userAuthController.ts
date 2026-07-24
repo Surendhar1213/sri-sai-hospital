@@ -97,7 +97,10 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         email: user.email,
         phone: user.phone,
         gender: user.gender,
+        age: user.age,
         bloodGroup: user.bloodGroup,
+        address: user.address || "",
+        alternatePhone: user.alternatePhone || "",
       },
     });
 
@@ -127,7 +130,7 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
 export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, phone, age, gender, bloodGroup } = req.body;
+    const { name, phone, age, gender, bloodGroup, address, alternatePhone } = req.body;
 
     // Verify JWT Token and ownership
     const authHeader = req.headers.authorization;
@@ -165,6 +168,8 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
     if (age) user.age = Number(age);
     if (gender) user.gender = gender;
     if (bloodGroup) user.bloodGroup = bloodGroup;
+    if (address !== undefined) user.address = address;
+    if (alternatePhone !== undefined) user.alternatePhone = alternatePhone;
 
     await user.save();
 
@@ -178,6 +183,8 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
         age: user.age,
         gender: user.gender,
         bloodGroup: user.bloodGroup,
+        address: user.address || "",
+        alternatePhone: user.alternatePhone || "",
       },
     });
   } catch (error: any) {
@@ -310,6 +317,38 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
 
   } catch (error) {
     console.error("Verify OTP Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ─────────────────────────────────────────
+// GET PROFILE — Fetch single patient details
+// ─────────────────────────────────────────
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id, "-password");
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        age: user.age,
+        gender: user.gender,
+        bloodGroup: user.bloodGroup,
+        address: user.address || "",
+        alternatePhone: user.alternatePhone || "",
+        role: user.role,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (error) {
+    console.error("Get Profile Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

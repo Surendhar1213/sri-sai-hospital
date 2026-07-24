@@ -51,16 +51,16 @@ app.use(cors({
 app.use(express.json());
 
 // ✅ Admin Auth Routes register pannanum
-app.use("/api/admin", authRoutes);
+app.use(["/api/admin", "/admin"], authRoutes);
 
 // ✅ User Auth Routes register pannanum
-app.use("/api/user", userRoutes);
+app.use(["/api/user", "/user"], userRoutes);
 
-app.use("/api/doctor", doctorRoutes);
+app.use(["/api/doctor", "/doctor"], doctorRoutes);
 
-app.use("/api/appointments", appointmentRoutes);
+app.use(["/api/appointments", "/appointments"], appointmentRoutes);
 
-app.use("/api/payments", paymentRoutes);
+app.use(["/api/payments", "/payments"], paymentRoutes);
 
 
 
