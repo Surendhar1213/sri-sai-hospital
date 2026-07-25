@@ -60,7 +60,7 @@ const Profile = () => {
     }
   })();
 
-  const [userId, setUserId] = useState(() => cachedUserInfo?.id || cachedUserInfo?._id || "");
+  const [userId] = useState(() => cachedUserInfo?.id || cachedUserInfo?._id || "");
   const [userName, setUserName] = useState(() => cachedUserInfo?.name || "User");
   const [userEmail, setUserEmail] = useState(() => cachedUserInfo?.email || "");
   const [userPhone, setUserPhone] = useState(() => cachedUserInfo?.phone || "");
