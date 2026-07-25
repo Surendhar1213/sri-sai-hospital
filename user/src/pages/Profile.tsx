@@ -50,23 +50,33 @@ const Profile = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("User");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPhone, setUserPhone] = useState("");
-  const [userAge, setUserAge] = useState<number | string>("");
-  const [userGender, setUserGender] = useState("");
-  const [userBloodGroup, setUserBloodGroup] = useState("");
-  const [userAddress, setUserAddress] = useState("");
-  const [userAlternatePhone, setUserAlternatePhone] = useState("");
+  // Read cached user info synchronously on first render to eliminate delay
+  const cachedUserInfo = (() => {
+    try {
+      const info = localStorage.getItem("userInfo");
+      return info ? JSON.parse(info) : null;
+    } catch {
+      return null;
+    }
+  })();
 
-  const [editName, setEditName] = useState("");
-  const [editPhone, setEditPhone] = useState("");
-  const [editAge, setEditAge] = useState<number | string>("");
-  const [editGender, setEditGender] = useState("");
-  const [editBloodGroup, setEditBloodGroup] = useState("");
-  const [editAddress, setEditAddress] = useState("");
-  const [editAlternatePhone, setEditAlternatePhone] = useState("");
+  const [userId, setUserId] = useState(() => cachedUserInfo?.id || cachedUserInfo?._id || "");
+  const [userName, setUserName] = useState(() => cachedUserInfo?.name || "User");
+  const [userEmail, setUserEmail] = useState(() => cachedUserInfo?.email || "");
+  const [userPhone, setUserPhone] = useState(() => cachedUserInfo?.phone || "");
+  const [userAge, setUserAge] = useState<number | string>(() => cachedUserInfo?.age || "");
+  const [userGender, setUserGender] = useState(() => cachedUserInfo?.gender || "");
+  const [userBloodGroup, setUserBloodGroup] = useState(() => cachedUserInfo?.bloodGroup || "");
+  const [userAddress, setUserAddress] = useState(() => cachedUserInfo?.address || "");
+  const [userAlternatePhone, setUserAlternatePhone] = useState(() => cachedUserInfo?.alternatePhone || "");
+
+  const [editName, setEditName] = useState(() => cachedUserInfo?.name || "");
+  const [editPhone, setEditPhone] = useState(() => cachedUserInfo?.phone || "");
+  const [editAge, setEditAge] = useState<number | string>(() => cachedUserInfo?.age || "");
+  const [editGender, setEditGender] = useState(() => cachedUserInfo?.gender || "");
+  const [editBloodGroup, setEditBloodGroup] = useState(() => cachedUserInfo?.bloodGroup || "");
+  const [editAddress, setEditAddress] = useState(() => cachedUserInfo?.address || "");
+  const [editAlternatePhone, setEditAlternatePhone] = useState(() => cachedUserInfo?.alternatePhone || "");
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -89,32 +99,10 @@ const Profile = () => {
   useEffect(() => {
     // Check Auth
     const token = localStorage.getItem("userToken");
-    const userInfo = localStorage.getItem("userInfo");
     
     if (!token) {
       navigate("/login");
       return;
-    }
-
-    if (userInfo) {
-      const user = JSON.parse(userInfo);
-      setUserId(user.id || user._id || "");
-      setUserName(user.name || "User");
-      setUserEmail(user.email || "");
-      setUserPhone(user.phone || "");
-      setUserAge(user.age || "");
-      setUserGender(user.gender || "");
-      setUserBloodGroup(user.bloodGroup || "");
-      setUserAddress(user.address || "");
-      setUserAlternatePhone(user.alternatePhone || "");
-
-      setEditName(user.name || "");
-      setEditPhone(user.phone || "");
-      setEditAge(user.age || "");
-      setEditGender(user.gender || "");
-      setEditBloodGroup(user.bloodGroup || "");
-      setEditAddress(user.address || "");
-      setEditAlternatePhone(user.alternatePhone || "");
     }
 
     // Read URL query parameter for tab selection

@@ -105,10 +105,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
       window.dispatchEvent(new Event("storage"));
 
       setSuccess("Login successful! Redirecting...");
-      setTimeout(() => {
-        onClose();
-        onAuthSuccess();
-      }, 800);
+      onClose();
+      onAuthSuccess();
     } catch (err: any) {
       setError(err.message || "Connection error. Please try again.");
     } finally {
