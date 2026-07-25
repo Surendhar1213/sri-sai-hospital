@@ -35,7 +35,18 @@ interface Appointment {
 }
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    return tab || localStorage.getItem("profileActiveTab") || "overview";
+  });
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    localStorage.setItem("profileActiveTab", tabId);
+    window.history.replaceState(null, "", `${window.location.pathname}?tab=${tabId}`);
+  };
+
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -70,6 +81,7 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userInfo");
+    localStorage.removeItem("profileActiveTab");
     window.dispatchEvent(new Event("storage"));
     navigate("/");
   };
@@ -109,7 +121,7 @@ const Profile = () => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get("tab");
     if (tab) {
-      setActiveTab(tab);
+      handleTabChange(tab);
     }
   }, [navigate]);
 
@@ -158,9 +170,11 @@ const Profile = () => {
     };
 
     fetchUserProfile();
+    const interval = setInterval(fetchUserProfile, 10000);
+    return () => clearInterval(interval);
   }, [userId]);
 
-  // Fetch appointments
+  // Fetch appointments with live auto-refresh
   useEffect(() => {
     if (!userEmail) return;
 
@@ -175,6 +189,7 @@ const Profile = () => {
             "Authorization": `Bearer ${token}`
           }
         });
+        
         const data = await response.json();
         if (response.ok) {
           setAppointments(data || []);
@@ -189,6 +204,8 @@ const Profile = () => {
     };
 
     fetchAppointments();
+    const interval = setInterval(fetchAppointments, 5000);
+    return () => clearInterval(interval);
   }, [userEmail]);
 
   const copyToClipboard = (text: string) => {
@@ -311,23 +328,26 @@ const Profile = () => {
         margin: "0 auto"
       }}>
         {/* Top Header */}
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "36px",
-          animation: "fadeInUp 0.4s ease"
-        }}>
+        <div
+          className="profile-header-container"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "36px",
+            animation: "fadeInUp 0.4s ease"
+          }}
+        >
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
               <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#4A65FF" }}></span>
-              <span style={{ fontSize: "13px", fontWeight: "700", color: "#4A65FF", letterSpacing: "1.2px", textTransform: "uppercase" }}>Sri Sai Subhramaniya Hospital</span>
+              <span className="profile-tagline" style={{ fontSize: "13px", fontWeight: "700", color: "#4A65FF", letterSpacing: "1.2px", textTransform: "uppercase" }}>Sri Sai Subhramaniya Hospital</span>
             </div>
-            <h1 style={{ fontSize: "30px", fontWeight: "700", color: "#0F2239", margin: 0, letterSpacing: "-0.3px" }}>Patient Dashboard</h1>
+            <h1 className="profile-title" style={{ fontSize: "30px", fontWeight: "700", color: "#0F2239", margin: 0, letterSpacing: "-0.3px" }}>Patient Dashboard</h1>
           </div>
           <button
             onClick={() => navigate("/")}
-            className="home-btn"
+            className="home-btn profile-back-btn"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -407,7 +427,7 @@ const Profile = () => {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => handleTabChange(tab.id)}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -541,7 +561,7 @@ const Profile = () => {
                     appointments={appointments}
                     upcomingAppointment={upcomingAppointment}
                     handleJoinMeeting={handleJoinMeeting}
-                    setActiveTab={setActiveTab}
+                    setActiveTab={handleTabChange}
                   />
                 )}
 
@@ -549,7 +569,7 @@ const Profile = () => {
                   <AppointmentsTab
                     appointments={appointments}
                     handleJoinMeeting={handleJoinMeeting}
-                    setActiveTab={setActiveTab}
+                    setActiveTab={handleTabChange}
                   />
                 )}
 
@@ -640,6 +660,130 @@ const Profile = () => {
         @media (max-width: 992px) {
           div {
             grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .patient-profile-header-container {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            margin-bottom: 20px !important;
+          }
+          .patient-profile-header-container h2 {
+            font-size: 20px !important;
+          }
+          .patient-profile-header-container p {
+            font-size: 12px !important;
+          }
+          .patient-profile-header-container button {
+            font-size: 13px !important;
+            padding: 8px 16px !important;
+          }
+          .patient-profile-content-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .profile-header-container {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            margin-bottom: 24px !important;
+          }
+          .profile-tagline {
+            font-size: 10px !important;
+            letter-spacing: 0.8px !important;
+          }
+          .profile-title {
+            font-size: 22px !important;
+          }
+          .profile-back-btn {
+            font-size: 13px !important;
+            padding: 8px 16px !important;
+          }
+          .payment-table-header {
+            display: none !important;
+          }
+          .payment-table-card {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            padding: 16px !important;
+            text-align: center !important;
+          }
+          .payment-table-card > div {
+            justify-content: center !important;
+            text-align: center !important;
+          }
+          .appointment-card-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .overview-banner-img-container {
+            display: none !important;
+          }
+          .overview-top-banner {
+            padding: 20px 16px !important;
+          }
+          .overview-top-banner h2 {
+            font-size: 20px !important;
+            margin-bottom: 8px !important;
+          }
+          .overview-top-banner p {
+            font-size: 13px !important;
+            margin-bottom: 16px !important;
+          }
+          .overview-top-banner button {
+            font-size: 13px !important;
+            padding: 10px 18px !important;
+            width: 100% !important;
+          }
+          .prescription-header-container h2 {
+            font-size: 18px !important;
+          }
+          .prescription-header-container p {
+            font-size: 12px !important;
+            word-break: break-word !important;
+          }
+          .prescription-accordion-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+            padding: 16px 14px !important;
+          }
+          .prescription-date-col {
+            font-size: 12px !important;
+          }
+          .prescription-actions-col {
+            justify-content: space-between !important;
+            width: 100% !important;
+            margin-top: 4px !important;
+            padding-top: 10px !important;
+            border-top: 1px dashed #E2E8F0 !important;
+          }
+          .prescription-actions-col button {
+            flex-grow: 1 !important;
+            justify-content: center !important;
+          }
+          .prescription-telehealth-header {
+            padding: 12px 16px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+          }
+          .prescription-body-details {
+            padding: 16px 12px !important;
+          }
+          .prescription-patient-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .prescription-patient-grid > div {
+            text-align: left !important;
+          }
+          .prescription-medicines-table-wrapper {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          .prescription-medicines-table-wrapper table {
+            min-width: 480px !important;
           }
         }
       `}</style>

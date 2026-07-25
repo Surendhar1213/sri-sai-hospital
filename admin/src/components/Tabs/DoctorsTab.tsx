@@ -230,6 +230,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
 
       {/* Stats Row */}
       <div
+        className="doctor-stats-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
@@ -304,7 +305,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
           </div>
         </div>
 
-        {/* Card 3: Away/Inactive */}
+        {/* Card 3: Away / Inactive */}
         <div
           style={{
             backgroundColor: "#FFFFFF",
@@ -341,6 +342,7 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
 
       {/* Filters Grid */}
       <div
+        className="doctor-filters-grid"
         style={{
           backgroundColor: "#FFFFFF",
           padding: "20px 28px",

@@ -312,6 +312,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
       }}
     >
       <div
+        className="admin-appointments-header-row"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -418,6 +419,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
       {/* Appointment Search & Filter Controls */}
       {appointmentViewMode === "table" && (
         <div
+          className="admin-appointments-filter-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "1.5fr 1fr 1fr 1.2fr 1fr",
@@ -665,7 +667,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
           })()}
         </div>
       ) : (
-        <div style={{ overflowX: "auto" }}>
+        <div className="admin-appointments-table-wrapper" style={{ overflowX: "auto" }}>
           {filteredAppointments.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px", color: "#616161" }}>
               <Calendar size={40} color="#4A65FF" style={{ marginBottom: "12px" }} />
@@ -674,7 +676,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
             </div>
           ) : (
             <>
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+              <table style={{ width: "100%", minWidth: "850px", borderCollapse: "collapse", textAlign: "left" }}>
                 <thead>
                   <tr style={{ borderBottom: "2px solid #F2F3FE", color: "#616161", fontSize: "13px", fontWeight: "700" }}>
                     <th style={{ padding: "16px 12px" }}>Patient Profile</th>

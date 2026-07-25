@@ -87,17 +87,20 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "28px", animation: "fadeInUp 0.5s ease" }}>
       {/* Top Banner */}
-      <div style={{
-        background: "linear-gradient(105.87deg, #E9F2FF 0%, #F3F8FF 100%)",
-        borderRadius: "16px",
-        padding: "36px 40px",
-        border: "1px solid #E2EEFF",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        position: "relative",
-        overflow: "hidden"
-      }}>
+      <div
+        className="overview-top-banner"
+        style={{
+          background: "linear-gradient(105.87deg, #E9F2FF 0%, #F3F8FF 100%)",
+          borderRadius: "16px",
+          padding: "36px 40px",
+          border: "1px solid #E2EEFF",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "relative",
+          overflow: "hidden"
+        }}
+      >
         <div style={{ flex: 1, zIndex: 2, textAlign: "left" }}>
           <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#0F2239", margin: "0 0 12px 0", lineHeight: "1.2" }}>
             Dedicated to Your <br />Health & Well-being
@@ -128,7 +131,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <FaCalendarAlt /> Book Appointment
           </button>
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", zIndex: 1 }}>
+        <div className="overview-banner-img-container" style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", zIndex: 1 }}>
           <img
             src={profileIllustration}
             alt="Profile Illustration"
@@ -350,7 +353,7 @@ export const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   setActiveTab
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 4;
 
   // Calculate total pages
   const totalPages = Math.ceil(appointments.length / itemsPerPage);
@@ -464,6 +467,7 @@ export const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
               return (
                 <div
                   key={app._id}
+                  className="appointment-card-grid"
                   style={{
                     display: "grid",
                     gridTemplateColumns: "1.6fr 1fr",
@@ -808,10 +812,15 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
 }) => {
   const completedWithPrescription = appointments.filter(a => a.status === "completed" && a.prescription);
 
-  // Track which prescription ID is expanded. Default to the most recent one (first in the list).
-  const [expandedId, setExpandedId] = React.useState<string | null>(
-    completedWithPrescription.length > 0 ? completedWithPrescription[0]._id : null
-  );
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 4;
+
+  const totalPages = Math.ceil(completedWithPrescription.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPrescriptions = completedWithPrescription.slice(startIndex, startIndex + itemsPerPage);
+
+  // Track which prescription ID is expanded. Default to null (closed by default).
+  const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
   const [printPrescriptionId, setPrintPrescriptionId] = React.useState<string | null>(null);
 
@@ -828,7 +837,7 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
   return (
     <div style={{ animation: "fadeInUp 0.4s ease", textAlign: "left" }}>
       {/* Header section with Document icon badge */}
-      <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "28px" }}>
+      <div className="prescription-header-container" style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "28px" }}>
         <div style={{
           width: "48px",
           height: "48px",
@@ -856,7 +865,7 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {completedWithPrescription.map((app) => {
+          {paginatedPrescriptions.map((app) => {
             const isExpanded = expandedId === app._id;
             
             // Replicate the mockup with clean blue Completed theme for all prescriptions
@@ -918,6 +927,7 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
 
                 {/* Accordion Header - clickable to expand/collapse */}
                 <div
+                  className="prescription-accordion-header"
                   onClick={() => setExpandedId(isExpanded ? null : app._id)}
                   style={{
                     padding: "20px 24px",
@@ -985,13 +995,14 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                   </div>
 
                   {/* Date Column (Center) */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "#72849B", fontWeight: "500", textAlign: "left" }}>
+                  <div className="prescription-date-col" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "#72849B", fontWeight: "500", textAlign: "left" }}>
                     <FaCalendarAlt style={{ color: "#3B82F6" }} />
                     {formattedDate}
                   </div>
 
                   {/* Actions (Right) */}
                   <div
+                    className="prescription-actions-col"
                     style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px" }}
                     onClick={(e) => e.stopPropagation()} // Prevents toggling accordion when clicking button controls
                   >
@@ -1039,15 +1050,18 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                 {isExpanded && (
                   <div className={`user-prescription-print-container-${app._id}`}>
                     {/* Clinical Letterhead Subheader */}
-                    <div style={{
-                      background: "#1A3454",
-                      padding: "16px 28px",
-                      color: "#FFFFFF",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderTop: "1px solid rgba(255,255,255,0.05)"
-                    }}>
+                    <div
+                      className="prescription-telehealth-header"
+                      style={{
+                        background: "#1A3454",
+                        padding: "16px 28px",
+                        color: "#FFFFFF",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        borderTop: "1px solid rgba(255,255,255,0.05)"
+                      }}
+                    >
                       <div style={{ textAlign: "left" }}>
                         <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "700", color: "#FFFFFF" }}>SRI SAI HOSPITAL</h3>
                         <span style={{ fontSize: "11px", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px" }}>Telehealth Prescription slip</span>
@@ -1077,8 +1091,8 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                     </div>
 
                     {/* Prescription Body Details */}
-                    <div style={{ padding: "24px" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", borderBottom: "1px dashed #E2E8F0", paddingBottom: "16px", marginBottom: "20px" }}>
+                    <div className="prescription-body-details" style={{ padding: "24px" }}>
+                      <div className="prescription-patient-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", borderBottom: "1px dashed #E2E8F0", paddingBottom: "16px", marginBottom: "20px" }}>
                         <div style={{ textAlign: "left" }}>
                           <span style={{ fontSize: "12px", textTransform: "uppercase", color: "#72849B", fontWeight: "700" }}>Patient</span>
                           <h4 style={{ margin: "2px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#0F2239" }}>{app.pasentname}</h4>
@@ -1122,7 +1136,7 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                                 {/* Medicines Table */}
                                 {medicinesList.length > 0 ? (
-                                  <div style={{ overflowX: "auto", border: "1px solid #EBF1F9", borderRadius: "10px" }}>
+                                  <div className="prescription-medicines-table-wrapper" style={{ overflowX: "auto", border: "1px solid #EBF1F9", borderRadius: "10px" }}>
                                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                       <thead>
                                         <tr style={{ backgroundColor: "#F8FAFC", borderBottom: "2px solid #EBF1F9", textAlign: "left", fontSize: "12px", color: "#72849B" }}>
@@ -1246,6 +1260,89 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
           })}
         </div>
       )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "8px",
+          marginTop: "24px",
+          paddingTop: "16px",
+          borderTop: "1px solid #F1F5F9"
+        }}>
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              border: "1.5px solid #E2E8F0",
+              backgroundColor: "#FFFFFF",
+              color: currentPage === 1 ? "#94A3B8" : "#0F2239",
+              cursor: currentPage === 1 ? "not-allowed" : "pointer",
+              fontSize: "12px",
+              transition: "all 0.2s"
+            }}
+          >
+            <FaChevronLeft />
+          </button>
+
+          {/* Page Numbers */}
+          {Array.from({ length: totalPages }).map((_, index) => {
+            const pageNumber = index + 1;
+            const isActive = pageNumber === currentPage;
+            return (
+              <button
+                key={pageNumber}
+                onClick={() => setCurrentPage(pageNumber)}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: isActive ? "none" : "1.5px solid #E2E8F0",
+                  backgroundColor: isActive ? "#2563EB" : "#FFFFFF",
+                  color: isActive ? "#FFFFFF" : "#0F2239",
+                  fontWeight: "750",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  transition: "all 0.2s"
+                }}
+              >
+                {pageNumber}
+              </button>
+            );
+          })}
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              border: "1.5px solid #E2E8F0",
+              backgroundColor: "#FFFFFF",
+              color: currentPage === totalPages ? "#94A3B8" : "#0F2239",
+              cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+              fontSize: "12px",
+              transition: "all 0.2s"
+            }}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -1263,6 +1360,13 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
   copyToClipboard,
   setSelectedReceipt
 }) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 4;
+
+  const totalPages = Math.ceil(appointments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPayments = appointments.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div style={{ animation: "fadeInUp 0.4s ease", textAlign: "left" }}>
       {/* Header section with Illustration */}
@@ -1297,17 +1401,20 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
       ) : (
         <div>
           {/* Table Headers */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "100px 1.5fr 1fr 100px 120px",
-            gap: "16px",
-            padding: "0 20px 12px 20px",
-            color: "#72849B",
-            fontSize: "12px",
-            fontWeight: "800",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px"
-          }}>
+          <div
+            className="payment-table-header"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "100px 1.5fr 1fr 100px 120px",
+              gap: "16px",
+              padding: "0 20px 12px 20px",
+              color: "#72849B",
+              fontSize: "12px",
+              fontWeight: "800",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px"
+            }}
+          >
             <div>Date</div>
             <div>Description</div>
             <div>Amount Paid</div>
@@ -1317,7 +1424,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
 
           {/* Table Rows (Card Style) */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {appointments.map((app: Appointment) => {
+            {paginatedPayments.map((app: Appointment) => {
               const dateObj = new Date(app.createdAt || app.appointmenttime);
               const day = dateObj.getDate().toString().padStart(2, "0");
               const monthYear = dateObj.toLocaleDateString("en-US", { month: "short", year: "numeric" });
@@ -1329,6 +1436,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
               return (
                 <div
                   key={app._id}
+                  className="payment-table-card"
                   style={{
                     display: "grid",
                     gridTemplateColumns: "100px 1.5fr 1fr 100px 120px",
@@ -1448,6 +1556,89 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
               );
             })}
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "8px",
+              marginTop: "24px",
+              paddingTop: "16px",
+              borderTop: "1px solid #F1F5F9"
+            }}>
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "1.5px solid #E2E8F0",
+                  backgroundColor: "#FFFFFF",
+                  color: currentPage === 1 ? "#94A3B8" : "#0F2239",
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                  fontSize: "12px",
+                  transition: "all 0.2s"
+                }}
+              >
+                <FaChevronLeft />
+              </button>
+
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const pageNumber = index + 1;
+                const isActive = pageNumber === currentPage;
+                return (
+                  <button
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      border: isActive ? "none" : "1.5px solid #E2E8F0",
+                      backgroundColor: isActive ? "#2563EB" : "#FFFFFF",
+                      color: isActive ? "#FFFFFF" : "#0F2239",
+                      fontWeight: "750",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
+
+              {/* Next Button */}
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "1.5px solid #E2E8F0",
+                  backgroundColor: "#FFFFFF",
+                  color: currentPage === totalPages ? "#94A3B8" : "#0F2239",
+                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                  fontSize: "12px",
+                  transition: "all 0.2s"
+                }}
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -1515,7 +1706,10 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
   return (
     <div style={{ textAlign: "left", animation: "fadeInUp 0.4s ease" }}>
       {/* Header section with Edit Profile button */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
+      <div
+        className="patient-profile-header-container"
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}
+      >
         <div>
           <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#0F2239", margin: "0 0 6px 0", display: "flex", alignItems: "center", gap: "8px" }}>
             Patient Profile <span style={{ color: "#3B82F6", fontSize: "20px" }}>🛡️</span>
@@ -1556,7 +1750,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
       </div>
 
       {/* Main 2-column Content Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: "28px", alignItems: "start" }}>
+      <div className="patient-profile-content-grid" style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: "28px", alignItems: "start" }}>
         
         {/* Left Column: Personal Information & Verified Badge */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>

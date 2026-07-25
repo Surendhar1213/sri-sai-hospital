@@ -126,6 +126,8 @@ const Appointment = () => {
       }
     };
     fetchBookedSlots();
+    const interval = setInterval(fetchBookedSlots, 5000);
+    return () => clearInterval(interval);
   }, [selectedDate, formData.speciality]);
 
   // Prevent background scrolling when modals are open

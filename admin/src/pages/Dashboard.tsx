@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, CreditCard, ChevronDown, Search, Menu } from "lucide-react";
+import { LayoutDashboard, Stethoscope, Users, Calendar, Settings, LogOut, Bell, CreditCard, ChevronDown, Search, Menu, X } from "lucide-react";
 import OverviewTab from "../components/Tabs/OverviewTab";
 import DoctorsTab from "../components/Tabs/DoctorsTab";
 import PatientsTab from "../components/Tabs/PatientsTab";
@@ -55,6 +55,7 @@ const TIMINGS = [
 ];
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("adminActiveTab") || "dashboard";
   });
@@ -777,8 +778,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         </div>
       )}
 
+      {/* Mobile Backdrop Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="admin-mobile-backdrop"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <aside
+        className={`admin-sidebar ${isMobileMenuOpen ? "open" : ""}`}
         style={{
           backgroundColor: "#060F2D",
           color: "#FFFFFF",
@@ -794,29 +804,50 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
           {/* Logo Brand Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "0 8px" }}>
-            <div
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  backgroundColor: "#4A65FF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 8px 20px rgba(74, 101, 255, 0.3)",
+                }}
+              >
+                <Stethoscope size={20} color="#FFFFFF" />
+              </div>
+              <div>
+                <h1 style={{ fontSize: "12px", fontWeight: "800", letterSpacing: "-0.3px", fontFamily: "'Outfit', sans-serif", color: "#FFFFFF", margin: 0, whiteSpace: "nowrap" }}>
+                  SRISAI SUBHRAMANIYA
+                </h1>
+                <span style={{ fontSize: "9px", color: "rgba(255,255,255,0.4)", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginTop: "2px" }}>
+                  Hospitals
+                </span>
+              </div>
+            </div>
+
+            {/* Mobile Close Button (X) */}
+            <button
+              className="admin-mobile-close-btn"
+              onClick={() => setIsMobileMenuOpen(false)}
               style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "12px",
-                backgroundColor: "#4A65FF",
+                background: "rgba(255, 255, 255, 0.1)",
+                border: "none",
+                borderRadius: "8px",
+                padding: "6px",
+                color: "#FFFFFF",
+                cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 8px 20px rgba(74, 101, 255, 0.3)",
               }}
             >
-              <Stethoscope size={20} color="#FFFFFF" />
-            </div>
-            <div>
-              <h1 style={{ fontSize: "12px", fontWeight: "800", letterSpacing: "-0.3px", fontFamily: "'Outfit', sans-serif", color: "#FFFFFF", margin: 0, whiteSpace: "nowrap" }}>
-                SRISAI SUBHRAMANIYA
-              </h1>
-              <span style={{ fontSize: "9px", color: "rgba(255,255,255,0.4)", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase", display: "block", marginTop: "2px" }}>
-                Hospitals
-              </span>
-            </div>
+              <X size={20} />
+            </button>
           </div>
 
           {/* Navigation Items List */}
@@ -833,7 +864,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    localStorage.setItem("adminActiveTab", tab.id);
+                    setIsMobileMenuOpen(false);
+                  }}
                   style={{
                     width: "100%",
                     display: "flex",
@@ -951,6 +986,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       <main style={{ display: "flex", flexDirection: "column", height: "100vh", overflowY: "auto" }}>
         {/* Header Bar */}
         <header
+          className="admin-header-bar"
           style={{
             backgroundColor: "#FFFFFF",
             padding: "18px 40px",
@@ -965,6 +1001,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               style={{
                 background: "transparent",
                 border: "none",
@@ -981,7 +1018,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               <h2 style={{ fontSize: "20px", fontWeight: "800", color: "#060F2D", letterSpacing: "-0.5px", margin: 0 }}>
                 {getHeaderTitle()}
               </h2>
-              <span style={{ fontSize: "12px", color: "#64748B", marginTop: "2px", display: "block", fontWeight: "500" }}>
+              <span className="admin-header-subtitle" style={{ fontSize: "12px", color: "#64748B", marginTop: "2px", display: "block", fontWeight: "500" }}>
                 Srisai Subhramaniya Hospitals Management Hub
               </span>
             </div>
@@ -989,7 +1026,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
           <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
             {/* Search Input */}
-            <div style={{ position: "relative" }}>
+            <div className="admin-search-wrapper" style={{ position: "relative" }}>
               <Search
                 size={16}
                 color="#94A3B8"
@@ -1002,6 +1039,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               />
               <input
                 type="text"
+                className="admin-search-input"
                 placeholder="Search patient, doctor..."
                 style={{
                   padding: "10px 16px 10px 40px",
@@ -1077,7 +1115,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </div>
 
             {/* User Profile Info Card */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", borderLeft: "1.5px solid #F1F5F9", paddingLeft: "24px" }}>
+            <div className="admin-user-badge" style={{ display: "flex", alignItems: "center", gap: "12px", borderLeft: "1.5px solid #F1F5F9", paddingLeft: "24px" }}>
               <div
                 style={{
                   width: "36px",
@@ -1104,7 +1142,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         </header>
 
         {/* Tab Page Containers */}
-        <div style={{ padding: "40px", flexGrow: 1 }}>
+        <div className="admin-content-container" style={{ padding: "40px", flexGrow: 1 }}>
           {activeTab === "dashboard" && (
             <OverviewTab
               appointments={appointments}
@@ -1205,6 +1243,108 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           )}
         </div>
       </main>
+      <style>{`
+        @media (max-width: 600px) {
+          .dashboard-layout {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 280px !important;
+            height: 100vh !important;
+            z-index: 99999 !important;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out !important;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4) !important;
+          }
+          .admin-sidebar.open {
+            transform: translateX(0) !important;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5) !important;
+          }
+          .admin-mobile-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(6, 15, 45, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 99998;
+          }
+          .admin-mobile-close-btn {
+            display: flex !important;
+          }
+
+          /* Header bar mobile adjustments */
+          .admin-header-bar {
+            padding: 12px 14px !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+          }
+          .admin-header-subtitle {
+            display: none !important;
+          }
+          .admin-header-bar h2 {
+            font-size: 16px !important;
+          }
+          .admin-header-right-actions {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            width: 100% !important;
+          }
+          .admin-search-wrapper {
+            width: 100% !important;
+          }
+          .admin-search-input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .admin-user-badge {
+            display: none !important;
+          }
+          .admin-content-container {
+            padding: 16px 12px !important;
+          }
+          .overview-split-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .overview-bottom-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .doctor-stats-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .doctor-filters-grid {
+            grid-template-columns: 1fr !important;
+            padding: 16px !important;
+          }
+          .admin-appointments-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+          }
+          .admin-appointments-filter-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+          }
+          .admin-appointments-table-wrapper {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+        }
+        @media (min-width: 601px) {
+          .admin-mobile-close-btn {
+            display: none !important;
+          }
+          .admin-mobile-backdrop {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

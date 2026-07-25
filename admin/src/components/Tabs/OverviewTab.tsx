@@ -217,7 +217,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
       </div>
 
       {/* 📊 Main Split Grid Section */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.7fr 1.1fr", gap: "28px" }}>
+      <div className="overview-split-grid" style={{ display: "grid", gridTemplateColumns: "1.7fr 1.1fr", gap: "28px" }}>
         
         {/* Left Side: Recent Appointments Table */}
         <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "32px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)" }}>
@@ -362,7 +362,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
       </div>
 
       {/* 📈 Bottom Visual Analytics & Quick Actions Section */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1.1fr 1fr", gap: "28px" }}>
+      <div className="overview-bottom-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1.1fr 1fr", gap: "28px" }}>
         
         {/* 1. Appointments Trend Chart */}
         <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "28px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)" }}>
