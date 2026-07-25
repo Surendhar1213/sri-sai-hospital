@@ -29,9 +29,12 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
+    // Trim and lowercase email for consistency
+    const cleanEmail = email.trim().toLowerCase();
+
     // Gmail validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(cleanEmail)) {
       setError("Please enter a valid Gmail address (ending in @gmail.com)");
       toast.warning("Please enter a valid Gmail address.");
       return;
@@ -44,7 +47,7 @@ const Login = () => {
       const response = await fetch(`${backendUrl}/api/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanEmail, password }),
       });
 
       const data = await response.json();
@@ -57,11 +60,13 @@ const Login = () => {
       localStorage.setItem("userInfo", JSON.stringify(data.user));
 
       toast.success("🎉 Welcome back! Login successful.");
-      navigate(from);
+      
+      // Use replace: true so that clicking browser Back button does not show Login page again
+      navigate(from, { replace: true });
       window.dispatchEvent(new Event("storage"));
 
-    } catch (err: any) {
-      const errMsg = err.message || "Connection error. Please try again.";
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Connection error. Please try again.";
       setError(errMsg);
       toast.error("❌ " + errMsg);
     } finally {
