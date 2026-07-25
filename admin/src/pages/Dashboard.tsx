@@ -55,6 +55,7 @@ const TIMINGS = [
 ];
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("adminActiveTab") || "dashboard";
