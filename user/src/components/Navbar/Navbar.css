@@ -527,7 +527,7 @@
     .header-layout1 .header-top .header-links.header-right li:first-child {
         padding-right: 0
     }
-} */
+}
 
 .header-layout1 .header-top .header-links.header-right li:not(:last-child):before {
     display: none

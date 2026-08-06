@@ -114,7 +114,7 @@
   transition-delay: 1200ms;
 }
 
-.shop-details-wrapper .single-tab .review-form .form-clt-big textarea:placeholder {
+.shop-details-wrapper .single-tab .review-form .form-clt-big textarea::placeholder {
   color: #000;
 }
 
@@ -265,7 +265,7 @@
   left: 0;
   content: "";
   height: 100%;
-  background: linear-gradient(90deg, #03b0e5 0%, rgba(3, 175, 229, 0)30%, rgba(3, 175, 229, 0) 100%);
+  background: linear-gradient(90deg, #03b0e5 0%, rgba(3, 175, 229, 0) 30%, rgba(3, 175, 229, 0) 100%);
   width: 32%;
   z-index: 1;
 } */
