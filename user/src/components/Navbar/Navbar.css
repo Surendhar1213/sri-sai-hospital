@@ -499,10 +499,6 @@
     color: var(--title-color)
 }
 
-/* .header-layout1 .header-top .header-links.header-right li:first-child {
-    padding-right: 60px
-}
-
 @media (min-width: 1921px) and (max-width: 2520px) {
     .header-layout1 .header-top .header-links.header-right li:first-child {
         padding-right: 0

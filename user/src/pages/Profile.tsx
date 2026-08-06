@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaCalendarAlt,
@@ -81,6 +81,11 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const isEditingRef = useRef(isEditing);
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [popupType, setPopupType] = useState<"success" | "error">("success");
@@ -139,16 +144,20 @@ const Profile = () => {
           setUserAddress(data.user.address || "");
           setUserAlternatePhone(data.user.alternatePhone || "");
 
-          setEditName(data.user.name || "");
-          setEditPhone(data.user.phone || "");
-          setEditAge(data.user.age || "");
-          setEditGender(data.user.gender || "");
-          setEditBloodGroup(data.user.bloodGroup || "");
-          setEditAddress(data.user.address || "");
-          setEditAlternatePhone(data.user.alternatePhone || "");
+          // Only update edit form inputs if user is NOT currently editing
+          if (!isEditingRef.current) {
+            setEditName(data.user.name || "");
+            setEditPhone(data.user.phone || "");
+            setEditAge(data.user.age || "");
+            setEditGender(data.user.gender || "");
+            setEditBloodGroup(data.user.bloodGroup || "");
+            setEditAddress(data.user.address || "");
+            setEditAlternatePhone(data.user.alternatePhone || "");
+          }
 
           // Update local cache
           localStorage.setItem("userInfo", JSON.stringify(data.user));
+          window.dispatchEvent(new Event("storage"));
         } else if (response.status === 401) {
           handleLogout();
         }
@@ -275,6 +284,7 @@ const Profile = () => {
           alternatePhone: data.user.alternatePhone || ""
         };
         localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+        window.dispatchEvent(new Event("storage"));
         setIsEditing(false);
         setPopupType("success");
         setPopupMessage("Profile updated successfully!");
@@ -309,6 +319,7 @@ const Profile = () => {
       backgroundColor: "#F4F7FC",
       fontFamily: "'Inter', sans-serif",
       color: "#4D5765",
+      
       padding: "40px 20px"
     }}>
       <div style={{

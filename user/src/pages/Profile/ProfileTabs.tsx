@@ -1718,15 +1718,13 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
         </div>
         <button
           onClick={() => {
-            if (isEditing) {
-              setEditName(userName);
-              setEditPhone(userPhone);
-              setEditAge(userAge);
-              setEditGender(userGender);
-              setEditBloodGroup(userBloodGroup);
-              setEditAddress(userAddress);
-              setEditAlternatePhone(userAlternatePhone);
-            }
+            setEditName(userName);
+            setEditPhone(userPhone);
+            setEditAge(userAge);
+            setEditGender(userGender);
+            setEditBloodGroup(userBloodGroup);
+            setEditAddress(userAddress || "");
+            setEditAlternatePhone(userAlternatePhone || "");
             setIsEditing(!isEditing);
           }}
           style={{
@@ -2018,7 +2016,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
                 <label style={{ display: "block", fontSize: "11px", fontWeight: "750", color: "#72849B", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>Residential Address</label>
                 {isEditing ? (
                   <textarea
-                    value={editAddress}
+                    value={editAddress || ""}
                     onChange={(e) => setEditAddress(e.target.value)}
                     placeholder="Enter your full address..."
                     style={{
@@ -2046,7 +2044,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
                 {isEditing ? (
                   <input
                     type="text"
-                    value={editAlternatePhone}
+                    value={editAlternatePhone || ""}
                     onChange={(e) => setEditAlternatePhone(e.target.value.replace(/\D/g, ""))}
                     placeholder="Alternate mobile number..."
                     style={{

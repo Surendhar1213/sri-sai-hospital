@@ -240,7 +240,7 @@ export const getAllAppointments = async (req: Request, res: Response): Promise<v
 export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { status, assignedDoctor, prescription, paymentStatus } = req.body; // prescription details handling parameters
+    const { status, assignedDoctor, prescription, paymentStatus, meetingLink: customMeetingLink } = req.body; // prescription details handling parameters
 
     // Validate prescription structure if provided
     if (prescription !== undefined && prescription !== "") {
@@ -293,8 +293,8 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       }
     }
 
-    let meetingLink = appointment.meetingLink;
-    let linkGeneratedThisSession = false;
+    let meetingLink = customMeetingLink !== undefined ? customMeetingLink : appointment.meetingLink;
+    let linkGeneratedThisSession = customMeetingLink ? true : false;
 
     // இதைச் சேர்க்கவும் (Debug Log):
     console.log("🔍 DEBUG CHECK:", {
@@ -307,7 +307,8 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
     // 2. Checking if Status is updated to "approved" AND Doctor is assigned AND meetingLink not generated yet
     const targetDoctorId = assignedDoctor || appointment.assignedDoctor;
     if (status === "approved" && targetDoctorId) {
-      if (!meetingLink) {
+      const isDummyLink = meetingLink && (meetingLink.includes("ibi-") || meetingLink.includes("bpo-") || meetingLink.includes("/lookup/"));
+      if (!meetingLink || isDummyLink) {
         // Find Doctor details (especially doctor email)
         const doctorDetails = await Doctor.findById(targetDoctorId);
         

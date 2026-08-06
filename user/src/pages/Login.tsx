@@ -222,7 +222,7 @@ const Login = () => {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                   <label className="user-auth-label" style={{ marginBottom: 0 }}>Password</label>
                   <Link to="/forgot-password" className="user-auth-link" style={{ fontSize: "0.82rem" }}>
-                    Forgot Password?
+                    {/* Forgot Password? */}
                   </Link>
                 </div>
                 <div className="user-auth-input-wrap">
