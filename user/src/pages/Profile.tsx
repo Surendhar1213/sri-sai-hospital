@@ -314,13 +314,11 @@ const Profile = () => {
     .sort((a, b) => new Date(a.appointmenttime).getTime() - new Date(b.appointmenttime).getTime())[0];
 
   return (
-    <div style={{
+    <div className="profile-main-container" style={{
       minHeight: "100vh",
       backgroundColor: "#F4F7FC",
       fontFamily: "'Inter', sans-serif",
-      color: "#4D5765",
-      
-      padding: "40px 20px"
+      color: "#4D5765"
     }}>
       <div style={{
         maxWidth: "1240px",
@@ -531,13 +529,12 @@ const Profile = () => {
           </div>
 
           {/* Right Detailed Panel */}
-          <div style={activeTab === "overview" ? {
+          <div className="profile-right-panel" style={activeTab === "overview" ? {
             minHeight: "540px",
           } : {
             backgroundColor: "#FFFFFF",
             borderRadius: "16px",
             border: "1px solid #EBF1F9",
-            padding: "36px",
             minHeight: "540px",
             boxShadow: "0 10px 30px rgba(77, 87, 101, 0.03)"
           }}>
@@ -661,7 +658,34 @@ const Profile = () => {
             grid-template-columns: 1fr !important;
           }
         }
-        @media (max-width: 600px) {
+        .profile-main-container {
+          padding: 40px 20px;
+        }
+        .profile-right-panel {
+          padding: 32px;
+        }
+        .prescription-accordion-header {
+          padding: 20px 24px;
+        }
+        .prescription-body-details {
+          padding: 24px;
+        }
+
+        @media (max-width: 850px) {
+          .profile-main-container {
+            padding: 10px 4px !important;
+          }
+          .profile-right-panel {
+            padding: 10px 6px !important;
+            border-radius: 12px !important;
+          }
+          .prescription-accordion-header {
+            padding: 12px 8px !important;
+          }
+          .prescription-body-details {
+            padding: 10px 6px !important;
+            overflow-x: hidden !important;
+          }
           .patient-profile-header-container {
             flex-direction: column !important;
             align-items: flex-start !important;
@@ -769,6 +793,7 @@ const Profile = () => {
           }
           .prescription-body-details {
             padding: 16px 12px !important;
+            overflow-x: hidden !important;
           }
           .prescription-patient-grid {
             grid-template-columns: 1fr !important;
@@ -777,12 +802,35 @@ const Profile = () => {
           .prescription-patient-grid > div {
             text-align: left !important;
           }
+          .prescription-consultant-container {
+            text-align: left !important;
+            margin-top: 8px !important;
+            padding-top: 8px !important;
+            border-top: 1px dashed #E2E8F0 !important;
+          }
+          .prescription-scroll-hint {
+            display: none !important;
+          }
           .prescription-medicines-table-wrapper {
             overflow-x: auto !important;
             -webkit-overflow-scrolling: touch !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
           }
           .prescription-medicines-table-wrapper table {
-            min-width: 480px !important;
+            min-width: 0 !important;
+            width: 100% !important;
+            table-layout: auto !important;
+          }
+          .prescription-medicines-table-wrapper th,
+          .prescription-medicines-table-wrapper td {
+            padding: 8px 4px !important;
+            font-size: 11px !important;
+          }
+          .prescription-medicines-table-wrapper td span {
+            padding: 2px 4px !important;
+            font-size: 10px !important;
           }
         }
       `}</style>

@@ -930,14 +930,16 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                   className="prescription-accordion-header"
                   onClick={() => setExpandedId(isExpanded ? null : app._id)}
                   style={{
-                    padding: "20px 24px",
                     backgroundColor: "#FFFFFF",
                     display: "grid",
                     gridTemplateColumns: "60px 1.5fr 1fr 180px",
                     gap: "16px",
                     alignItems: "center",
                     cursor: "pointer",
-                    transition: "all 0.2s ease"
+                    transition: "all 0.2s ease",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
+                    overflow: "hidden"
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.backgroundColor = "#F8FAFC";
@@ -966,12 +968,12 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                   </div>
 
                   {/* Doctor & Speciality */}
-                  <div style={{ textAlign: "left" }}>
-                    <h4 style={{ margin: "0 0 4px 0", fontSize: "16px", fontWeight: "600", color: "#0F2239" }}>
+                  <div style={{ textAlign: "left", minWidth: 0, overflow: "hidden" }}>
+                    <h4 style={{ margin: "0 0 4px 0", fontSize: "16px", fontWeight: "600", color: "#0F2239", wordBreak: "break-word", overflowWrap: "break-word" }}>
                       Prescription • {formattedDate}
                     </h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                      <span style={{ fontSize: "13px", color: "#72849B", fontWeight: "500", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <span style={{ fontSize: "13px", color: "#72849B", fontWeight: "500", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", wordBreak: "break-word", overflowWrap: "break-word" }}>
                         <span style={{ color: "#3B82F6", display: "flex" }}><FaUser size={12} /></span>
                         Dr. {app.assignedDoctor ? app.assignedDoctor.name : "Specialist Doctor"} • {app.speciality}
                       </span>
@@ -1091,22 +1093,22 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                     </div>
 
                     {/* Prescription Body Details */}
-                    <div className="prescription-body-details" style={{ padding: "24px" }}>
+                    <div className="prescription-body-details">
                       <div className="prescription-patient-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", borderBottom: "1px dashed #E2E8F0", paddingBottom: "16px", marginBottom: "20px" }}>
-                        <div style={{ textAlign: "left" }}>
+                        <div style={{ textAlign: "left", minWidth: 0, overflow: "hidden" }}>
                           <span style={{ fontSize: "12px", textTransform: "uppercase", color: "#72849B", fontWeight: "700" }}>Patient</span>
-                          <h4 style={{ margin: "2px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#0F2239" }}>{app.pasentname}</h4>
+                          <h4 style={{ margin: "2px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#0F2239", wordBreak: "break-word" }}>{app.pasentname}</h4>
                           <p style={{ margin: "2px 0 0 0", fontSize: "14px", color: "#72849B" }}>Phone: {app.pasentnumber}</p>
-                          <div style={{ display: "flex", gap: "10px", marginTop: "4px", fontSize: "13px", color: "#72849B" }}>
+                          <div style={{ display: "flex", gap: "10px", marginTop: "4px", fontSize: "13px", color: "#72849B", flexWrap: "wrap" }}>
                             <span>Age: <strong>{userAge || "N/A"}</strong></span>
                             <span>Gender: <strong>{userGender || "N/A"}</strong></span>
                             <span>Blood: <strong>{userBloodGroup || "N/A"}</strong></span>
                           </div>
                         </div>
-                        <div style={{ textAlign: "right" }}>
+                        <div className="prescription-consultant-container" style={{ textAlign: "right", wordBreak: "break-word", overflowWrap: "break-word", minWidth: 0, overflow: "hidden" }}>
                           <span style={{ fontSize: "12px", textTransform: "uppercase", color: "#72849B", fontWeight: "700" }}>Consultant</span>
-                          <h4 style={{ margin: "2px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#0F2239" }}>{app.assignedDoctor ? app.assignedDoctor.name : "Specialist Doctor"}</h4>
-                          <p style={{ margin: "2px 0 0 0", fontSize: "14px", color: "#72849B" }}>{app.speciality}</p>
+                          <h4 style={{ margin: "2px 0 0 0", fontSize: "16px", fontWeight: "700", color: "#0F2239", lineHeight: "1.3", wordBreak: "break-word" }}>{app.assignedDoctor ? app.assignedDoctor.name : "Specialist Doctor"}</h4>
+                          <p style={{ margin: "2px 0 0 0", fontSize: "14px", color: "#72849B", wordBreak: "break-word" }}>{app.speciality}</p>
                         </div>
                       </div>
 
@@ -1136,8 +1138,14 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                                 {/* Medicines Table */}
                                 {medicinesList.length > 0 ? (
-                                  <div className="prescription-medicines-table-wrapper" style={{ overflowX: "auto", border: "1px solid #EBF1F9", borderRadius: "10px" }}>
-                                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                  <>
+                                    <div className="prescription-scroll-hint" style={{ display: "none", alignItems: "center", gap: "6px", fontSize: "11px", color: "#2563EB", fontWeight: "600", marginBottom: "6px", backgroundColor: "#EEF2FF", padding: "6px 10px", borderRadius: "6px" }}>
+                                      <span>👈</span>
+                                      <span>Swipe table left/right to view full details</span>
+                                      <span>👉</span>
+                                    </div>
+                                    <div className="prescription-medicines-table-wrapper" style={{ overflowX: "auto", border: "1px solid #EBF1F9", borderRadius: "10px", width: "100%", maxWidth: "100%", WebkitOverflowScrolling: "touch" }}>
+                                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                       <thead>
                                         <tr style={{ backgroundColor: "#F8FAFC", borderBottom: "2px solid #EBF1F9", textAlign: "left", fontSize: "12px", color: "#72849B" }}>
                                           <th style={{ padding: "12px", fontWeight: "700" }}>Medicine Name</th>
@@ -1209,7 +1217,8 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                                         ))}
                                       </tbody>
                                     </table>
-                                  </div>
+                                    </div>
+                                  </>
                                 ) : (
                                   <div style={{ padding: "20px", textAlign: "center", border: "1px solid #EBF1F9", borderRadius: "10px", color: "#94A3B8", fontSize: "14px" }}>
                                     No specific medicines listed.
