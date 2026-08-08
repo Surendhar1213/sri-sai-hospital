@@ -398,8 +398,12 @@
 
 @media (max-width: 640px) {
   .spec-card-image-wrapper {
-    width: 80px;
-    height: 80px;
+    width: 305px;
+    height: 165px;
+  }
+
+  .spec-content h3 {
+    margin: 15px 0 6px;
   }
 
   .spec-card-inner {

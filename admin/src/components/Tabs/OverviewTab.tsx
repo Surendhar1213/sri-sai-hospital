@@ -275,40 +275,40 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                     const statusColor = getStatusColor(app.status);
 
                     return (
-                      <tr key={app._id || idx} style={{ borderBottom: "1px solid #F8FAFC", fontSize: "13.5px", color: "#0F172A" }}>
-                        <td style={{ padding: "16px 6px", fontWeight: "700" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#EEF2FF", color: "#4A65FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "800" }}>
+                      <tr key={app._id || idx} style={{ borderBottom: "1px solid #F8FAFC", fontSize: "11.5px", color: "#0F172A" }}>
+                        <td style={{ padding: "10px 4px", fontWeight: "700" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#EEF2FF", color: "#4A65FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "800", flexShrink: 0 }}>
                               {app.pasentname.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div>{app.pasentname}</div>
-                              <span style={{ fontSize: "10.5px", color: "#94A3B8", fontWeight: "500" }}>#PT{app._id.slice(-6).toUpperCase()}</span>
+                              <div style={{ lineHeight: "1.2" }}>{app.pasentname}</div>
+                              <span style={{ fontSize: "9px", color: "#94A3B8", fontWeight: "500" }}>#PT{app._id.slice(-6).toUpperCase()}</span>
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: "16px 6px", color: "#475569", fontWeight: "600" }}>
+                        <td style={{ padding: "10px 4px", color: "#475569", fontWeight: "600", lineHeight: "1.2" }}>
                           {app.assignedDoctor ? app.assignedDoctor.name : "Dr. Karthi T"}
                         </td>
-                        <td style={{ padding: "16px 6px", color: "#64748B", fontWeight: "500" }}>
+                        <td style={{ padding: "10px 4px", color: "#64748B", fontWeight: "500", lineHeight: "1.2" }}>
                           {app.speciality}
                         </td>
-                        <td style={{ padding: "16px 6px", color: "#475569", fontWeight: "600" }}>
+                        <td style={{ padding: "10px 4px", color: "#475569", fontWeight: "600", whiteSpace: "nowrap" }}>
                           {appTime}
                         </td>
-                        <td style={{ padding: "16px 6px" }}>
+                        <td style={{ padding: "10px 4px" }}>
                           <span style={{
-                            padding: "4px 10px",
+                            padding: "3px 8px",
                             borderRadius: "20px",
                             backgroundColor: statusColor.bg,
                             color: statusColor.text,
-                            fontSize: "11.5px",
+                            fontSize: "10.5px",
                             fontWeight: "700",
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "5px"
+                            gap: "4px"
                           }}>
-                            <span style={{ width: "5px", height: "5px", borderRadius: "50%", backgroundColor: statusColor.text }}></span>
+                            <span style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: statusColor.text }}></span>
                             {app.status}
                           </span>
                         </td>

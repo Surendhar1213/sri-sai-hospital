@@ -308,6 +308,18 @@ const Profile = () => {
     }
   };
 
+  // Prevent background body scroll when Payment Receipt modal is open
+  useEffect(() => {
+    if (selectedReceipt) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedReceipt]);
+
   // Find next upcoming appointment
   const upcomingAppointment = appointments
     .filter(app => app.status === "approved" && new Date(app.appointmenttime) > new Date())
@@ -455,7 +467,7 @@ const Profile = () => {
               })}
 
               {/* Need Help Card */}
-              <div style={{
+              <div className="need-help-card" style={{
                 backgroundColor: "#F0F5FF",
                 borderRadius: "12px",
                 padding: "16px",
@@ -501,6 +513,7 @@ const Profile = () => {
               </div>
 
               <button
+                className="logout-sidebar-btn"
                 onClick={handleLogout}
                 style={{
                   display: "flex",
@@ -672,6 +685,14 @@ const Profile = () => {
         }
 
         @media (max-width: 850px) {
+          .logout-sidebar-btn {
+            order: 5 !important;
+            margin-top: 12px !important;
+          }
+          .need-help-card {
+            order: 10 !important;
+            margin-top: 12px !important;
+          }
           .profile-main-container {
             padding: 10px 4px !important;
           }
@@ -707,8 +728,8 @@ const Profile = () => {
           }
           .profile-header-container {
             flex-direction: column !important;
-            align-items: flex-start !important;
             gap: 12px !important;
+            margin-top: 14px !important;
             margin-bottom: 24px !important;
           }
           .profile-tagline {
@@ -755,7 +776,6 @@ const Profile = () => {
           .overview-top-banner button {
             font-size: 13px !important;
             padding: 10px 18px !important;
-            width: 100% !important;
           }
           .prescription-header-container h2 {
             font-size: 18px !important;
@@ -830,7 +850,32 @@ const Profile = () => {
           }
           .prescription-medicines-table-wrapper td span {
             padding: 2px 4px !important;
-            font-size: 10px !important;
+            font-size: 9px !important;
+          }
+          .receipt-sheet-container {
+            padding: 20px 16px !important;
+            gap: 20px !important;
+          }
+          .receipt-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 16px !important;
+          }
+          .receipt-invoice-info {
+            align-items: flex-start !important;
+            text-align: left !important;
+          }
+          .receipt-bill-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .receipt-print-btn {
+            font-size: 9px !important;
+            padding: 6px 5px !important;
+          }
+          .receipt-sheet-container th,
+          .receipt-sheet-container td {
+            text-align: left !important;
           }
         }
       `}</style>
@@ -929,6 +974,7 @@ const Profile = () => {
               <span style={{ fontSize: "16px", fontWeight: "700" }}>Payment Receipt Preview</span>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
+                  className="receipt-print-btn"
                   onClick={() => window.print()}
                   style={{
                     background: "#4A65FF",
@@ -964,6 +1010,7 @@ const Profile = () => {
             {/* Receipt Sheet */}
             <div
               id="printable-receipt-modal"
+              className="receipt-sheet-container"
               style={{
                 padding: "48px",
                 color: "#0F172A",
@@ -976,7 +1023,7 @@ const Profile = () => {
               }}
             >
               {/* Logo, Hospital Info & Invoice Meta */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "24px" }}>
+              <div className="receipt-header-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "24px" }}>
                 {/* Left Side: Hospital Details */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -992,10 +1039,10 @@ const Profile = () => {
                       <span style={{ color: "#FFFFFF", fontSize: "18px", fontWeight: "700" }}>🩺</span>
                     </div>
                     <div>
-                      <span style={{ fontSize: "14px", fontWeight: "800", color: "#060F2D", display: "block" }}>
+                      <span style={{ fontSize: "14px", fontWeight: "600", color: "#060F2D", display: "block" }}>
                         SRISAI SUBHRAMANIYA
                       </span>
-                      <span style={{ fontSize: "9.5px", color: "#64748B", fontWeight: "700", letterSpacing: "0.5px", textTransform: "uppercase", display: "block", marginTop: "-2px" }}>
+                      <span style={{ fontSize: "9.5px", color: "#060F2D", fontWeight: "600", letterSpacing: "0.5px", textTransform: "uppercase", display: "block", marginTop: "-2px" }}>
                         Hospitals
                       </span>
                     </div>
@@ -1009,8 +1056,8 @@ const Profile = () => {
                 </div>
 
                 {/* Right Side: Invoice Info */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px", textAlign: "right" }}>
-                  <span style={{ fontSize: "24px", fontWeight: "800", color: "#060F2D", letterSpacing: "-1px" }}>PAYMENT RECEIPT</span>
+                <div className="receipt-invoice-info" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px", textAlign: "right" }}>
+                  <span style={{ fontSize: "21px", fontWeight: "600", color: "#060F2D", letterSpacing: "-1px" }}>PAYMENT RECEIPT</span>
                   <span style={{ fontSize: "12px", color: "#64748B", fontWeight: "600" }}>
                     Invoice No: <strong style={{ color: "#0F172A" }}>#SSH-{selectedReceipt.paymentId?.substring(0, 8).toUpperCase() || "ONLINE"}</strong>
                   </span>
@@ -1035,7 +1082,7 @@ const Profile = () => {
               </div>
 
               {/* Bill To & Bill From */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", borderTop: "1.5px solid #F1F5F9", paddingTop: "24px" }}>
+              <div className="receipt-bill-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", borderTop: "1.5px solid #F1F5F9", paddingTop: "24px" }}>
                 <div>
                   <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "#64748B", letterSpacing: "1px", display: "block", marginBottom: "8px" }}>Patient Details (Bill To)</span>
                   <strong style={{ fontSize: "15px", color: "#060F2D", display: "block" }}>{selectedReceipt.pasentname}</strong>

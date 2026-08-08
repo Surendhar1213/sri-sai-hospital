@@ -102,7 +102,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         }}
       >
         <div style={{ flex: 1, zIndex: 2, textAlign: "left" }}>
-          <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#0F2239", margin: "0 0 12px 0", lineHeight: "1.2" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#0F2239", margin: "0 0 12px 0", lineHeight: "1.2" }}>
             Dedicated to Your <br />Health & Well-being
           </h2>
           <p style={{ margin: "0 0 24px 0", color: "#4D5765", fontSize: "15px", fontWeight: "600", lineHeight: "1.6", maxWidth: "450px" }}>
@@ -328,7 +328,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
                 fontSize: "11px",
                 cursor: "pointer"
               }}
-              onClick={stat.action}
+                onClick={stat.action}
               >
                 <FaArrowRight />
               </span>
@@ -410,7 +410,7 @@ export const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
               let statusLabel = "Scheduled";
               let rightHeader = "Status Active";
               let rightDesc = "Consultation is active.";
-              
+
               if (isPendingPayment) {
                 if (isPaidButPendingApproval) {
                   themeColor = "#D97706"; // golden yellow/amber
@@ -867,9 +867,9 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {paginatedPrescriptions.map((app) => {
             const isExpanded = expandedId === app._id;
-            
+
             // Replicate the mockup with clean blue Completed theme for all prescriptions
-            const accentColor = "#2563EB"; 
+            const accentColor = "#2563EB";
             const statusLabel = "Completed";
             const statusBg = "#EEF2FF";
 
@@ -1146,77 +1146,77 @@ export const PrescriptionsTab: React.FC<PrescriptionsTabProps> = ({
                                     </div>
                                     <div className="prescription-medicines-table-wrapper" style={{ overflowX: "auto", border: "1px solid #EBF1F9", borderRadius: "10px", width: "100%", maxWidth: "100%", WebkitOverflowScrolling: "touch" }}>
                                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                      <thead>
-                                        <tr style={{ backgroundColor: "#F8FAFC", borderBottom: "2px solid #EBF1F9", textAlign: "left", fontSize: "12px", color: "#72849B" }}>
-                                          <th style={{ padding: "12px", fontWeight: "700" }}>Medicine Name</th>
-                                          <th style={{ padding: "12px", fontWeight: "700" }}>Dosage Schedule</th>
-                                          <th style={{ padding: "12px", fontWeight: "700" }}>Instruction</th>
-                                          <th style={{ padding: "12px", fontWeight: "700" }}>Duration</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {medicinesList.map((med, idx) => (
-                                          <tr key={idx} style={{ borderBottom: "1px solid #EBF1F9", fontSize: "14px", color: "#0F2239" }}>
-                                            <td style={{ padding: "14px 12px", fontWeight: "700" }}>
-                                              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                                                <FaPills color="#4A65FF" /> {med.name}
-                                              </span>
-                                            </td>
-                                            <td style={{ padding: "12px" }}>
-                                              {med.isSos ? (
-                                                <span style={{ padding: "4px 10px", borderRadius: "8px", backgroundColor: "rgba(245, 158, 11, 0.1)", color: "#F59E0B", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                                                  <FaExclamationTriangle /> SOS / As Needed
-                                                </span>
-                                              ) : (
-                                                <div style={{ display: "flex", gap: "8px" }}>
-                                                  <span style={{ padding: "3px 8px", borderRadius: "6px", backgroundColor: med.morning ? "#FEF3C7" : "#F3F4F6", color: med.morning ? "#D97706" : "#9CA3AF", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                                                    Morning
-                                                  </span>
-                                                  <span style={{ padding: "3px 8px", borderRadius: "6px", backgroundColor: med.noon ? "#FFE4E6" : "#F3F4F6", color: med.noon ? "#E11D48" : "#9CA3AF", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                                                    Noon
-                                                  </span>
-                                                  <span style={{ padding: "3px 8px", borderRadius: "6px", backgroundColor: med.night ? "#DBEAFE" : "#F3F4F6", color: med.night ? "#2563EB" : "#9CA3AF", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                                                    Night
-                                                  </span>
-                                                </div>
-                                              )}
-                                            </td>
-                                            <td style={{ padding: "12px" }}>
-                                              <span style={{
-                                                padding: "4px 10px",
-                                                borderRadius: "8px",
-                                                fontWeight: "700",
-                                                fontSize: "12px",
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                gap: "4px",
-                                                color: med.timing === "before" ? "#10B981" : med.timing === "sos" ? "#F59E0B" : "#3B82F6",
-                                                backgroundColor: med.timing === "before" ? "rgba(16, 185, 129, 0.08)" : med.timing === "sos" ? "rgba(245, 158, 11, 0.08)" : "rgba(59, 130, 246, 0.08)"
-                                              }}>
-                                                {med.timing === "before" ? (
-                                                  <>
-                                                    <FaUtensils /> Before Food
-                                                  </>
-                                                ) : med.timing === "sos" ? (
-                                                  <>
-                                                    <FaExclamationTriangle /> SOS / As Needed
-                                                  </>
-                                                ) : (
-                                                  <>
-                                                    <FaUtensils /> After Food
-                                                  </>
-                                                )}
-                                              </span>
-                                            </td>
-                                            <td style={{ padding: "12px", fontWeight: "600", color: "#72849B" }}>
-                                              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                                                <FaCalendarAlt /> {med.duration}
-                                              </span>
-                                            </td>
+                                        <thead>
+                                          <tr style={{ backgroundColor: "#F8FAFC", borderBottom: "2px solid #EBF1F9", textAlign: "left", fontSize: "12px", color: "#72849B" }}>
+                                            <th style={{ padding: "12px", fontWeight: "700" }}>Medicine Name</th>
+                                            <th style={{ padding: "12px", fontWeight: "700" }}>Dosage Schedule</th>
+                                            <th style={{ padding: "12px", fontWeight: "700" }}>Instruction</th>
+                                            <th style={{ padding: "12px", fontWeight: "700" }}>Duration</th>
                                           </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
+                                        </thead>
+                                        <tbody>
+                                          {medicinesList.map((med, idx) => (
+                                            <tr key={idx} style={{ borderBottom: "1px solid #EBF1F9", fontSize: "14px", color: "#0F2239" }}>
+                                              <td style={{ padding: "14px 12px", fontWeight: "700" }}>
+                                                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                                  <FaPills color="#4A65FF" /> {med.name}
+                                                </span>
+                                              </td>
+                                              <td style={{ padding: "12px" }}>
+                                                {med.isSos ? (
+                                                  <span style={{ padding: "4px 10px", borderRadius: "8px", backgroundColor: "rgba(245, 158, 11, 0.1)", color: "#F59E0B", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                                    <FaExclamationTriangle /> SOS / As Needed
+                                                  </span>
+                                                ) : (
+                                                  <div style={{ display: "flex", gap: "8px" }}>
+                                                    <span style={{ padding: "3px 8px", borderRadius: "6px", backgroundColor: med.morning ? "#FEF3C7" : "#F3F4F6", color: med.morning ? "#D97706" : "#9CA3AF", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "3px", textDecoration: med.morning ? "none" : "line-through", opacity: med.morning ? 1 : 0.65 }}>
+                                                      Morning
+                                                    </span>
+                                                    <span style={{ padding: "3px 8px", borderRadius: "6px", backgroundColor: med.noon ? "#FFE4E6" : "#F3F4F6", color: med.noon ? "#E11D48" : "#9CA3AF", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "3px", textDecoration: med.noon ? "none" : "line-through", opacity: med.noon ? 1 : 0.65 }}>
+                                                      Noon
+                                                    </span>
+                                                    <span style={{ padding: "3px 8px", borderRadius: "6px", backgroundColor: med.night ? "#DBEAFE" : "#F3F4F6", color: med.night ? "#2563EB" : "#9CA3AF", fontWeight: "bold", fontSize: "11px", display: "inline-flex", alignItems: "center", gap: "3px", textDecoration: med.night ? "none" : "line-through", opacity: med.night ? 1 : 0.65 }}>
+                                                      Night
+                                                    </span>
+                                                  </div>
+                                                )}
+                                              </td>
+                                              <td style={{ padding: "12px" }}>
+                                                <span style={{
+                                                  padding: "4px 10px",
+                                                  borderRadius: "8px",
+                                                  fontWeight: "700",
+                                                  fontSize: "12px",
+                                                  display: "inline-flex",
+                                                  alignItems: "center",
+                                                  gap: "4px",
+                                                  color: med.timing === "before" ? "#10B981" : med.timing === "sos" ? "#F59E0B" : "#3B82F6",
+                                                  backgroundColor: med.timing === "before" ? "rgba(16, 185, 129, 0.08)" : med.timing === "sos" ? "rgba(245, 158, 11, 0.08)" : "rgba(59, 130, 246, 0.08)"
+                                                }}>
+                                                  {med.timing === "before" ? (
+                                                    <>
+                                                      <FaUtensils /> Before Food
+                                                    </>
+                                                  ) : med.timing === "sos" ? (
+                                                    <>
+                                                      <FaExclamationTriangle /> SOS / As Needed
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <FaUtensils /> After Food
+                                                    </>
+                                                  )}
+                                                </span>
+                                              </td>
+                                              <td style={{ padding: "12px", fontWeight: "600", color: "#72849B" }}>
+                                                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                                  <FaCalendarAlt /> {med.duration}
+                                                </span>
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
                                     </div>
                                   </>
                                 ) : (
@@ -1386,16 +1386,16 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
           <svg width="100" height="100" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="60" cy="60" r="50" fill="#F3F8FF"/>
-            <path d="M95 85C95 90 90 95 85 95C80 95 75 90 75 85" stroke="#E2EEFF" strokeWidth="4" strokeLinecap="round"/>
-            <rect x="35" y="25" width="50" height="70" rx="6" fill="#FFFFFF" stroke="#3B82F6" strokeWidth="3"/>
-            <rect x="48" y="18" width="24" height="10" rx="3" fill="#3B82F6"/>
-            <circle cx="60" cy="23" r="2" fill="#FFFFFF"/>
-            <line x1="45" y1="42" x2="75" y2="42" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-            <line x1="45" y1="52" x2="75" y2="52" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-            <line x1="45" y1="62" x2="65" y2="62" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-            <line x1="45" y1="72" x2="70" y2="72" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="85" cy="75" r="16" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2"/>
+            <circle cx="60" cy="60" r="50" fill="#F3F8FF" />
+            <path d="M95 85C95 90 90 95 85 95C80 95 75 90 75 85" stroke="#E2EEFF" strokeWidth="4" strokeLinecap="round" />
+            <rect x="35" y="25" width="50" height="70" rx="6" fill="#FFFFFF" stroke="#3B82F6" strokeWidth="3" />
+            <rect x="48" y="18" width="24" height="10" rx="3" fill="#3B82F6" />
+            <circle cx="60" cy="23" r="2" fill="#FFFFFF" />
+            <line x1="45" y1="42" x2="75" y2="42" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round" />
+            <line x1="45" y1="52" x2="75" y2="52" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round" />
+            <line x1="45" y1="62" x2="65" y2="62" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round" />
+            <line x1="45" y1="72" x2="70" y2="72" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="85" cy="75" r="16" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2" />
             <text x="85" y="80" fill="#FFFFFF" fontSize="14" fontWeight="bold" textAnchor="middle">₹</text>
           </svg>
         </div>
@@ -1437,7 +1437,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
               const dateObj = new Date(app.createdAt || app.appointmenttime);
               const day = dateObj.getDate().toString().padStart(2, "0");
               const monthYear = dateObj.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-              
+
               const isPaid = app.paymentStatus === "paid";
               const payColor = isPaid ? "#10B981" : app.paymentStatus === "failed" ? "#EF4444" : "#F59E0B";
               const payBg = isPaid ? "#E8F8F0" : app.paymentStatus === "failed" ? "rgba(239, 68, 68, 0.06)" : "rgba(245, 158, 11, 0.06)";
@@ -1452,18 +1452,18 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
                     gap: "16px",
                     alignItems: "center",
                     backgroundColor: "#FFFFFF",
-                    border: "1.5px solid #F1F5F9",
+                    border: "1.5px solid #2B6CEE",
                     borderRadius: "16px",
                     padding: "16px 20px",
                     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.01)",
                     transition: "all 0.2s"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "#E2E8F0";
-                    e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.02)";
+                    e.currentTarget.style.borderColor = "#2563EB";
+                    e.currentTarget.style.boxShadow = "0 4px 10px rgba(43, 108, 238, 0.15)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "#F1F5F9";
+                    e.currentTarget.style.borderColor = "#2B6CEE";
                     e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.01)";
                   }}
                 >
@@ -1758,10 +1758,10 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
 
       {/* Main 2-column Content Grid */}
       <div className="patient-profile-content-grid" style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: "28px", alignItems: "start" }}>
-        
+
         {/* Left Column: Personal Information & Verified Badge */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          
+
           {/* Personal Info Card */}
           <div style={{
             backgroundColor: "#FFFFFF",
@@ -1778,7 +1778,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
             </h3>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              
+
               {/* Full Name */}
               <div style={{
                 border: "1px solid #EBF1F9",
@@ -1850,7 +1850,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
 
               {/* Age & Gender Grid */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                
+
                 {/* Age */}
                 <div style={{
                   border: "1px solid #EBF1F9",
@@ -2006,7 +2006,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = ({
 
         {/* Right Column: Care Team & Account Details */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          
+
           {/* Primary Contact Address */}
           <div style={{
             backgroundColor: "#FFFFFF",

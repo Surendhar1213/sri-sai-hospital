@@ -670,13 +670,14 @@ const DoctorsTab: React.FC<DoctorsTabProps> = ({
             {/* Pagination Controls */}
             {totalDoctorPages > 1 && (
               <div
+                className="admin-pagination-footer"
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
                   borderTop: "1.5px solid #F2F3FE",
-                  paddingTop: "24px",
-                  marginTop: "16px"
+                  paddingTop: "20px",
+                  marginTop: "15px"
                 }}
               >
                 <span style={{ fontSize: "14px", color: "#616161" }}>

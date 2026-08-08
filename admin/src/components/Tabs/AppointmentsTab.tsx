@@ -330,7 +330,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
             Manage doctor check-ups, consult scheduling, and patient visits.
           </span>
         </div>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+        <div className="admin-nowrap-mobile" style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
           {/* View Toggles */}
           <div style={{ display: "flex", backgroundColor: "#F1F5F9", borderRadius: "10px", padding: "4px" }}>
             <button
@@ -969,13 +969,14 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
               {/* Pagination Controls */}
               {totalAppointmentPages > 1 && (
                 <div
+                  className="admin-pagination-footer"
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                     borderTop: "1.5px solid #F2F3FE",
-                    paddingTop: "24px",
-                    marginTop: "16px",
+                    paddingTop: "20px",
+                    marginTop: "15px",
                   }}
                 >
                   <span style={{ fontSize: "13px", color: "#64748B", fontFamily: "'Onest', sans-serif", fontWeight: "500" }}>

@@ -1002,6 +1002,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             <button
+              className="admin-menu-toggle-btn"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               style={{
                 background: "transparent",
@@ -1245,7 +1246,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         </div>
       </main>
       <style>{`
+        /* Max-width 600px rules (UNTOUCHED) */
         @media (max-width: 600px) {
+          .admin-nowrap-mobile {
+            flex-wrap: nowrap !important;
+          }
           .dashboard-layout {
             grid-template-columns: 1fr !important;
           }
@@ -1337,7 +1342,102 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             -webkit-overflow-scrolling: touch !important;
           }
         }
-        @media (min-width: 601px) {
+
+        /* Tablet & Mobile padding-bottom 20px for pagination footers */
+        @media (max-width: 1200px) {
+          .admin-pagination-footer {
+            padding-bottom: 20px !important;
+          }
+        }
+
+        /* 600px to 1200px responsive range (TABLET & MEDIUM DESKTOPS) */
+        @media (min-width: 601px) and (max-width: 1200px) {
+          .dashboard-layout {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-menu-toggle-btn {
+            display: flex !important;
+          }
+          .admin-sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 280px !important;
+            height: 100vh !important;
+            z-index: 99999 !important;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out !important;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4) !important;
+          }
+          .admin-sidebar.open {
+            transform: translateX(0) !important;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5) !important;
+          }
+          .admin-mobile-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(6, 15, 45, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 99998;
+            display: block !important;
+          }
+          .admin-mobile-close-btn {
+            display: flex !important;
+          }
+          .admin-header-bar {
+            padding: 14px 24px !important;
+          }
+          .admin-search-input {
+            width: 180px !important;
+          }
+          .admin-header-subtitle {
+            font-size: 11px !important;
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .admin-content-container {
+            padding: 24px 20px !important;
+          }
+          .overview-split-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .overview-bottom-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 20px !important;
+          }
+          .doctor-stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+          }
+          .doctor-filters-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 14px !important;
+          }
+          .admin-appointments-table-wrapper {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+        }
+
+        @media (max-width: 850px) and (min-width: 601px) {
+          .overview-bottom-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-user-badge {
+            display: none !important;
+          }
+        }
+
+        /* 1201px and above (LARGE DESKTOPS - UNTOUCHED) */
+        @media (min-width: 1201px) {
+          .admin-menu-toggle-btn {
+            display: none !important;
+          }
           .admin-mobile-close-btn {
             display: none !important;
           }

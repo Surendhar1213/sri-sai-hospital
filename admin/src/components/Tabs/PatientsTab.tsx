@@ -102,7 +102,7 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
           </span>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+        <div className="admin-nowrap-mobile" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           {/* CSV Export Button */}
           <button
             onClick={exportToCSV}
@@ -335,11 +335,12 @@ const PatientsTab: React.FC<PatientsTabProps> = ({
           {/* Premium Pagination Bar */}
           {totalPages > 1 && (
             <div
+              className="admin-pagination-footer"
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginTop: "24px",
+                marginTop: "15px",
                 borderTop: "1.5px solid #F1F5F9",
                 paddingTop: "20px",
               }}
