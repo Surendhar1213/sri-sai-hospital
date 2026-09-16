@@ -95,6 +95,14 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
   const [localNotes, setLocalNotes] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
+  // Screen width monitoring for responsive font sizes (width < 900px)
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const medInputRef = useRef<HTMLInputElement>(null);
 
   // Temp states for adding a new medicine row
@@ -769,8 +777,8 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                               {app.pasentname.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div>{app.pasentname}</div>
-                              <div style={{ fontSize: "11px", color: "#616161", fontWeight: "normal" }}>
+                              <div style={{ fontSize: windowWidth < 900 ? "12px" : "14px", fontWeight: "700" }}>{app.pasentname}</div>
+                              <div style={{ fontSize: windowWidth < 900 ? "9px" : "11px", color: "#616161", fontWeight: "normal" }}>
                                 {app.pasentnumber} | {app.pasentmail}
                               </div>
                             </div>
@@ -779,7 +787,7 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
 
                         {/* Assigned Doctor / Speciality info */}
                         <td style={{ padding: "18px 12px", fontWeight: "500" }}>
-                          <div>
+                          <div style={{ fontSize: windowWidth < 900 ? "11px" : "13px" }}>
                             {app.assignedDoctor
                               ? `${app.assignedDoctor.name} (${app.speciality})`
                               : `Not Assigned (${app.speciality})`
@@ -799,10 +807,10 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                                 color: "#4A65FF",
                                 textDecoration: "none",
                                 marginTop: "6px",
-                                fontSize: "12px",
+                                fontSize: windowWidth < 900 ? "9px" : "12px",
                                 fontWeight: "700",
                                 backgroundColor: "rgba(74, 101, 255, 0.08)",
-                                padding: "4px 8px",
+                                padding: windowWidth < 900 ? "3px 6px" : "4px 8px",
                                 borderRadius: "6px",
                                 transition: "all 0.2s",
                               }}
@@ -979,22 +987,22 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                     marginTop: "15px",
                   }}
                 >
-                  <span style={{ fontSize: "13px", color: "#64748B", fontFamily: "'Onest', sans-serif", fontWeight: "500" }}>
+                  <span style={{ fontSize: windowWidth < 900 ? "10px" : "13px", color: "#64748B", fontFamily: "'Onest', sans-serif", fontWeight: "500" }}>
                     Showing {indexOfFirstApp + 1} to {Math.min(indexOfLastApp, filteredAppointments.length)} of {filteredAppointments.length} entries
                   </span>
 
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: windowWidth < 900 ? "4px" : "6px", alignItems: "center" }}>
                     <button
                       disabled={activeAppPageBounded === 1}
                       onClick={() => setAppointmentCurrentPage(1)}
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "8px",
+                        width: windowWidth < 900 ? "28px" : "36px",
+                        height: windowWidth < 900 ? "28px" : "36px",
+                        borderRadius: windowWidth < 900 ? "6px" : "8px",
                         border: "1.5px solid #F1F5F9",
                         backgroundColor: "#FFFFFF",
                         color: activeAppPageBounded === 1 ? "#cbd5e1" : "#64748B",
-                        fontSize: "13px",
+                        fontSize: windowWidth < 900 ? "10px" : "13px",
                         fontWeight: "700",
                         cursor: activeAppPageBounded === 1 ? "not-allowed" : "pointer",
                         display: "flex",
@@ -1011,13 +1019,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       disabled={activeAppPageBounded === 1}
                       onClick={() => setAppointmentCurrentPage(activeAppPageBounded - 1)}
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "8px",
+                        width: windowWidth < 900 ? "28px" : "36px",
+                        height: windowWidth < 900 ? "28px" : "36px",
+                        borderRadius: windowWidth < 900 ? "6px" : "8px",
                         border: "1.5px solid #F1F5F9",
                         backgroundColor: "#FFFFFF",
                         color: activeAppPageBounded === 1 ? "#cbd5e1" : "#64748B",
-                        fontSize: "13px",
+                        fontSize: windowWidth < 900 ? "10px" : "13px",
                         fontWeight: "700",
                         cursor: activeAppPageBounded === 1 ? "not-allowed" : "pointer",
                         display: "flex",
@@ -1043,13 +1051,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                             key={p}
                             onClick={() => setAppointmentCurrentPage(p)}
                             style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "8px",
+                              width: windowWidth < 900 ? "28px" : "36px",
+                              height: windowWidth < 900 ? "28px" : "36px",
+                              borderRadius: windowWidth < 900 ? "6px" : "8px",
                               border: p === activeAppPageBounded ? "none" : "1.5px solid #F1F5F9",
                               backgroundColor: p === activeAppPageBounded ? "#0EA5E9" : "#FFFFFF",
                               color: p === activeAppPageBounded ? "#FFFFFF" : "#64748B",
-                              fontSize: "13px",
+                              fontSize: windowWidth < 900 ? "10px" : "13px",
                               fontWeight: "700",
                               cursor: "pointer",
                               outline: "none",
@@ -1063,12 +1071,12 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       if (
                         p === 2 && activeAppPageBounded > 3
                       ) {
-                        return <span key="dots-start" style={{ color: "#94A3B8", padding: "0 4px", fontSize: "13px" }}>...</span>;
+                        return <span key="dots-start" style={{ color: "#94A3B8", padding: "0 4px", fontSize: windowWidth < 900 ? "10px" : "13px" }}>...</span>;
                       }
                       if (
                         p === totalAppointmentPages - 1 && activeAppPageBounded < totalAppointmentPages - 2
                       ) {
-                        return <span key="dots-end" style={{ color: "#94A3B8", padding: "0 4px", fontSize: "13px" }}>...</span>;
+                        return <span key="dots-end" style={{ color: "#94A3B8", padding: "0 4px", fontSize: windowWidth < 900 ? "10px" : "13px" }}>...</span>;
                       }
                       return null;
                     })}
@@ -1077,13 +1085,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       disabled={activeAppPageBounded === totalAppointmentPages}
                       onClick={() => setAppointmentCurrentPage(activeAppPageBounded + 1)}
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "8px",
+                        width: windowWidth < 900 ? "28px" : "36px",
+                        height: windowWidth < 900 ? "28px" : "36px",
+                        borderRadius: windowWidth < 900 ? "6px" : "8px",
                         border: "1.5px solid #F1F5F9",
                         backgroundColor: "#FFFFFF",
                         color: activeAppPageBounded === totalAppointmentPages ? "#cbd5e1" : "#64748B",
-                        fontSize: "13px",
+                        fontSize: windowWidth < 900 ? "10px" : "13px",
                         fontWeight: "700",
                         cursor: activeAppPageBounded === totalAppointmentPages ? "not-allowed" : "pointer",
                         display: "flex",
@@ -1100,13 +1108,13 @@ const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                       disabled={activeAppPageBounded === totalAppointmentPages}
                       onClick={() => setAppointmentCurrentPage(totalAppointmentPages)}
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "8px",
+                        width: windowWidth < 900 ? "28px" : "36px",
+                        height: windowWidth < 900 ? "28px" : "36px",
+                        borderRadius: windowWidth < 900 ? "6px" : "8px",
                         border: "1.5px solid #F1F5F9",
                         backgroundColor: "#FFFFFF",
                         color: activeAppPageBounded === totalAppointmentPages ? "#cbd5e1" : "#64748B",
-                        fontSize: "13px",
+                        fontSize: windowWidth < 900 ? "10px" : "13px",
                         fontWeight: "700",
                         cursor: activeAppPageBounded === totalAppointmentPages ? "not-allowed" : "pointer",
                         display: "flex",

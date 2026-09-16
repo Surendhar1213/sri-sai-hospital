@@ -98,7 +98,7 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
 
     await newAppointment.save();
 
-    // 💡 [இந்த இடத்தில் தான் சேர்க்க வேண்டும்]
+    // 
     if (paymentStatus === "paid") {
       const formattedTime = new Date(newAppointment.appointmenttime).toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
@@ -140,8 +140,7 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
         }
       });
     }
-
-    
+  
     // Trigger SSE notification
     notifySSEClients({ event: "new-appointment", data: newAppointment });
 
@@ -296,7 +295,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
     let meetingLink = customMeetingLink !== undefined ? customMeetingLink : appointment.meetingLink;
     let linkGeneratedThisSession = customMeetingLink ? true : false;
 
-    // இதைச் சேர்க்கவும் (Debug Log):
+    // (Debug Log):
     console.log("🔍 DEBUG CHECK:", {
       incomingStatus: status,
       incomingDoctor: assignedDoctor,
@@ -678,5 +677,3 @@ export const checkMeetingLink = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ status: "error", message: "Failed to validate meeting slot.", error: error.message });
   }
 };
-
-

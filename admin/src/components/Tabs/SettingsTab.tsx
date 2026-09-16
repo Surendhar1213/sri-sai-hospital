@@ -140,7 +140,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
           </label>
         </div>
 
-        {/* Razorpay gateway settings */}
+        {/* CCAvenue gateway settings */}
         <div
           style={{
             padding: "24px",
@@ -153,16 +153,16 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
           }}
         >
           <h4 style={{ fontSize: "14.5px", fontWeight: "700", color: "#060F2D" }}>
-            Razorpay Checkout Integration Setup
+            CCAvenue Live Payment Gateway Setup
           </h4>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
             <div>
               <label style={{ fontSize: "12px", fontWeight: "600", color: "#616161", display: "block", marginBottom: "6px" }}>
-                Razorpay API Key ID
+                CCAvenue Merchant ID
               </label>
               <input
                 type="text"
-                placeholder="rzp_test_..."
+                placeholder="4469310"
                 value={settingsForm.razorpayKey}
                 onChange={(e) => setSettingsForm({ ...settingsForm, razorpayKey: e.target.value })}
                 style={{
@@ -177,11 +177,11 @@ const SettingsTab: React.FC<SettingsTabProps> = ({
             </div>
             <div>
               <label style={{ fontSize: "12px", fontWeight: "600", color: "#616161", display: "block", marginBottom: "6px" }}>
-                Razorpay Key Secret
+                CCAvenue Access Code
               </label>
               <input
-                type="password"
-                placeholder="••••••••••••"
+                type="text"
+                placeholder="AVWF96NH10CE34FWEC"
                 value={settingsForm.razorpaySecret}
                 onChange={(e) => setSettingsForm({ ...settingsForm, razorpaySecret: e.target.value })}
                 style={{

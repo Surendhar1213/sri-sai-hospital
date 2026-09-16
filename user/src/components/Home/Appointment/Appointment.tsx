@@ -130,6 +130,19 @@ const Appointment = () => {
     return () => clearInterval(interval);
   }, [selectedDate, formData.speciality]);
 
+  // Check if returning from CCAvenue payment callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment_status");
+    if (paymentStatus === "success") {
+      setShowSuccess(true);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (paymentStatus === "failed") {
+      setShowFailure(true);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   // Prevent background scrolling when modals are open
   useEffect(() => {
     if (showTermsModal || showSuccess || isAuthModalOpen) {
@@ -182,16 +195,7 @@ const Appointment = () => {
     }));
   };
 
-  // Razorpay SDK-ஐ பிரவுசரில் லோடு செய்வதற்கான ஹெல்பர்
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
+
 
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -237,24 +241,24 @@ const Appointment = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. Razorpay ஸ்கிரிப்ட் லோடு செய்யப்படுகிறதா எனச் சோதிக்கவும்
-      const isLoaded = await loadRazorpayScript();
-      if (!isLoaded) {
-        alert("Razorpay SDK failed to load. Please check your internet connection.");
-        setIsSubmitting(false);
-        return;
-      }
-
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const consultationFee = 5;
+      const appointmenttime = combineDateAndTime(selectedDate, selectedSlot).toISOString();
 
-      // 2. பேமெண்ட் கட்டணத்தை ₹1000 ஆக செட் செய்கிறோம்
-      const consultationFee = 1000;
       let orderResponse;
       try {
         orderResponse = await fetch(`${backendUrl}/api/payments/create-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: consultationFee }),
+          body: JSON.stringify({
+            amount: consultationFee,
+            pasentname: formData.pasentname,
+            pasentmail: formData.pasentmail,
+            pasentnumber: `+91${formData.pasentnumber}`,
+            appointmenttime,
+            speciality: formData.speciality,
+            subject: formData.subject || "General consultation booking"
+          }),
         });
       } catch (err: any) {
         alert(`Network Connection Error!\nFailed to connect to: ${backendUrl}/api/payments/create-order\nError: ${err.message}`);
@@ -267,140 +271,38 @@ const Appointment = () => {
       try {
         orderData = JSON.parse(responseText);
       } catch (err: any) {
-        alert(`API Error: Expected JSON but received HTML.\n\n` +
-          `Requested URL: ${backendUrl}/api/payments/create-order\n` +
-          `HTTP Status: ${orderResponse.status} ${orderResponse.statusText}\n\n` +
-          `Response Preview (First 150 chars):\n${responseText.substring(0, 150)}`);
+        alert(`API Error: Expected JSON response.\n\nResponse Preview:\n${responseText.substring(0, 150)}`);
         setIsSubmitting(false);
         return;
       }
 
-      if (!orderResponse.ok) {
+      if (!orderResponse.ok || !orderData.success) {
         alert(orderData.message || "Failed to initiate payment order");
         setIsSubmitting(false);
         return;
       }
 
-      // 3. தேதி மற்றும் நேரத்தை ஒருங்கிணைக்கிறோம் (இங்கு ஏற்கனவே உள்ள combineDateAndTime-ஐப் பயன்படுத்துகிறோம்)
-      const appointmenttime = combineDateAndTime(selectedDate, selectedSlot).toISOString();
+      // Automatically construct and submit hidden form to CCAvenue Gateway
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = orderData.ccavenueUrl;
 
-      let paymentProcessed = false;
+      const inputEncReq = document.createElement("input");
+      inputEncReq.type = "hidden";
+      inputEncReq.name = "encRequest";
+      inputEncReq.value = orderData.encRequest;
+      form.appendChild(inputEncReq);
 
-      // 4. Razorpay பாப்-அப் விண்டோவிற்கான ஆப்ஷன்கள்
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TBQAbNQmdj88dM", // உங்களது Razorpay Key ID
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "Sri Sai Hospital",
-        description: `Appointment Consultation Fee - ${formData.speciality}`,
-        order_id: orderData.id,
-        handler: async function (response: any) {
-          paymentProcessed = true;
-          try {
-            // 5. பேமெண்ட் வெற்றிகரமாக முடிந்ததும் வெரிஃபை செய்கிறோம்
-            const verifyResponse = await fetch(`${backendUrl}/api/payments/verify`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
+      const inputAccessCode = document.createElement("input");
+      inputAccessCode.type = "hidden";
+      inputAccessCode.name = "access_code";
+      inputAccessCode.value = orderData.accessCode;
+      form.appendChild(inputAccessCode);
 
-            const verifyData = await verifyResponse.json();
-            if (!verifyResponse.ok || !verifyData.success) {
-              alert("Payment verification failed");
-              return;
-            }
-
-            const token = localStorage.getItem("userToken") || "";
-            const bookingResponse = await fetch(`${backendUrl}/api/appointments`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                pasentname: formData.pasentname,
-                pasentmail: formData.pasentmail,
-                pasentnumber: `+91${formData.pasentnumber}`,
-                appointmenttime,
-                speciality: formData.speciality,
-                subject: formData.subject || "General consultation booking",
-                paymentStatus: "paid",
-                paymentId: response.razorpay_payment_id
-              }),
-            });
-
-            const bookingData = await bookingResponse.json();
-            if (!bookingResponse.ok) {
-              alert(bookingData.message || "Failed to save appointment after payment");
-              return;
-            }
-
-            // புக் ஆனது உறுதியானதும் வெற்றிப் பாப்-அப்பைக் காட்டுகிறோம்
-            setShowSuccess(true);
-
-            // பார்ம் வேல்யூக்களை ரீசெட் செய்கிறோம்
-            setFormData({
-              pasentname: "",
-              pasentmail: "",
-              pasentnumber: "",
-              appointmenttime: "",
-              speciality: "",
-              subject: "",
-            });
-            setSelectedDate("");
-            setSelectedSlot("");
-          } catch (err: any) {
-            alert(`Payment successful, but appointment save error: ${err.message}`);
-          }
-        },
-        prefill: {
-          name: formData.pasentname,
-          email: formData.pasentmail,
-          contact: formData.pasentnumber,
-        },
-        theme: {
-          color: "#4A65FF",
-        },
-        modal: {
-          ondismiss: async function () {
-            if (paymentProcessed) return;
-            try {
-              const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-              const token = localStorage.getItem("userToken") || "";
-              await fetch(`${backendUrl}/api/appointments`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                  pasentname: formData.pasentname,
-                  pasentmail: formData.pasentmail,
-                  pasentnumber: `+91${formData.pasentnumber}`,
-                  appointmenttime,
-                  speciality: formData.speciality,
-                  subject: formData.subject || "Payment Cancelled / Dismissed by User",
-                  paymentStatus: "failed",
-                  paymentId: orderData.id || "cancelled_order"
-                }),
-              });
-              setShowFailure(true);
-            } catch (err) {
-              console.error("Failed to log failed/cancelled appointment:", err);
-            }
-          }
-        }
-      };
-
-      const rzp1 = new (window as any).Razorpay(options);
-      rzp1.open();
+      document.body.appendChild(form);
+      form.submit();
     } catch (err: any) {
-      alert(err.message || "Failed to process booking flow.");
-    } finally {
+      alert(err.message || "Failed to process payment flow.");
       setIsSubmitting(false);
     }
   };
@@ -657,46 +559,50 @@ const Appointment = () => {
           position: "fixed",
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(6, 15, 45, 0.4)",
-          backdropFilter: "blur(8px)",
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(6, 15, 45, 0.5)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           zIndex: 9999,
+          padding: "16px",
+          boxSizing: "border-box",
           animation: "fadeIn 0.3s ease-out"
         }}>
           <div style={{
             backgroundColor: "#FFFFFF",
             borderRadius: "24px",
-            padding: "40px",
+            padding: "32px 24px",
             maxWidth: "420px",
-            width: "90%",
+            width: "100%",
+            maxHeight: "90vh",
+            overflowY: "auto",
             textAlign: "center",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
             border: "1px solid rgba(255,255,255,0.8)",
-            transform: "scale(1)",
-            transition: "transform 0.3s ease"
+            boxSizing: "border-box"
           }}>
             <div style={{
-              width: "70px",
-              height: "70px",
+              width: "64px",
+              height: "64px",
               borderRadius: "50%",
               backgroundColor: "rgba(16, 185, 129, 0.1)",
               color: "#10B981",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              fontSize: "32px",
-              margin: "0 auto 20px auto"
+              fontSize: "30px",
+              margin: "0 auto 16px auto"
             }}>
               ✓
             </div>
-            <h3 style={{ fontSize: "22px", fontWeight: "700", color: "#060F2D", marginBottom: "10px" }}>
+            <h3 style={{ fontSize: "21px", fontWeight: "700", color: "#060F2D", marginBottom: "10px" }}>
               Request Submitted!
             </h3>
-            <p style={{ fontSize: "14px", color: "#64748B", lineHeight: "1.6", marginBottom: "25px" }}>
+            <p style={{ fontSize: "13.5px", color: "#64748B", lineHeight: "1.6", marginBottom: "22px" }}>
               Your appointment request has been logged. Our administration team will contact you shortly to confirm your scheduled slot.
             </p>
             <button
@@ -730,39 +636,43 @@ const Appointment = () => {
           position: "fixed",
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(6, 15, 45, 0.4)",
-          backdropFilter: "blur(8px)",
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(6, 15, 45, 0.5)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           zIndex: 9999,
+          padding: "16px",
+          boxSizing: "border-box",
           animation: "fadeIn 0.3s ease-out"
         }}>
           <div style={{
             backgroundColor: "#FFFFFF",
             borderRadius: "24px",
-            padding: "40px",
+            padding: "32px 24px",
             maxWidth: "420px",
-            width: "90%",
+            width: "100%",
+            maxHeight: "90vh",
+            overflowY: "auto",
             textAlign: "center",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
             border: "1px solid rgba(255,255,255,0.8)",
-            transform: "scale(1)",
-            transition: "transform 0.3s ease"
+            boxSizing: "border-box"
           }}>
             <div style={{
-              width: "70px",
-              height: "70px",
+              width: "64px",
+              height: "64px",
               borderRadius: "50%",
               backgroundColor: "rgba(239, 68, 68, 0.1)",
               color: "#EF4444",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              fontSize: "32px",
-              margin: "0 auto 20px auto",
+              fontSize: "30px",
+              margin: "0 auto 16px auto",
               fontWeight: "bold"
             }}>
               ⚠️
@@ -770,7 +680,7 @@ const Appointment = () => {
             <h3 style={{ fontSize: "20px", fontWeight: "700", color: "#060F2D", marginBottom: "10px" }}>
               Booking Cancelled
             </h3>
-            <p style={{ fontSize: "14px", color: "#64748B", lineHeight: "1.6", marginBottom: "25px" }}>
+            <p style={{ fontSize: "13.5px", color: "#64748B", lineHeight: "1.6", marginBottom: "22px" }}>
               Your payment attempt was cancelled or failed, so the slot was not booked. If any amount was deducted, it will be refunded automatically by your bank within 5-7 business days.
             </p>
             <button
@@ -797,38 +707,101 @@ const Appointment = () => {
       )}
 
       {showTermsModal && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(15, 23, 42, 0.7)",
-          backdropFilter: "blur(16px)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 9999,
-          animation: "fadeIn 0.3s ease-out",
-          touchAction: "none"
-        }}>
-          <div style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: "28px",
-            padding: "40px",
-            maxWidth: "520px",
-            width: "90%",
-            boxShadow: "0 30px 70px rgba(15, 23, 42, 0.35)",
-            border: "1px solid rgba(255, 255, 255, 0.8)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "24px",
-            transform: "scale(1)",
-            transition: "transform 0.3s ease",
-            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            position: "relative",
-            overflow: "hidden"
-          }}>
+        <div className="terms-modal-overlay">
+          <style>{`
+            .terms-modal-overlay {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: rgba(15, 23, 42, 0.75);
+              backdrop-filter: blur(12px);
+              -webkit-backdrop-filter: blur(12px);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 9999;
+              padding: 16px;
+              box-sizing: border-box;
+              overflow-y: auto;
+              animation: fadeIn 0.3s ease-out;
+            }
+            .terms-modal-card {
+              background-color: #FFFFFF;
+              border-radius: 24px;
+              padding: 32px 28px;
+              max-width: 500px;
+              width: 100%;
+              max-height: calc(100vh - 32px);
+              box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+              border: 1px solid rgba(255, 255, 255, 0.8);
+              display: flex;
+              flex-direction: column;
+              gap: 18px;
+              position: relative;
+              overflow: hidden;
+              box-sizing: border-box;
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+            .terms-scroll-container::-webkit-scrollbar {
+              width: 5px;
+            }
+            .terms-scroll-container::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .terms-scroll-container::-webkit-scrollbar-thumb {
+              background-color: #CBD5E1;
+              border-radius: 20px;
+            }
+            .terms-scroll-container::-webkit-scrollbar-thumb:hover {
+              background-color: #94A3B8;
+            }
+            @media (max-width: 640px) {
+              .terms-modal-overlay {
+                padding: 12px;
+              }
+              .terms-modal-card {
+                padding: 20px 16px !important;
+                border-radius: 20px !important;
+                gap: 14px !important;
+                max-height: 92vh !important;
+              }
+              .terms-modal-title {
+                font-size: 19px !important;
+              }
+              .terms-modal-subtitle {
+                font-size: 12.5px !important;
+              }
+              .terms-modal-icon {
+                width: 48px !important;
+                height: 48px !important;
+                border-radius: 14px !important;
+              }
+              .terms-modal-icon svg {
+                width: 24px !important;
+                height: 24px !important;
+              }
+              .terms-scroll-container {
+                padding: 12px 14px !important;
+                max-height: 150px !important;
+                font-size: 12px !important;
+              }
+              .terms-modal-checkbox {
+                padding: 8px 10px !important;
+                font-size: 12px !important;
+              }
+              .terms-modal-buttons {
+                gap: 8px !important;
+              }
+              .terms-modal-btn {
+                padding: 12px 14px !important;
+                font-size: 13.5px !important;
+                border-radius: 12px !important;
+              }
+            }
+          `}</style>
+          <div className="terms-modal-card">
             {/* Soft top gradient accent line */}
             <div style={{
               position: "absolute",
@@ -839,10 +812,36 @@ const Appointment = () => {
               background: "linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%)"
             }}></div>
 
-            <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-              <div style={{
-                width: "60px",
-                height: "60px",
+            {/* Close button for quick mobile dismissal */}
+            <button
+              type="button"
+              onClick={() => setShowTermsModal(false)}
+              style={{
+                position: "absolute",
+                top: "14px",
+                right: "14px",
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                backgroundColor: "#F1F5F9",
+                border: "none",
+                color: "#64748B",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "bold",
+                zIndex: 10
+              }}
+            >
+              ✕
+            </button>
+
+            <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+              <div className="terms-modal-icon" style={{
+                width: "58px",
+                height: "58px",
                 borderRadius: "18px",
                 backgroundColor: "rgba(39, 107, 212, 0.08)",
                 display: "flex",
@@ -851,7 +850,7 @@ const Appointment = () => {
                 color: "#276BD4",
                 boxShadow: "inset 0 0 12px rgba(39, 107, 212, 0.05)"
               }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -860,10 +859,10 @@ const Appointment = () => {
                 </svg>
               </div>
               <div>
-                <h3 style={{ fontSize: "23px", fontWeight: "800", color: "#0F172A", margin: "0 0 4px 0", letterSpacing: "-0.03em" }}>
+                <h3 className="terms-modal-title" style={{ fontSize: "22px", fontWeight: "800", color: "#0F172A", margin: "0 0 4px 0", letterSpacing: "-0.03em" }}>
                   Terms & Privacy Policy
                 </h3>
-                <p style={{ fontSize: "14px", color: "#64748B", margin: 0, fontWeight: "500" }}>
+                <p className="terms-modal-subtitle" style={{ fontSize: "13.5px", color: "#64748B", margin: 0, fontWeight: "500" }}>
                   Please read and accept the terms to proceed with payment
                 </p>
               </div>
@@ -873,57 +872,42 @@ const Appointment = () => {
             <div className="terms-scroll-container" style={{
               maxHeight: "180px",
               overflowY: "auto",
-              padding: "20px",
+              padding: "16px 18px",
               backgroundColor: "#F8FAFC",
               borderRadius: "16px",
               border: "1px solid #E2E8F0",
               fontSize: "13px",
               color: "#475569",
-              lineHeight: "1.6",
+              lineHeight: "1.55",
               textAlign: "left"
             }}>
-              <style>{`
-                .terms-scroll-container::-webkit-scrollbar {
-                  width: 5px;
-                }
-                .terms-scroll-container::-webkit-scrollbar-track {
-                  background: transparent;
-                }
-                .terms-scroll-container::-webkit-scrollbar-thumb {
-                  background-color: #CBD5E1;
-                  border-radius: 20px;
-                }
-                .terms-scroll-container::-webkit-scrollbar-thumb:hover {
-                  background-color: #94A3B8;
-                }
-              `}</style>
-              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "14px", margin: "0 0 8px 0" }}>1. Booking & Cancellation Policy</h4>
-              <p style={{ margin: "0 0 16px 0" }}>
-                Appointments can be booked online by paying a standard consultation fee of ₹1,000. Cancellations made at least 24 hours prior to the slot are eligible for a full refund.
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>1. Booking & Cancellation Policy</h4>
+              <p style={{ margin: "0 0 14px 0" }}>
+                Appointments can be booked online by paying a standard consultation fee of ₹5. Cancellations made at least 24 hours prior to the slot are eligible for a full refund.
               </p>
-              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "14px", margin: "0 0 8px 0" }}>2. Privacy & Data Protection</h4>
-              <p style={{ margin: "0 0 16px 0" }}>
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>2. Privacy & Data Protection</h4>
+              <p style={{ margin: "0 0 14px 0" }}>
                 Sri Sai Hospital values your privacy. The patient details (Name, Contact, and Email) provided during booking will only be used for appointment coordination, health record maintenance, and notifications.
               </p>
-              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "14px", margin: "0 0 8px 0" }}>3. Consultation Terms</h4>
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>3. Consultation Terms</h4>
               <p style={{ margin: 0 }}>
                 The fee paid covers online consultation scheduling or in-hospital checkups for the selected specialty. Please ensure you arrive 15 minutes before your slot.
               </p>
             </div>
 
             {/* Checkbox Agreement */}
-            <label style={{
+            <label className="terms-modal-checkbox" style={{
               display: "flex",
               alignItems: "flex-start",
-              gap: "12px",
-              fontSize: "13.5px",
+              gap: "10px",
+              fontSize: "13px",
               color: "#334155",
               cursor: "pointer",
               userSelect: "none",
               textAlign: "left",
-              padding: "8px 12px",
+              padding: "10px 12px",
               borderRadius: "12px",
-              backgroundColor: "rgba(241, 245, 249, 0.5)",
+              backgroundColor: "rgba(241, 245, 249, 0.6)",
               border: "1px solid #E2E8F0",
               transition: "all 0.2s"
             }}
@@ -932,7 +916,7 @@ const Appointment = () => {
                 e.currentTarget.style.borderColor = "#CBD5E1";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(241, 245, 249, 0.5)";
+                e.currentTarget.style.backgroundColor = "rgba(241, 245, 249, 0.6)";
                 e.currentTarget.style.borderColor = "#E2E8F0";
               }}
             >
@@ -941,13 +925,14 @@ const Appointment = () => {
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
                 style={{
-                  width: "20px",
-                  height: "20px",
+                  width: "18px",
+                  height: "18px",
+                  minWidth: "18px",
                   accentColor: "#276BD4",
                   cursor: "pointer",
                   marginTop: "2px",
                   border: "2px solid #CBD5E1",
-                  borderRadius: "6px"
+                  borderRadius: "5px"
                 }}
               />
               <span style={{ fontWeight: "500", lineHeight: "1.4" }}>
@@ -956,19 +941,20 @@ const Appointment = () => {
             </label>
 
             {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "14px", marginTop: "4px" }}>
+            <div className="terms-modal-buttons" style={{ display: "flex", gap: "12px", marginTop: "4px" }}>
               <button
                 type="button"
+                className="terms-modal-btn"
                 onClick={() => setShowTermsModal(false)}
                 style={{
                   flex: 1,
-                  padding: "14px 20px",
+                  padding: "14px 18px",
                   backgroundColor: "#F1F5F9",
                   color: "#64748B",
                   border: "none",
                   borderRadius: "14px",
                   fontWeight: "600",
-                  fontSize: "15px",
+                  fontSize: "14.5px",
                   cursor: "pointer",
                   transition: "all 0.2s"
                 }}
@@ -985,11 +971,12 @@ const Appointment = () => {
               </button>
               <button
                 type="button"
+                className="terms-modal-btn"
                 disabled={!acceptedTerms}
                 onClick={handleProceedToPayment}
                 style={{
-                  flex: 1,
-                  padding: "14px 20px",
+                  flex: 1.3,
+                  padding: "14px 18px",
                   background: acceptedTerms
                     ? "linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%)"
                     : "#CBD5E1",
@@ -997,7 +984,7 @@ const Appointment = () => {
                   border: "none",
                   borderRadius: "14px",
                   fontWeight: "600",
-                  fontSize: "15px",
+                  fontSize: "14.5px",
                   cursor: acceptedTerms ? "pointer" : "not-allowed",
                   transition: "all 0.2s",
                   boxShadow: acceptedTerms ? "0 4px 15px rgba(39, 107, 212, 0.25)" : "none"
@@ -1015,7 +1002,7 @@ const Appointment = () => {
                   }
                 }}
               >
-                Agree & Pay ₹1,000
+                Agree & Pay ₹5
               </button>
             </div>
           </div>

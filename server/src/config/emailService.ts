@@ -369,6 +369,7 @@ export const sendDoctorNotificationEmail = async (options: DoctorMailOptions) =>
     `,
   };
 
+  
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("📧 Doctor Notification Email sent successfully:", info.messageId);
@@ -709,9 +710,3 @@ export const sendResetOTPEmail = async (options: ResetOTPMailOptions) => {
     return false;
   }
 };
-
-
-
-
-
-

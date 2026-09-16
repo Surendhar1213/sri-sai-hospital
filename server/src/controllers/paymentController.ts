@@ -1,82 +1,197 @@
 import { Request, Response } from "express";
-import Razorpay from "razorpay";
-import crypto from "crypto";
+import Appointment from "../models/Appointment.js";
+import { ccavenueEncrypt, ccavenueDecrypt, parseCcavenueResponse } from "../utils/ccavenue.js";
+import { notifySSEClients } from "./appointmentController.js";
+import { sendBookingReceiptEmail, sendBookingFailureEmail } from "../config/emailService.js";
 
-// Razorpay instans-ஐ .env load 
-let razorpay: Razorpay | null = null;
-try {
-  const key_id = process.env.RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
-  if (key_id && key_secret) {
-    razorpay = new Razorpay({
-      key_id,
-      key_secret,
-    });
-  } else {
-    console.warn("⚠️ RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing from environment variables. Razorpay payment integration will not work.");
-  }
-} catch (err) {
-  console.error("❌ Failed to initialize Razorpay:", err);
-}
+const CCAVENUE_MERCHANT_ID = process.env.CCAVENUE_MERCHANT_ID || "4469310";
+const CCAVENUE_ACCESS_CODE = process.env.CCAVENUE_ACCESS_CODE || "AVWF96NH10CE34FWEC";
+const CCAVENUE_WORKING_KEY = process.env.CCAVENUE_WORKING_KEY || "95D34BC6C43072BB4E0E8BECEDD87911";
+const CCAVENUE_GATEWAY_URL = "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
-// 1. Create a new order 
+/**
+ * 1. Create CCAvenue Payment Order / Encrypted Payload
+ */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { amount } = req.body; // Amount in INR (Ex: 1000)
+    const { amount, pasentname, pasentmail, pasentnumber, appointmenttime, speciality, subject } = req.body;
 
     if (!amount) {
       res.status(400).json({ message: "Amount is required" });
       return;
     }
 
-    if (!razorpay) {
-      res.status(500).json({
-        message: "Razorpay payment gateway is not configured on the server. Please check environment variables (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)."
-      });
-      return;
-    }
+    const orderId = `ORD_${Date.now()}`;
+    const host = req.get("host") || "localhost:5000";
+    const protocol = req.protocol || "http";
+    const backendUrl = `${protocol}://${host}`;
 
-    const options = {
-      amount: Number(amount) * 100, // Razorpay-க்கு convert to paisa (₹1 = 100 Paise)
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-    };
+    const redirectUrl = `${backendUrl}/api/payments/ccavenue-response`;
+    const cancelUrl = `${backendUrl}/api/payments/ccavenue-response`;
 
-    const order = await razorpay.orders.create(options);
-    res.status(201).json(order); // Razorpay வழங்கிய ஆர்டர் விவரங்களை அனுப்புகிறோம்
+    // Encode appointment details into merchant_param1 as a clean pipe-separated string
+    const encodedPayload = [
+      pasentname || "",
+      pasentmail || "",
+      pasentnumber || "",
+      appointmenttime || "",
+      speciality || "",
+      subject || "General consultation booking"
+    ].join("|");
+
+    // CCAvenue parameters string
+    const merchantData = [
+      `merchant_id=${encodeURIComponent(CCAVENUE_MERCHANT_ID)}`,
+      `order_id=${encodeURIComponent(orderId)}`,
+      `currency=INR`,
+      `amount=${encodeURIComponent(Number(amount).toFixed(2))}`,
+      `redirect_url=${encodeURIComponent(redirectUrl)}`,
+      `cancel_url=${encodeURIComponent(cancelUrl)}`,
+      `language=EN`,
+      `billing_name=${encodeURIComponent(pasentname || "Patient")}`,
+      `billing_email=${encodeURIComponent(pasentmail || "patient@srisaihospital.org")}`,
+      `billing_tel=${encodeURIComponent(pasentnumber || "9999999999")}`,
+      `merchant_param1=${encodeURIComponent(encodedPayload)}`
+    ].join("&");
+
+    const encRequest = ccavenueEncrypt(merchantData, CCAVENUE_WORKING_KEY);
+
+    res.status(200).json({
+      success: true,
+      encRequest,
+      accessCode: CCAVENUE_ACCESS_CODE,
+      ccavenueUrl: CCAVENUE_GATEWAY_URL,
+      orderId
+    });
   } catch (error: any) {
-    console.error("❌ Error creating Razorpay order:", error);
-    res.status(500).json({ message: "Failed to create payment order", error: error.message });
+    console.error("❌ Error creating CCAvenue order:", error);
+    res.status(500).json({ message: "Failed to initiate payment", error: error.message });
   }
 };
 
-// 2. பேமெண்ட் செக்யூரிட்டி செக் (Verify Payment Signature)
-export const verifyPayment = async (req: Request, res: Response): Promise<void> => {
+/**
+ * 2. CCAvenue Payment Callback / Response Handler
+ */
+export const handleCcavenueResponse = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { encResp } = req.body;
 
-    if (!razorpay) {
-      res.status(500).json({
-        message: "Razorpay payment gateway is not configured on the server.",
-        success: false
-      });
+    if (!encResp) {
+      res.status(400).send("Invalid payment response payload.");
       return;
     }
 
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
-      .update(sign.toString())
-      .digest("hex");
+    const decryptedStr = ccavenueDecrypt(encResp, CCAVENUE_WORKING_KEY);
+    const parsedData = parseCcavenueResponse(decryptedStr);
 
-    // Razorpay சிக்னேச்சரும் நமது கணக்கீடும் ஒத்துப்போகிறதா என்று பார்க்கிறோம்
-    if (razorpay_signature === expectedSign) {
-      res.status(200).json({ message: "Payment verified successfully", success: true });
+    const orderStatus = parsedData.order_status;
+    const trackingId = parsedData.tracking_id || parsedData.order_id || `CCAV_${Date.now()}`;
+    const encodedPayload = parsedData.merchant_param1;
+
+    let appointmentInfo: any = null;
+    if (encodedPayload) {
+      try {
+        if (encodedPayload.includes("|")) {
+          const parts = encodedPayload.split("|");
+          appointmentInfo = {
+            pasentname: parts[0] || "",
+            pasentmail: parts[1] || "",
+            pasentnumber: parts[2] || "",
+            appointmenttime: parts[3] || "",
+            speciality: parts[4] || "",
+            subject: parts[5] || "General consultation booking"
+          };
+        } else {
+          const decodedStr = Buffer.from(encodedPayload, "base64url").toString("utf8");
+          appointmentInfo = JSON.parse(decodedStr);
+        }
+      } catch (err) {
+        console.error("Failed to parse appointment info from merchant_param1:", err);
+      }
+    }
+
+    // Determine Client Host for browser redirect
+    const host = req.get("host") || "";
+    let clientUrl = process.env.CLIENT_URL || "https://srisaisubhramaniyahospitals.com";
+    if (host.includes("localhost") || host.includes("127.0.0.1")) {
+      clientUrl = "http://localhost:5173";
+    }
+
+    if (orderStatus === "Success") {
+      if (appointmentInfo && appointmentInfo.appointmenttime) {
+        const newAppointment = new Appointment({
+          pasentname: appointmentInfo.pasentname,
+          pasentmail: appointmentInfo.pasentmail,
+          pasentnumber: appointmentInfo.pasentnumber,
+          appointmenttime: new Date(appointmentInfo.appointmenttime),
+          speciality: appointmentInfo.speciality,
+          subject: appointmentInfo.subject || "General consultation booking",
+          paymentStatus: "paid",
+          paymentId: trackingId,
+          amount: 1000,
+          status: "pending"
+        });
+
+        await newAppointment.save();
+        notifySSEClients({ type: "NEW_APPOINTMENT", appointment: newAppointment });
+
+        // Trigger receipt email
+        sendBookingReceiptEmail({
+          to: newAppointment.pasentmail,
+          patientName: newAppointment.pasentname,
+          amount: newAppointment.amount || 1000,
+          paymentId: trackingId,
+          speciality: newAppointment.speciality,
+          time: new Date(newAppointment.appointmenttime).toLocaleString("en-IN")
+        }).catch((e) => console.error("Email receipt error:", e));
+      }
+
+      // HTTP 302 redirect back to frontend (bypasses CSP inline script restrictions)
+      res.redirect(302, `${clientUrl}/?payment_status=success`);
     } else {
-      res.status(400).json({ message: "Invalid payment signature", success: false });
+      // Payment Failed or Cancelled
+      if (appointmentInfo && appointmentInfo.appointmenttime) {
+        const failedAppointment = new Appointment({
+          pasentname: appointmentInfo.pasentname,
+          pasentmail: appointmentInfo.pasentmail,
+          pasentnumber: appointmentInfo.pasentnumber,
+          appointmenttime: new Date(appointmentInfo.appointmenttime),
+          speciality: appointmentInfo.speciality,
+          subject: appointmentInfo.subject || "Payment Failed / Cancelled",
+          paymentStatus: "failed",
+          paymentId: trackingId,
+          amount: 1000,
+          status: "cancelled"
+        });
+
+        await failedAppointment.save();
+        sendBookingFailureEmail({
+          to: failedAppointment.pasentmail,
+          patientName: failedAppointment.pasentname,
+          amount: failedAppointment.amount || 1000,
+          paymentId: trackingId,
+          speciality: failedAppointment.speciality,
+          time: new Date(failedAppointment.appointmenttime).toLocaleString("en-IN")
+        }).catch((e) => console.error("Failure email error:", e));
+      }
+
+      // HTTP 302 redirect back to frontend (bypasses CSP inline script restrictions)
+      res.redirect(302, `${clientUrl}/?payment_status=failed`);
     }
   } catch (error: any) {
-    console.error("❌ Error verifying payment:", error);
-    res.status(500).json({ message: "Server error during verification", error: error.message });
+    console.error("❌ Error handling CCAvenue response:", error);
+    const host = req.get("host") || "";
+    let clientUrl = process.env.CLIENT_URL || "https://srisaisubhramaniyahospitals.com";
+    if (host.includes("localhost") || host.includes("127.0.0.1")) {
+      clientUrl = "http://localhost:5173";
+    }
+    res.redirect(302, `${clientUrl}/?payment_status=failed`);
   }
+};
+
+/**
+ * 3. Payment Verification Endpoint (Legacy / Direct check)
+ */
+export const verifyPayment = async (req: Request, res: Response): Promise<void> => {
+  res.status(200).json({ message: "CCAvenue verification handled via gateway response", success: true });
 };

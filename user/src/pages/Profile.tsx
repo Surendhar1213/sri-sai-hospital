@@ -1065,7 +1065,7 @@ const Profile = () => {
                     Date: <strong style={{ color: "#0F172A" }}>{new Date(selectedReceipt.createdAt || selectedReceipt.appointmenttime).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</strong>
                   </span>
                   <span style={{ fontSize: "12px", color: "#64748B", fontWeight: "600" }}>
-                    Payment Mode: <strong style={{ color: "#0F172A" }}>Razorpay Online</strong>
+                    Payment Mode: <strong style={{ color: "#0F172A" }}>CCAvenue Online</strong>
                   </span>
                   <span style={{
                     marginTop: "6px",

@@ -11,7 +11,12 @@ import doctorRoutes from "./routes/doctorRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
+try {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+} catch (_e) {
+  // Ignore DNS override errors on cPanel shared hosting
+}
 
 dotenv.config();
 
@@ -20,7 +25,6 @@ const REQUIRED_ENV_VARS = ["MONGO_URI", "JWT_SECRET"];
 REQUIRED_ENV_VARS.forEach((envVar) => {
   if (!process.env[envVar]) {
     console.error(`❌ CRITICAL ERROR: Environment variable "${envVar}" is missing!`);
-    process.exit(1);
   }
 });
 console.log("✅ Environment variables validated successfully.");
@@ -47,8 +51,9 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ JSON body parse pannanum (req.body work aaga)
+// ✅ JSON & Form body parse pannanum (req.body work aaga)
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ✅ Admin Auth Routes register pannanum
 app.use(["/api/admin", "/admin"], authRoutes);
@@ -69,20 +74,13 @@ app.get("/", (req, res) => {
   res.send("✅ Hospital Server Running");
 });
 
-async function start() {
-  try {
-    await mongoose.connect(process.env.MONGO_URI!);
-    console.log("✅ Database Connected Successfully");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`✅ Hospital Server Started on Port ${PORT}`);
+});
 
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`✅ Hospital Server Started on Port ${PORT}`);
-    });
-
-  } catch (err) {
-    console.error("❌ MongoDB Connection Error");
-    console.error(err);
-  }
+if (process.env.MONGO_URI) {
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("✅ Database Connected Successfully"))
+    .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 }
-
-start();
