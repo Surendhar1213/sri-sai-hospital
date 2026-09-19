@@ -226,7 +226,9 @@ export const getBookedSlots = async (req: Request, res: Response): Promise<void>
 export const getAllAppointments = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email } = req.query;
-    const filter = email ? { pasentmail: String(email) } : {};
+    const filter = email
+      ? { pasentmail: { $regex: `^${String(email).trim().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, $options: "i" } }
+      : {};
     const appointments = await Appointment.find(filter).populate("assignedDoctor", "name email speciality").sort({ createdAt: -1 });
     res.status(200).json(appointments);
   } catch (error: any) {
@@ -456,13 +458,13 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
             });
           }
 
-          // Schedule a 15-minute prior reminder if meetingLink exists and time is in the future
+          // Schedule a 10-minute prior reminder if meetingLink exists and time is in the future
           const appTime = new Date(updatedAppointment.appointmenttime);
-          const reminderTime = new Date(appTime.getTime() - 15 * 60 * 1000);
+          const reminderTime = new Date(appTime.getTime() - 10 * 60 * 1000);
           if (reminderTime > new Date()) {
-            console.log(`⏰ Scheduling 15-min email reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
+            console.log(`⏰ Scheduling 10-min email reminders at: ${reminderTime} for appointment ${updatedAppointment._id}`);
             schedule.scheduleJob(updatedAppointment._id.toString(), reminderTime, async () => {
-              console.log(`🔔 Executing scheduled 15-min email reminders for appointment: ${updatedAppointment._id}`);
+              console.log(`🔔 Executing scheduled 10-min email reminders for appointment: ${updatedAppointment._id}`);
               
               await sendReminderEmail({
                 to: updatedAppointment.pasentmail,
@@ -471,6 +473,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
                 speciality: updatedAppointment.speciality,
                 time: formattedTime,
                 meetingLink: updatedAppointment.meetingLink || "",
+                appointmentId: updatedAppointment._id.toString(),
                 role: "patient"
               });
 
@@ -482,6 +485,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
                   speciality: updatedAppointment.speciality,
                   time: formattedTime,
                   meetingLink: updatedAppointment.meetingLink || "",
+                  appointmentId: updatedAppointment._id.toString(),
                   role: "doctor"
                 });
               }
@@ -671,5 +675,102 @@ export const checkMeetingLink = async (req: Request, res: Response): Promise<voi
   } catch (error: any) {
     console.error("❌ Error validating meeting link:", error);
     res.status(500).json({ status: "error", message: "Failed to validate meeting slot.", error: error.message });
+  }
+};
+
+// 8. Handle direct link click from Email / Browser (Enforces 3 minutes prior rule)
+export const joinMeeting = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment || !appointment.meetingLink) {
+      res.status(404).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Meeting Not Available</title>
+        </head>
+        <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #F8FAFC; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 90vh;">
+          <div style="background-color: #ffffff; max-width: 480px; width: 100%; padding: 40px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid #E2E8F0;">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <h2 style="color: #0F172A; margin: 0 0 12px 0;">Consultation Link Not Found</h2>
+            <p style="color: #64748B; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0;">This appointment or meeting link is not available. Please contact hospital support if you need assistance.</p>
+            <a href="https://srisaisubhramaniyahospitals.com/profile?tab=appointments" style="display: inline-block; padding: 12px 24px; background-color: #4A65FF; color: #FFFFFF; text-decoration: none; font-weight: bold; border-radius: 12px; font-size: 14px;">Go to Patient Dashboard</a>
+          </div>
+        </body>
+        </html>
+      `);
+      return;
+    }
+
+    const now = new Date();
+    const appTime = new Date(appointment.appointmenttime);
+    
+    const earlyBoundMinutes = 3;  // Link activates strictly 3 minutes before slot
+    const lateBoundMinutes = 35;  // Link expires 35 mins after appointment start time
+
+    const startTimeLimit = new Date(appTime.getTime() - earlyBoundMinutes * 60 * 1000);
+    const endTimeLimit = new Date(appTime.getTime() + lateBoundMinutes * 60 * 1000);
+
+    if (now < startTimeLimit) {
+      const formattedTime = appTime.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata"
+      });
+      res.status(200).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Consultation Starts Soon</title>
+        </head>
+        <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #F8FAFC; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 90vh;">
+          <div style="background-color: #ffffff; max-width: 480px; width: 100%; padding: 40px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid #E2E8F0;">
+            <div style="font-size: 48px; margin-bottom: 16px;">⏳</div>
+            <h2 style="color: #0F172A; margin: 0 0 12px 0;">Too Early to Join!</h2>
+            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+              Your video consultation is scheduled for <strong>${formattedTime}</strong>.<br/>
+              The meeting link will automatically activate <strong>strictly 3 minutes before</strong> your appointment slot.
+            </p>
+            <a href="https://srisaisubhramaniyahospitals.com/profile?tab=appointments" style="display: inline-block; padding: 12px 24px; background-color: #4A65FF; color: #FFFFFF; text-decoration: none; font-weight: bold; border-radius: 12px; font-size: 14px;">Go to Patient Dashboard</a>
+          </div>
+        </body>
+        </html>
+      `);
+      return;
+    }
+
+    if (now > endTimeLimit) {
+      res.status(200).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Link Expired</title>
+        </head>
+        <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #F8FAFC; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 90vh;">
+          <div style="background-color: #ffffff; max-width: 480px; width: 100%; padding: 40px 24px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid #E2E8F0;">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <h2 style="color: #EF4444; margin: 0 0 12px 0;">Meeting Link Expired</h2>
+            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+              This consultation slot has passed and the meeting link is no longer active.
+            </p>
+            <a href="https://srisaisubhramaniyahospitals.com/profile?tab=appointments" style="display: inline-block; padding: 12px 24px; background-color: #4A65FF; color: #FFFFFF; text-decoration: none; font-weight: bold; border-radius: 12px; font-size: 14px;">Go to Patient Dashboard</a>
+          </div>
+        </body>
+        </html>
+      `);
+      return;
+    }
+
+    // Active slot -> Redirect to Google Meet URL
+    res.redirect(302, appointment.meetingLink);
+  } catch (error: any) {
+    console.error("❌ Error joining meeting from email link:", error);
+    res.status(500).send("Server error processing meeting link.");
   }
 };

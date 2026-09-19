@@ -52,6 +52,9 @@ interface PrescriptionMailOptions {
 export const sendAppointmentEmail = async (options: AppointmentMailOptions) => {
   const { to, patientName, doctorName, speciality, time, meetingLink, appointmentId } = options;
 
+  const backendUrl = (process.env.VITE_API_URL || "https://srisaisubhramaniyahospitals.com").replace(/\/+$/, "");
+  const joinUrl = appointmentId ? `${backendUrl}/api/appointments/join-meeting/${appointmentId}` : (meetingLink || "#");
+
   const mailOptions: any = {
     from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
     to,
@@ -78,7 +81,7 @@ export const sendAppointmentEmail = async (options: AppointmentMailOptions) => {
           ${meetingLink ? `
           <tr>
             <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f9fafb; font-weight: bold;">Meeting Link</td>
-            <td style="padding: 10px; border: 1px solid #e2e8f0;"><a href="${meetingLink}" style="color: #0d9488; font-weight: bold; text-decoration: none;">Join Video Consultation</a></td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0;"><a href="${joinUrl}" style="color: #0d9488; font-weight: bold; text-decoration: none;">Join Video Consultation</a></td>
           </tr>
           ` : ""}
         </table>
@@ -526,7 +529,7 @@ export const sendBookingFailureEmail = async (options: FailureMailOptions) => {
 };
 
 
-// 6. Function to send Consultation Alert Reminder Email (15 minutes prior)
+// 6. Function to send Consultation Alert Reminder Email (10 minutes prior)
 interface ReminderMailOptions {
   to: string;
   patientName: string;
@@ -534,16 +537,20 @@ interface ReminderMailOptions {
   speciality: string;
   time: string;
   meetingLink: string;
+  appointmentId?: string;
   role: "patient" | "doctor";
 }
 
 export const sendReminderEmail = async (options: ReminderMailOptions) => {
-  const { to, patientName, doctorName, speciality, time, meetingLink, role } = options;
+  const { to, patientName, doctorName, speciality, time, meetingLink, appointmentId, role } = options;
+
+  const backendUrl = (process.env.VITE_API_URL || "https://srisaisubhramaniyahospitals.com").replace(/\/+$/, "");
+  const joinUrl = appointmentId ? `${backendUrl}/api/appointments/join-meeting/${appointmentId}` : meetingLink;
 
   const recipientName = role === "patient" ? patientName : `Dr. ${doctorName}`;
   const subject = role === "patient" 
-    ? "⏰ Alert: Your Consultation starts in 15 Minutes!" 
-    : "⏰ Alert: Upcoming Consultation in 15 Minutes!";
+    ? "⏰ Alert: Your Consultation starts in 10 Minutes!" 
+    : "⏰ Alert: Upcoming Consultation in 10 Minutes!";
 
   const mailOptions = {
     from: `"Srisai Subhramaniya Hospitals" <${process.env.EMAIL_USER}>`,
@@ -558,7 +565,7 @@ export const sendReminderEmail = async (options: ReminderMailOptions) => {
         </div>
 
         <p>Dear <strong>${recipientName}</strong>,</p>
-        <p>This is a reminder that the virtual video consultation is scheduled to begin in <strong>15 minutes</strong>.</p>
+        <p>This is a reminder that the virtual video consultation is scheduled to begin in <strong>10 minutes</strong>.</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr>
@@ -576,7 +583,7 @@ export const sendReminderEmail = async (options: ReminderMailOptions) => {
           <tr>
             <td style="padding: 8px 0; color: #475569; font-weight: bold;">Google Meet Link:</td>
             <td style="padding: 8px 0;">
-              <a href="${meetingLink}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #3f59ff; color: white; font-weight: bold; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(63, 89, 255, 0.2);">
+              <a href="${joinUrl}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #3f59ff; color: white; font-weight: bold; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(63, 89, 255, 0.2);">
                 Join Google Meet 🎥
               </a>
             </td>
@@ -593,10 +600,10 @@ export const sendReminderEmail = async (options: ReminderMailOptions) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`📧 15-Min Reminder Email sent successfully to ${to}:`, info.messageId);
+    console.log(`📧 10-Min Reminder Email sent successfully to ${to}:`, info.messageId);
     return true;
   } catch (error) {
-    console.error(`❌ Error sending 15-Min Reminder email to ${to}:`, error);
+    console.error(`❌ Error sending 10-Min Reminder email to ${to}:`, error);
     return false;
   }
 };

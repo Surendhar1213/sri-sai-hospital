@@ -7,6 +7,7 @@ import {
   appointmentSSE,
   getRevenueStats,
   checkMeetingLink,
+  joinMeeting,
 } from "../controllers/appointmentController.js";
 import { verifyAdminToken, verifyUserOrAdminToken } from "../middlewares/authMiddleware.js";
 import { bookingLimiter } from "../middlewares/rateLimiter.js";
@@ -18,6 +19,7 @@ router.get("/live", appointmentSSE);
 router.get("/booked-slots", getBookedSlots); // <--- Add this route BEFORE "/"
 router.get("/revenue-stats", verifyAdminToken, getRevenueStats);
 router.get("/validate-meeting/:id", checkMeetingLink);
+router.get("/join-meeting/:id", joinMeeting);
 // Secure route for patients to book (Rate limited and authenticated to prevent spam)
 router.post("/", verifyUserOrAdminToken, bookingLimiter, createAppointment);
 // Admin dashboard actions secured with authentication middleware

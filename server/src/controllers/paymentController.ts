@@ -10,6 +10,35 @@ const CCAVENUE_WORKING_KEY = process.env.CCAVENUE_WORKING_KEY || "95D34BC6C43072
 const CCAVENUE_GATEWAY_URL = "https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction";
 
 /**
+ * Helper to determine secure backend URL for CCAvenue callback
+ * Ensures HTTPS is forced in production to prevent cPanel HTTP->HTTPS 301 POST payload drops
+ */
+const getBackendUrl = (req: Request): string => {
+  const host = req.get("host") || "srisaisubhramaniyahospitals.com";
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+  if (isLocal) {
+    return (process.env.VITE_API_URL || `http://${host}`).replace(/\/+$/, "");
+  }
+  let url = process.env.VITE_API_URL || `https://${host}`;
+  if (url.startsWith("http://")) {
+    url = url.replace("http://", "https://");
+  }
+  return url.replace(/\/+$/, "");
+};
+
+/**
+ * Helper to determine frontend client URL for browser redirects
+ */
+const getClientUrl = (req: Request): string => {
+  const host = req.get("host") || "";
+  if (host.includes("localhost") || host.includes("127.0.0.1")) {
+    return "http://localhost:5173";
+  }
+  const rawUrl = process.env.CLIENT_URL || "https://srisaisubhramaniyahospitals.com";
+  return rawUrl.replace(/\/+$/, "");
+};
+
+/**
  * 1. Create CCAvenue Payment Order / Encrypted Payload
  */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
@@ -22,22 +51,43 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     }
 
     const orderId = `ORD_${Date.now()}`;
-    const host = req.get("host") || "localhost:5000";
-    const protocol = req.protocol || "http";
-    const backendUrl = `${protocol}://${host}`;
+    const backendUrl = getBackendUrl(req);
 
     const redirectUrl = `${backendUrl}/api/payments/ccavenue-response`;
     const cancelUrl = `${backendUrl}/api/payments/ccavenue-response`;
 
-    // Encode appointment details into merchant_param1 as a clean pipe-separated string
-    const encodedPayload = [
-      pasentname || "",
-      pasentmail || "",
-      pasentnumber || "",
-      appointmenttime || "",
-      speciality || "",
-      subject || "General consultation booking"
-    ].join("|");
+    // Pre-create appointment in MongoDB so cancelled or failed bookings are ALWAYS saved and logged
+    if (pasentname && pasentmail && pasentnumber && appointmenttime && speciality) {
+      try {
+        const pendingAppointment = new Appointment({
+          pasentname: pasentname.trim(),
+          pasentmail: pasentmail.trim().toLowerCase(),
+          pasentnumber: pasentnumber.trim(),
+          appointmenttime: new Date(appointmenttime),
+          speciality: speciality.trim(),
+          subject: subject || "General consultation booking",
+          paymentStatus: "failed",
+          paymentId: orderId,
+          amount: Number(amount) || 1000,
+          status: "cancelled"
+        });
+        await pendingAppointment.save();
+        notifySSEClients({ type: "NEW_APPOINTMENT", appointment: pendingAppointment });
+      } catch (dbErr: any) {
+        console.error("⚠️ Pre-saving pending appointment warning:", dbErr.message);
+      }
+    }
+
+    // Safely encode appointment payload in Base64URL format to prevent special characters like '&' from breaking CCAvenue query parser
+    const payloadObj = {
+      name: pasentname || "",
+      email: pasentmail || "",
+      phone: pasentnumber || "",
+      time: appointmenttime || "",
+      speciality: speciality || "",
+      subject: subject || "General consultation booking"
+    };
+    const encodedPayload = Buffer.from(JSON.stringify(payloadObj)).toString("base64url");
 
     // CCAvenue parameters string
     const merchantData = [
@@ -73,19 +123,24 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
  * 2. CCAvenue Payment Callback / Response Handler
  */
 export const handleCcavenueResponse = async (req: Request, res: Response): Promise<void> => {
+  const clientUrl = getClientUrl(req);
+
   try {
-    const { encResp } = req.body;
+    const encResp = req.body?.encResp || req.query?.encResp || req.body?.encResponse || req.body?.enc_response;
 
     if (!encResp) {
-      res.status(400).send("Invalid payment response payload.");
+      console.error("❌ CCAvenue response error: encResp missing in req.body/query", req.body, req.query);
+      res.redirect(302, `${clientUrl}/?payment_status=failed`);
       return;
     }
 
     const decryptedStr = ccavenueDecrypt(encResp, CCAVENUE_WORKING_KEY);
     const parsedData = parseCcavenueResponse(decryptedStr);
 
-    const orderStatus = parsedData.order_status;
-    const trackingId = parsedData.tracking_id || parsedData.order_id || `CCAV_${Date.now()}`;
+    const orderStatus = (parsedData.order_status || "").trim();
+    const orderId = parsedData.order_id || "";
+    const trackingId = parsedData.tracking_id || orderId || `CCAV_${Date.now()}`;
+    const paidAmount = Number(parsedData.amount) || 1000;
     const encodedPayload = parsedData.merchant_param1;
 
     let appointmentInfo: any = null;
@@ -103,23 +158,40 @@ export const handleCcavenueResponse = async (req: Request, res: Response): Promi
           };
         } else {
           const decodedStr = Buffer.from(encodedPayload, "base64url").toString("utf8");
-          appointmentInfo = JSON.parse(decodedStr);
+          const parsed = JSON.parse(decodedStr);
+          appointmentInfo = {
+            pasentname: parsed.name || parsed.pasentname || "",
+            pasentmail: parsed.email || parsed.pasentmail || "",
+            pasentnumber: parsed.phone || parsed.pasentnumber || "",
+            appointmenttime: parsed.time || parsed.appointmenttime || "",
+            speciality: parsed.speciality || "",
+            subject: parsed.subject || "General consultation booking"
+          };
         }
       } catch (err) {
         console.error("Failed to parse appointment info from merchant_param1:", err);
       }
     }
 
-    // Determine Client Host for browser redirect
-    const host = req.get("host") || "";
-    let clientUrl = process.env.CLIENT_URL || "https://srisaisubhramaniyahospitals.com";
-    if (host.includes("localhost") || host.includes("127.0.0.1")) {
-      clientUrl = "http://localhost:5173";
+    // Try finding pre-created appointment record in MongoDB
+    let appointment = null;
+    if (orderId) {
+      appointment = await Appointment.findOne({ paymentId: orderId });
+    }
+    if (!appointment && trackingId) {
+      appointment = await Appointment.findOne({ paymentId: trackingId });
     }
 
-    if (orderStatus === "Success") {
-      if (appointmentInfo && appointmentInfo.appointmenttime) {
-        const newAppointment = new Appointment({
+    const isSuccess = orderStatus.toLowerCase() === "success";
+
+    if (isSuccess) {
+      if (appointment) {
+        appointment.paymentStatus = "paid";
+        appointment.status = "pending";
+        appointment.paymentId = trackingId;
+        await appointment.save();
+      } else if (appointmentInfo && appointmentInfo.appointmenttime) {
+        appointment = new Appointment({
           pasentname: appointmentInfo.pasentname,
           pasentmail: appointmentInfo.pasentmail,
           pasentnumber: appointmentInfo.pasentnumber,
@@ -128,21 +200,23 @@ export const handleCcavenueResponse = async (req: Request, res: Response): Promi
           subject: appointmentInfo.subject || "General consultation booking",
           paymentStatus: "paid",
           paymentId: trackingId,
-          amount: 1000,
+          amount: paidAmount,
           status: "pending"
         });
+        await appointment.save();
+      }
 
-        await newAppointment.save();
-        notifySSEClients({ type: "NEW_APPOINTMENT", appointment: newAppointment });
+      if (appointment) {
+        notifySSEClients({ type: "NEW_APPOINTMENT", appointment });
 
         // Trigger receipt email
         sendBookingReceiptEmail({
-          to: newAppointment.pasentmail,
-          patientName: newAppointment.pasentname,
-          amount: newAppointment.amount || 1000,
+          to: appointment.pasentmail,
+          patientName: appointment.pasentname,
+          amount: appointment.amount || paidAmount,
           paymentId: trackingId,
-          speciality: newAppointment.speciality,
-          time: new Date(newAppointment.appointmenttime).toLocaleString("en-IN")
+          speciality: appointment.speciality,
+          time: new Date(appointment.appointmenttime).toLocaleString("en-IN")
         }).catch((e) => console.error("Email receipt error:", e));
       }
 
@@ -150,8 +224,13 @@ export const handleCcavenueResponse = async (req: Request, res: Response): Promi
       res.redirect(302, `${clientUrl}/?payment_status=success`);
     } else {
       // Payment Failed or Cancelled
-      if (appointmentInfo && appointmentInfo.appointmenttime) {
-        const failedAppointment = new Appointment({
+      if (appointment) {
+        appointment.paymentStatus = "failed";
+        appointment.status = "cancelled";
+        if (trackingId) appointment.paymentId = trackingId;
+        await appointment.save();
+      } else if (appointmentInfo && appointmentInfo.appointmenttime) {
+        appointment = new Appointment({
           pasentname: appointmentInfo.pasentname,
           pasentmail: appointmentInfo.pasentmail,
           pasentnumber: appointmentInfo.pasentnumber,
@@ -160,18 +239,22 @@ export const handleCcavenueResponse = async (req: Request, res: Response): Promi
           subject: appointmentInfo.subject || "Payment Failed / Cancelled",
           paymentStatus: "failed",
           paymentId: trackingId,
-          amount: 1000,
+          amount: paidAmount,
           status: "cancelled"
         });
+        await appointment.save();
+      }
 
-        await failedAppointment.save();
+      if (appointment) {
+        notifySSEClients({ type: "UPDATE_APPOINTMENT", appointment });
+
         sendBookingFailureEmail({
-          to: failedAppointment.pasentmail,
-          patientName: failedAppointment.pasentname,
-          amount: failedAppointment.amount || 1000,
+          to: appointment.pasentmail,
+          patientName: appointment.pasentname,
+          amount: appointment.amount || paidAmount,
           paymentId: trackingId,
-          speciality: failedAppointment.speciality,
-          time: new Date(failedAppointment.appointmenttime).toLocaleString("en-IN")
+          speciality: appointment.speciality,
+          time: new Date(appointment.appointmenttime).toLocaleString("en-IN")
         }).catch((e) => console.error("Failure email error:", e));
       }
 
@@ -180,11 +263,6 @@ export const handleCcavenueResponse = async (req: Request, res: Response): Promi
     }
   } catch (error: any) {
     console.error("❌ Error handling CCAvenue response:", error);
-    const host = req.get("host") || "";
-    let clientUrl = process.env.CLIENT_URL || "https://srisaisubhramaniyahospitals.com";
-    if (host.includes("localhost") || host.includes("127.0.0.1")) {
-      clientUrl = "http://localhost:5173";
-    }
     res.redirect(302, `${clientUrl}/?payment_status=failed`);
   }
 };
