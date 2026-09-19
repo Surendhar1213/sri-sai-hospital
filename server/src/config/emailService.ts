@@ -661,6 +661,7 @@ export const sendMissedAppointmentEmail = async (options: MissedMailOptions) => 
   }
 };
 
+
 // 7. Function to send Password Reset OTP Email
 interface ResetOTPMailOptions {
   to: string;
@@ -709,4 +710,60 @@ export const sendResetOTPEmail = async (options: ResetOTPMailOptions) => {
     console.error(`❌ Error sending Reset Password OTP email to ${to}:`, error);
     return false;
   }
+};
+
+export interface ContactEnquiryMailOptions {
+  fullName: string;
+  mobile: string;
+  email: string;
+  subject?: string;
+  message: string;
+}
+
+// Function to send website Contact Us enquiry directly to chandruleo769@gmail.com
+export const sendContactEnquiryEmail = async (options: ContactEnquiryMailOptions) => {
+  const { fullName, mobile, email, subject, message } = options;
+
+  const mailOptions = {
+    from: `"Srisai Subhramaniya Hospitals - Contact Enquiry" <${process.env.EMAIL_USER}>`,
+    to: "chandruleo769@gmail.com",
+    replyTo: email,
+    subject: `🏥 New Contact Enquiry: ${subject || "General Enquiry"} - ${fullName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+        <h2 style="color: #0d9488; text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-top: 0;">Srisai Subhramaniya Hospitals</h2>
+        <h3 style="color: #1e293b; margin-top: 16px;">New Website Contact Enquiry Received</h3>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: bold; width: 35%;">Full Name</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: 600; color: #0f172a;">${fullName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: bold;">Mobile Number</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; color: #0f172a;">${mobile || "Not provided"}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: bold;">Email Address</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; color: #0d9488; font-weight: 600;"><a href="mailto:${email}" style="color: #0d9488; text-decoration: none;">${email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: bold;">Subject</td>
+            <td style="padding: 10px; border: 1px solid #e2e8f0; color: #0f172a;">${subject || "General Enquiry"}</td>
+          </tr>
+        </table>
+        
+        <div style="background-color: #f1f5f9; border-left: 4px solid #0d9488; padding: 16px; border-radius: 6px; margin: 20px 0;">
+          <h4 style="margin: 0 0 8px 0; color: #0f172a;">Message / Health Concern:</h4>
+          <p style="margin: 0; color: #334155; font-size: 14px; line-height: 1.6; white-space: pre-line;">${message}</p>
+        </div>
+        
+        <p style="color: #64748b; font-size: 12px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 30px;">
+          This enquiry was submitted from the Contact Us form on Srisai Subhramaniya Hospitals website. You can reply directly to this email to respond to the sender.
+        </p>
+      </div>
+    `,
+  };
+
+  return await transporter.sendMail(mailOptions);
 };

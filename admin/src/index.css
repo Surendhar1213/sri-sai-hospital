@@ -128,7 +128,8 @@ body {
   .new-login-container {
     justify-content: center;
     padding: 24px;
-    background-position: 35% center; /* Adjust background focal point for smaller screens */
+    background-position: 35% center;
+    /* Adjust background focal point for smaller screens */
   }
 }
 

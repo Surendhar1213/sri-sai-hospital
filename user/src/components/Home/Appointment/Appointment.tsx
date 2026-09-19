@@ -242,7 +242,7 @@ const Appointment = () => {
 
     try {
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const consultationFee = 5;
+      const consultationFee = 1000;
       const appointmenttime = combineDateAndTime(selectedDate, selectedSlot).toISOString();
 
       let orderResponse;
@@ -883,7 +883,7 @@ const Appointment = () => {
             }}>
               <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>1. Booking & Cancellation Policy</h4>
               <p style={{ margin: "0 0 14px 0" }}>
-                Appointments can be booked online by paying a standard consultation fee of ₹5. Cancellations made at least 24 hours prior to the slot are eligible for a full refund.
+                Appointments can be booked online by paying a standard consultation fee of ₹1000. Cancellations made at least 24 hours prior to the slot are eligible for a full refund.
               </p>
               <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>2. Privacy & Data Protection</h4>
               <p style={{ margin: "0 0 14px 0" }}>
@@ -1002,7 +1002,7 @@ const Appointment = () => {
                   }
                 }}
               >
-                Agree & Pay ₹5
+                Agree & Pay ₹1000
               </button>
             </div>
           </div>

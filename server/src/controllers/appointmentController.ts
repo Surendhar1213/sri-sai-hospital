@@ -636,13 +636,8 @@ export const checkMeetingLink = async (req: Request, res: Response): Promise<voi
     const appTime = new Date(appointment.appointmenttime);
     
     // Configurable validation bounds (in minutes)
-    // TEMPORARY FOR DEMO/TESTING: Set to 24 hours (1440 mins) so links are active easily
-    const earlyBoundMinutes = 1440; // 24 hours before
-    const lateBoundMinutes = 1440;  // 24 hours after
-    /*
-    const earlyBoundMinutes = 15; // 15 mins before
-    const lateBoundMinutes = 45;  // 45 mins after start time
-    */
+    const earlyBoundMinutes = 3;  // Link activates strictly 3 minutes before slot
+    const lateBoundMinutes = 35;  // Link expires 35 mins after appointment start time
 
     const startTimeLimit = new Date(appTime.getTime() - earlyBoundMinutes * 60 * 1000);
     const endTimeLimit = new Date(appTime.getTime() + lateBoundMinutes * 60 * 1000);
@@ -651,10 +646,11 @@ export const checkMeetingLink = async (req: Request, res: Response): Promise<voi
       const formattedTime = appTime.toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit",
+        hour12: true
       });
       res.status(200).json({
         status: "early",
-        message: `Too Early! This consultation starts at ${formattedTime}. Please try joining within 15 minutes of your slot.`,
+        message: `Too Early! This consultation starts at ${formattedTime}. The link will open 3 minutes before your slot.`,
       });
       return;
     }

@@ -5,11 +5,7 @@ import {
   Users,
   CreditCard,
   UserPlus,
-  FileText,
-  Activity,
-  Heart,
-  Droplets,
-  Scissors
+  FileText
 } from "lucide-react";
 
 interface Doctor {
@@ -57,26 +53,6 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
     return paidApps.length * 500 || 68420; // Mockup default fallback
   }, [appointments]);
 
-  // Speciality count calculation for Department Summary
-  const departmentSummary = useMemo(() => {
-    const counts: { [key: string]: number } = {};
-    appointments.forEach(app => {
-      const spec = app.speciality || "General Medicine";
-      counts[spec] = (counts[spec] || 0) + 1;
-    });
-
-    // Make sure we have some defaults if data is empty
-    const defaults = [
-      { name: "General Medicine", count: counts["General Medicine"] || 8, icon: <Activity size={16} color="#10B981" />, bg: "#E6F4EA" },
-      { name: "Pediatrics", count: counts["Pediatrics"] || 5, icon: <Heart size={16} color="#3B82F6" />, bg: "#E8F0FE" },
-      { name: "Orthopedics", count: counts["Orthopedics"] || 4, icon: <Activity size={16} color="#F59E0B" />, bg: "#FEF3C7" },
-      { name: "Gynecology", count: counts["Gynecology & Women's Health"] || counts["Gynecology"] || 7, icon: <Droplets size={16} color="#EC4899" />, bg: "#FCE7F3" },
-      { name: "Dermatology", count: counts["Dermatology & Cosmetology"] || counts["Dermatology"] || 6, icon: <Scissors size={16} color="#8B5CF6" />, bg: "#F3E8FF" }
-    ];
-
-    return defaults;
-  }, [appointments]);
-
   // Appointments by Status Count
   const statusSummary = useMemo(() => {
     const approved = appointments.filter(app => (app.status || "").toLowerCase() === "approved").length;
@@ -108,7 +84,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
       {/* 🚀 Four Stat Cards Section */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
         {/* Card 1: Total Appointments */}
-        <div 
+        <div
           onClick={() => setActiveTab("appointments")}
           onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(6, 15, 45, 0.08)"; }}
           onMouseOut={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(6, 15, 45, 0.02)"; }}
@@ -135,7 +111,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
 
         {/* Card 2: Patients Registered */}
-        <div 
+        <div
           onClick={() => setActiveTab("patients")}
           onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(6, 15, 45, 0.08)"; }}
           onMouseOut={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(6, 15, 45, 0.02)"; }}
@@ -162,7 +138,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
 
         {/* Card 3: Active Doctors */}
-        <div 
+        <div
           onClick={() => setActiveTab("doctors")}
           onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(6, 15, 45, 0.08)"; }}
           onMouseOut={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(6, 15, 45, 0.02)"; }}
@@ -189,7 +165,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
 
         {/* Card 4: Today's Revenue */}
-        <div 
+        <div
           onClick={() => setActiveTab("payments")}
           onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(6, 15, 45, 0.08)"; }}
           onMouseOut={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(6, 15, 45, 0.02)"; }}
@@ -216,245 +192,453 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
       </div>
 
-      {/* 📊 Main Split Grid Section */}
-      <div className="overview-split-grid" style={{ display: "grid", gridTemplateColumns: "1.7fr 1.1fr", gap: "28px" }}>
-        
-        {/* Left Side: Recent Appointments Table */}
-        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "32px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#060F2D" }}>Recent Appointments</h3>
-            <button
-              onClick={() => setActiveTab("appointments")}
+      {/* 📊 Premium Full-Width Recent Appointments Section */}
+      <div style={{
+        backgroundColor: "#FFFFFF",
+        borderRadius: "24px",
+        border: "1px solid #E2E8F0",
+        padding: "32px",
+        boxShadow: "0 12px 36px rgba(6, 15, 45, 0.03), 0 2px 6px rgba(6, 15, 45, 0.02)",
+        width: "100%",
+        marginBottom: "28px"
+      }}>
+        {/* Section Header */}
+        <div 
+          className="overview-header-container"
+          style={{ 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "flex-end", 
+            marginBottom: "28px" 
+          }}
+        >
+          <style>{`
+            @media (max-width: 600px) {
+              .overview-header-container {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 16px !important;
+              }
+              .overview-header-badge {
+                white-space: nowrap !important;
+              }
+              .overview-header-btn {
+                margin-top: 14px !important;
+              }
+            }
+          `}</style>
+          <div>
+            <div 
+              className="overview-header-badge"
               style={{
-                backgroundColor: "transparent",
-                border: "1.5px solid #F1F5F9",
-                borderRadius: "10px",
-                padding: "8px 16px",
-                fontSize: "12px",
-                fontWeight: "700",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "6px 16px",
+                borderRadius: "20px",
+                backgroundColor: "#EEF2FF",
                 color: "#4A65FF",
-                cursor: "pointer",
-                transition: "all 0.2s"
+                fontSize: "12.5px",
+                fontWeight: "700",
+                letterSpacing: "0.5px",
+                marginBottom: "10px",
+                border: "1px solid #C7D2FE",
+                whiteSpace: "nowrap"
               }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#EEF1FF")}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
-              View All
-            </button>
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#4A65FF", display: "inline-block", boxShadow: "0 0 6px #4A65FF" }}></span>
+              LIVE APPOINTMENTS FEED ({recentAppointments.length})
+            </div>
+            <h3 style={{ fontSize: "24px", fontWeight: "750", color: "#060F2D", margin: 0, letterSpacing: "-0.3px" }}>Recent Appointments</h3>
+            <p style={{ fontSize: "14px", color: "#64748B", margin: "4px 0 0 0", fontWeight: "500" }}>Real-time consultation bookings & patient status tracking</p>
           </div>
 
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-              <thead>
-                <tr style={{ borderBottom: "1.5px solid #F1F5F9", color: "#94A3B8", fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  <th style={{ padding: "12px 6px" }}>Patient</th>
-                  <th style={{ padding: "12px 6px" }}>Doctor</th>
-                  <th style={{ padding: "12px 6px" }}>Specialty</th>
-                  <th style={{ padding: "12px 6px" }}>Time</th>
-                  <th style={{ padding: "12px 6px" }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentAppointments.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center", padding: "40px", color: "#64748B" }}>No recent appointments found.</td>
-                  </tr>
-                ) : (
-                  recentAppointments.map((app, idx) => {
-                    const appTime = app.appointmenttime
-                      ? new Date(app.appointmenttime).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-                      : "10:00 AM";
-
-                    const getStatusColor = (status: string) => {
-                      const normalized = (status || "").toLowerCase();
-                      if (normalized === "approved" || normalized === "paid") return { text: "#10B981", bg: "#E6F4EA" };
-                      if (normalized === "completed") return { text: "#512DA8", bg: "#EDE7F6" };
-                      if (normalized === "cancelled" || normalized === "failed") return { text: "#EF4444", bg: "#FCE8E6" };
-                      return { text: "#F59E0B", bg: "#FFF3E0" };
-                    };
-                    const statusColor = getStatusColor(app.status);
-
-                    return (
-                      <tr key={app._id || idx} style={{ borderBottom: "1px solid #F8FAFC", fontSize: "11.5px", color: "#0F172A" }}>
-                        <td style={{ padding: "10px 4px", fontWeight: "700" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#EEF2FF", color: "#4A65FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "800", flexShrink: 0 }}>
-                              {app.pasentname.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div style={{ lineHeight: "1.2" }}>{app.pasentname}</div>
-                              <span style={{ fontSize: "9px", color: "#94A3B8", fontWeight: "500" }}>#PT{app._id.slice(-6).toUpperCase()}</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: "10px 4px", color: "#475569", fontWeight: "600", lineHeight: "1.2" }}>
-                          {app.assignedDoctor ? app.assignedDoctor.name : "Dr. Karthi T"}
-                        </td>
-                        <td style={{ padding: "10px 4px", color: "#64748B", fontWeight: "500", lineHeight: "1.2" }}>
-                          {app.speciality}
-                        </td>
-                        <td style={{ padding: "10px 4px", color: "#475569", fontWeight: "600", whiteSpace: "nowrap" }}>
-                          {appTime}
-                        </td>
-                        <td style={{ padding: "10px 4px" }}>
-                          <span style={{
-                            padding: "3px 8px",
-                            borderRadius: "20px",
-                            backgroundColor: statusColor.bg,
-                            color: statusColor.text,
-                            fontSize: "10.5px",
-                            fontWeight: "700",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "4px"
-                          }}>
-                            <span style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: statusColor.text }}></span>
-                            {app.status}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+          <button
+            onClick={() => setActiveTab("appointments")}
+            className="overview-header-btn"
+            style={{
+              background: "linear-gradient(135deg, #4A65FF 0%, #2563EB 100%)",
+              border: "none",
+              borderRadius: "14px",
+              padding: "12px 24px",
+              fontSize: "14px",
+              fontWeight: "700",
+              color: "#FFFFFF",
+              cursor: "pointer",
+              boxShadow: "0 6px 18px rgba(74, 101, 255, 0.28)",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              whiteSpace: "nowrap"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(74, 101, 255, 0.38)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 6px 18px rgba(74, 101, 255, 0.28)";
+            }}
+          >
+            <span>View All Appointments</span>
+            <span style={{ fontSize: "15px" }}>→</span>
+          </button>
         </div>
 
-        {/* Right Side: Today's Department Summary */}
-        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "32px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
-            <h3 style={{ fontSize: "17px", fontWeight: "800", color: "#060F2D" }}>Today's Department Summary</h3>
-            <button
-              onClick={() => {
-                triggerToast("📋 Preparing Department Analytics Report...");
-              }}
-              style={{
-                backgroundColor: "transparent",
-                border: "none",
-                fontSize: "12px",
-                fontWeight: "750",
-                color: "#4A65FF",
-                cursor: "pointer"
-              }}
-            >
-              View Report
-            </button>
-          </div>
+        {/* Table Container */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px", textAlign: "left" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#F8FAFC", color: "#475569", fontSize: "13px", fontWeight: "750", textTransform: "uppercase", letterSpacing: "0.8px" }}>
+                <th style={{ padding: "16px 20px", borderRadius: "14px 0 0 14px", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0", borderLeft: "1px solid #E2E8F0" }}>Patient Details</th>
+                <th style={{ padding: "16px 20px", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>Assigned Doctor</th>
+                <th style={{ padding: "16px 20px", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>Specialty</th>
+                <th style={{ padding: "16px 20px", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>Time Slot</th>
+                <th style={{ padding: "16px 20px", borderRadius: "0 14px 14px 0", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0", borderRight: "1px solid #E2E8F0" }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentAppointments.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: "center", padding: "50px", color: "#64748B", fontSize: "15px", fontWeight: "600" }}>
+                    No recent appointments found.
+                  </td>
+                </tr>
+              ) : (
+                recentAppointments.map((app, idx) => {
+                  const appDateObj = app.appointmenttime ? new Date(app.appointmenttime) : null;
+                  const appTime = appDateObj
+                    ? appDateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+                    : "10:00 AM";
+                  const appDate = appDateObj
+                    ? appDateObj.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
+                    : "";
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {departmentSummary.map((dept, idx) => (
-              <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", backgroundColor: "#FCFDFD", borderRadius: "16px", border: "1px solid #F1F5F9" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <div style={{ width: "32px", height: "32px", borderRadius: "10px", backgroundColor: dept.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {dept.icon}
-                  </div>
-                  <span style={{ fontSize: "13.5px", fontWeight: "700", color: "#060F2D" }}>{dept.name}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "16px", fontWeight: "800", color: "#060F2D" }}>{dept.count.toString().padStart(2, "0")}</span>
-                  <span style={{ fontSize: "11px", color: "#94A3B8", fontWeight: "600" }}>Patients</span>
-                </div>
-              </div>
-            ))}
-          </div>
+                  const getStatusColor = (status: string) => {
+                    const normalized = (status || "").toLowerCase();
+                    if (normalized === "approved" || normalized === "paid") {
+                      return { text: "#047857", bg: "#ECFDF5", border: "#A7F3D0", dot: "#10B981" };
+                    }
+                    if (normalized === "completed") {
+                      return { text: "#6D28D9", bg: "#F3E8FF", border: "#DDD6FE", dot: "#8B5CF6" };
+                    }
+                    if (normalized === "cancelled" || normalized === "failed") {
+                      return { text: "#B91C1C", bg: "#FEE2E2", border: "#FCA5A5", dot: "#EF4444" };
+                    }
+                    return { text: "#B45309", bg: "#FEF3C7", border: "#FDE68A", dot: "#F59E0B" };
+                  };
+                  const statusColor = getStatusColor(app.status);
+
+                  return (
+                    <tr
+                      key={app._id || idx}
+                      style={{
+                        backgroundColor: "#FFFFFF",
+                        boxShadow: "0 2px 10px rgba(15, 23, 42, 0.02)",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "#F8FAFF";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "#FFFFFF";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                    >
+                      {/* Patient Name & Details */}
+                      <td style={{
+                        padding: "18px 20px",
+                        borderRadius: "16px 0 0 16px",
+                        borderTop: "1px solid #F1F5F9",
+                        borderBottom: "1px solid #F1F5F9",
+                        borderLeft: "1px solid #F1F5F9"
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                          <div style={{
+                            width: "46px",
+                            height: "46px",
+                            borderRadius: "14px",
+                            background: "linear-gradient(135deg, #4A65FF 0%, #2563EB 100%)",
+                            color: "#FFFFFF",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "18px",
+                            fontWeight: "750",
+                            flexShrink: 0,
+                            boxShadow: "0 4px 14px rgba(74, 101, 255, 0.25)"
+                          }}>
+                            {app.pasentname ? app.pasentname.charAt(0).toUpperCase() : "P"}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: "16.5px", fontWeight: "700", color: "#060F2D", lineHeight: "1.3" }}>
+                              {app.pasentname}
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                              <span style={{
+                                backgroundColor: "#F1F5F9",
+                                color: "#475569",
+                                fontSize: "12.5px",
+                                fontWeight: "650",
+                                padding: "3px 9px",
+                                borderRadius: "6px"
+                              }}>
+                                #PT{app._id ? app._id.slice(-6).toUpperCase() : "000000"}
+                              </span>
+                              <span style={{ fontSize: "13px", color: "#64748B", fontWeight: "500" }}>
+                                {app.pasentnumber || app.pasentmail || ""}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Doctor Details */}
+                      <td style={{
+                        padding: "18px 20px",
+                        borderTop: "1px solid #F1F5F9",
+                        borderBottom: "1px solid #F1F5F9"
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div style={{
+                            width: "34px",
+                            height: "34px",
+                            borderRadius: "10px",
+                            backgroundColor: "#EFF6FF",
+                            color: "#2563EB",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: "750",
+                            fontSize: "13px",
+                            border: "1px solid #DBEAFE"
+                          }}>
+                            Dr
+                          </div>
+                          <div>
+                            <div style={{ fontSize: "15.5px", fontWeight: "650", color: "#0F172A", lineHeight: "1.2" }}>
+                              {app.assignedDoctor ? app.assignedDoctor.name : "Dr. Karthi T"}
+                            </div>
+                            <span style={{ fontSize: "12.5px", color: "#64748B", fontWeight: "500" }}>Attending Specialist</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Specialty Tag */}
+                      <td style={{
+                        padding: "18px 20px",
+                        borderTop: "1px solid #F1F5F9",
+                        borderBottom: "1px solid #F1F5F9"
+                      }}>
+                        <span style={{
+                          backgroundColor: "#EEF2FF",
+                          color: "#4A65FF",
+                          border: "1px solid #C7D2FE",
+                          padding: "7px 16px",
+                          borderRadius: "10px",
+                          fontSize: "14px",
+                          fontWeight: "650",
+                          display: "inline-block",
+                          boxShadow: "0 2px 4px rgba(74, 101, 255, 0.05)"
+                        }}>
+                          {app.speciality || "General Medicine"}
+                        </span>
+                      </td>
+
+                      {/* Time & Date Slot */}
+                      <td style={{
+                        padding: "18px 20px",
+                        borderTop: "1px solid #F1F5F9",
+                        borderBottom: "1px solid #F1F5F9",
+                        whiteSpace: "nowrap"
+                      }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#0F172A", fontSize: "15.5px", fontWeight: "700" }}>
+                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3B82F6", display: "inline-block" }}></span>
+                            {appTime}
+                          </div>
+                          {appDate && (
+                            <div style={{ fontSize: "12.5px", color: "#64748B", fontWeight: "600", marginTop: "3px", paddingLeft: "16px" }}>
+                              📅 {appDate}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Status Pill */}
+                      <td style={{
+                        padding: "18px 20px",
+                        borderRadius: "0 16px 16px 0",
+                        borderTop: "1px solid #F1F5F9",
+                        borderBottom: "1px solid #F1F5F9",
+                        borderRight: "1px solid #F1F5F9"
+                      }}>
+                        <span style={{
+                          padding: "7px 16px",
+                          borderRadius: "20px",
+                          backgroundColor: statusColor.bg,
+                          color: statusColor.text,
+                          border: `1.5px solid ${statusColor.border}`,
+                          fontSize: "13px",
+                          fontWeight: "700",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)"
+                        }}>
+                          <span style={{ width: "7px", height: "7px", borderRadius: "50%", backgroundColor: statusColor.dot }}></span>
+                          {app.status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
       {/* 📈 Bottom Visual Analytics & Quick Actions Section */}
-      <div className="overview-bottom-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1.1fr 1fr", gap: "28px" }}>
-        
+      <div className="overview-bottom-grid" style={{ display: "grid", gridTemplateColumns: "1.15fr 1.15fr 1fr", gap: "24px" }}>
+
         {/* 1. Appointments Trend Chart */}
-        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "28px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-            <h4 style={{ fontSize: "15px", fontWeight: "800", color: "#060F2D" }}>Appointments Trend</h4>
-            <select style={{ border: "none", outline: "none", fontSize: "12px", fontWeight: "700", color: "#4A65FF", backgroundColor: "transparent", cursor: "pointer" }}>
-              <option>This Week</option>
-            </select>
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: "22px",
+          border: "1px solid #EAEFF5",
+          padding: "24px 26px",
+          boxShadow: "0 4px 20px rgba(15, 23, 42, 0.02)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <h4 style={{ fontSize: "16px", fontWeight: "800", color: "#0F172A", margin: 0, letterSpacing: "-0.2px" }}>Appointments Trend</h4>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <select style={{
+                border: "none",
+                outline: "none",
+                fontSize: "13px",
+                fontWeight: "700",
+                color: "#4F46E5",
+                backgroundColor: "transparent",
+                cursor: "pointer",
+                paddingRight: "2px"
+              }}>
+                <option>This Week</option>
+              </select>
+              <span style={{ fontSize: "11px", color: "#4F46E5", fontWeight: "800" }}>▼</span>
+            </div>
           </div>
-          <div style={{ width: "100%", height: "160px", position: "relative" }}>
-            {/* Inline SVG Chart */}
-            <svg viewBox="0 0 100 50" preserveAspectRatio="none" style={{ width: "100%", height: "100%" }}>
+          <div style={{ width: "100%", height: "165px", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+            {/* Inline Smooth Curve SVG Chart */}
+            <svg viewBox="0 0 100 50" preserveAspectRatio="none" style={{ width: "100%", height: "125px", overflow: "visible" }}>
               <defs>
                 <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#4A65FF" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#4A65FF" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#4338CA" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#4338CA" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
-              <path d="M 0,40 Q 15,20 30,35 T 60,15 T 85,30 T 100,25 L 100,50 L 0,50 Z" fill="url(#trendGrad)" />
-              <path d="M 0,40 Q 15,20 30,35 T 60,15 T 85,30 T 100,25" fill="none" stroke="#4A65FF" strokeWidth="2.5" strokeLinecap="round" />
-              {/* Dot Markers */}
-              <circle cx="0" cy="40" r="1.5" fill="#4A65FF" />
-              <circle cx="30" cy="35" r="1.5" fill="#4A65FF" />
-              <circle cx="60" cy="15" r="1.5" fill="#4A65FF" />
-              <circle cx="100" cy="25" r="1.5" fill="#4A65FF" />
+              {/* Smooth Bezier path matching image wave (starts mid, dips, peaks around Fri, drops Sat, rises Sun) */}
+              <path
+                d="M 0,35 C 10,25 20,28 30,34 C 40,40 52,18 64,6 C 74,-4 82,42 88,44 C 92,45 96,28 100,20 L 100,50 L 0,50 Z"
+                fill="url(#trendGrad)"
+              />
+              <path
+                d="M 0,35 C 10,25 20,28 30,34 C 40,40 52,18 64,6 C 74,-4 82,42 88,44 C 92,45 96,28 100,20"
+                fill="none"
+                stroke="#4338CA"
+                strokeWidth="3.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px", fontSize: "10px", color: "#94A3B8", fontWeight: "700" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", fontSize: "11px", color: "#94A3B8", fontWeight: "600", padding: "0 2px" }}>
               <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
             </div>
           </div>
         </div>
 
         {/* 2. Appointments by Status Donut */}
-        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "28px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)" }}>
-          <h4 style={{ fontSize: "15px", fontWeight: "800", color: "#060F2D", marginBottom: "20px" }}>Appointments by Status</h4>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-            <div style={{ width: "120px", height: "120px", position: "relative" }}>
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: "22px",
+          border: "1px solid #EAEFF5",
+          padding: "24px 26px",
+          boxShadow: "0 4px 20px rgba(15, 23, 42, 0.02)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
+        }}>
+          <h4 style={{ fontSize: "16px", fontWeight: "800", color: "#0F172A", margin: "0 0 16px 0", letterSpacing: "-0.2px" }}>Appointments by Status</h4>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexGrow: 1 }}>
+            <div style={{ width: "125px", height: "125px", position: "relative", flexShrink: 0 }}>
               {/* SVG Donut Chart */}
-              <svg viewBox="0 0 36 36" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}>
-                {/* Cancelled 5% */}
-                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#EF4444" strokeWidth="4.2" strokeDasharray="5 95" strokeDashoffset="0" />
-                {/* Pending 12% */}
-                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#FF9800" strokeWidth="4.2" strokeDasharray="12 88" strokeDashoffset="-5" />
-                {/* Completed 33% */}
-                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#8B5CF6" strokeWidth="4.2" strokeDasharray="33 67" strokeDashoffset="-17" />
-                {/* Approved 50% */}
-                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#10B981" strokeWidth="4.2" strokeDasharray="50 50" strokeDashoffset="-50" />
+              <svg viewBox="0 0 36 36" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)", overflow: "visible" }}>
+                {/* Cancelled 20% (red) */}
+                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#EF4444" strokeWidth="4.8" strokeDasharray="20 80" strokeDashoffset="0" strokeLinecap="butt" />
+                {/* Pending 40% (orange) */}
+                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#F59E0B" strokeWidth="4.8" strokeDasharray="40 60" strokeDashoffset="-20" strokeLinecap="butt" />
+                {/* Completed 20% (purple) */}
+                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#8B5CF6" strokeWidth="4.8" strokeDasharray="20 80" strokeDashoffset="-60" strokeLinecap="butt" />
+                {/* Approved 20% (green) */}
+                <circle cx="18" cy="18" r="15.91" fill="none" stroke="#10B981" strokeWidth="4.8" strokeDasharray="20 80" strokeDashoffset="-80" strokeLinecap="butt" />
               </svg>
               <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: "18px", fontWeight: "800", color: "#060F2D" }}>{statusSummary.total}</span>
-                <span style={{ fontSize: "9px", color: "#94A3B8", fontWeight: "700" }}>Total</span>
+                <span style={{ fontSize: "22px", fontWeight: "800", color: "#0F172A", lineHeight: "1" }}>{statusSummary.total}</span>
+                <span style={{ fontSize: "11px", color: "#94A3B8", fontWeight: "600", marginTop: "3px" }}>Total</span>
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontWeight: "700" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#10B981" }}></span>
-                  <span style={{ color: "#64748B" }}>Approved</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", flexGrow: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10B981" }}></span>
+                  <span style={{ color: "#475569", fontWeight: "600" }}>Approved</span>
                 </div>
-                <span style={{ color: "#060F2D" }}>{statusSummary.approved} ({Math.round(statusSummary.approved / statusSummary.total * 100) || 50}%)</span>
+                <span style={{ color: "#0F172A", fontWeight: "800" }}>{statusSummary.approved} ({Math.round(statusSummary.approved / statusSummary.total * 100) || 20}%)</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontWeight: "700" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#8B5CF6" }}></span>
-                  <span style={{ color: "#64748B" }}>Completed</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#8B5CF6" }}></span>
+                  <span style={{ color: "#475569", fontWeight: "600" }}>Completed</span>
                 </div>
-                <span style={{ color: "#060F2D" }}>{statusSummary.completed} ({Math.round(statusSummary.completed / statusSummary.total * 100) || 33}%)</span>
+                <span style={{ color: "#0F172A", fontWeight: "800" }}>{statusSummary.completed} ({Math.round(statusSummary.completed / statusSummary.total * 100) || 20}%)</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontWeight: "700" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#FF9800" }}></span>
-                  <span style={{ color: "#64748B" }}>Pending</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#F59E0B" }}></span>
+                  <span style={{ color: "#475569", fontWeight: "600" }}>Pending</span>
                 </div>
-                <span style={{ color: "#060F2D" }}>{statusSummary.pending} ({Math.round(statusSummary.pending / statusSummary.total * 100) || 12}%)</span>
+                <span style={{ color: "#0F172A", fontWeight: "800" }}>{statusSummary.pending} ({Math.round(statusSummary.pending / statusSummary.total * 100) || 40}%)</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontWeight: "700" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#EF4444" }}></span>
-                  <span style={{ color: "#64748B" }}>Cancelled</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#EF4444" }}></span>
+                  <span style={{ color: "#475569", fontWeight: "600" }}>Cancelled</span>
                 </div>
-                <span style={{ color: "#060F2D" }}>{statusSummary.cancelled} ({Math.round(statusSummary.cancelled / statusSummary.total * 100) || 5}%)</span>
+                <span style={{ color: "#0F172A", fontWeight: "800" }}>{statusSummary.cancelled} ({Math.round(statusSummary.cancelled / statusSummary.total * 100) || 20}%)</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* 3. Quick Actions Panel */}
-        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "24px", border: "1px solid #E2E8F0", padding: "28px", boxShadow: "0 10px 30px rgba(6, 15, 45, 0.01)", display: "flex", flexDirection: "column" }}>
-          <h4 style={{ fontSize: "15px", fontWeight: "800", color: "#060F2D", marginBottom: "20px" }}>Quick Actions</h4>
+        <div style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: "22px",
+          border: "1px solid #EAEFF5",
+          padding: "24px 26px",
+          boxShadow: "0 4px 20px rgba(15, 23, 42, 0.02)",
+          display: "flex",
+          flexDirection: "column"
+        }}>
+          <h4 style={{ fontSize: "16px", fontWeight: "800", color: "#0F172A", margin: "0 0 16px 0", letterSpacing: "-0.2px" }}>Quick Actions</h4>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", flexGrow: 1 }}>
-            
+
             {/* New Appointment Action */}
             <button
               onClick={() => {
@@ -462,25 +646,25 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                 triggerToast("📅 Opening Appointments log to create a new slot!");
               }}
               style={{
-                backgroundColor: "#FCFDFD",
+                backgroundColor: "#F8FAFC",
                 border: "1px solid #F1F5F9",
                 borderRadius: "16px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                padding: "16px",
-                gap: "10px",
+                padding: "16px 14px",
+                gap: "12px",
                 cursor: "pointer",
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 textAlign: "left"
               }}
-              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#4A65FF"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(74, 101, 255, 0.05)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.boxShadow = "none"; }}
+              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#4F46E5"; e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(79, 70, 229, 0.08)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.backgroundColor = "#F8FAFC"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EEF2FF", color: "#4A65FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Calendar size={16} />
+              <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#EEF2FF", color: "#4F46E5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Calendar size={18} />
               </div>
-              <span style={{ fontSize: "12px", fontWeight: "750", color: "#060F2D" }}>New Appointment</span>
+              <span style={{ fontSize: "13px", fontWeight: "750", color: "#0F172A", lineHeight: "1.2" }}>New Appointment</span>
             </button>
 
             {/* Add New Patient Action */}
@@ -490,25 +674,25 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                 triggerToast("👤 Opening Patients Registry to register a new user!");
               }}
               style={{
-                backgroundColor: "#FCFDFD",
+                backgroundColor: "#F8FAFC",
                 border: "1px solid #F1F5F9",
                 borderRadius: "16px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                padding: "16px",
-                gap: "10px",
+                padding: "16px 14px",
+                gap: "12px",
                 cursor: "pointer",
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 textAlign: "left"
               }}
-              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#10B981"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.05)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.boxShadow = "none"; }}
+              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#10B981"; e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(16, 185, 129, 0.08)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.backgroundColor = "#F8FAFC"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#E6F4EA", color: "#10B981", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <UserPlus size={16} />
+              <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#ECFDF5", color: "#10B981", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <UserPlus size={18} />
               </div>
-              <span style={{ fontSize: "12px", fontWeight: "750", color: "#060F2D" }}>Add New Patient</span>
+              <span style={{ fontSize: "13px", fontWeight: "750", color: "#0F172A", lineHeight: "1.2" }}>Add New Patient</span>
             </button>
 
             {/* Add Doctor Action */}
@@ -518,25 +702,25 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                 triggerToast("🩺 Opening Doctors Tab to register a new specialist!");
               }}
               style={{
-                backgroundColor: "#FCFDFD",
+                backgroundColor: "#F8FAFC",
                 border: "1px solid #F1F5F9",
                 borderRadius: "16px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                padding: "16px",
-                gap: "10px",
+                padding: "16px 14px",
+                gap: "12px",
                 cursor: "pointer",
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 textAlign: "left"
               }}
-              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#8B5CF6"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(139, 92, 246, 0.05)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.boxShadow = "none"; }}
+              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#8B5CF6"; e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(139, 92, 246, 0.08)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.backgroundColor = "#F8FAFC"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#F3E8FF", color: "#8B5CF6", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Stethoscope size={16} />
+              <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#F3E8FF", color: "#8B5CF6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Stethoscope size={18} />
               </div>
-              <span style={{ fontSize: "12px", fontWeight: "750", color: "#060F2D" }}>Add Doctor</span>
+              <span style={{ fontSize: "13px", fontWeight: "750", color: "#0F172A", lineHeight: "1.2" }}>Add Doctor</span>
             </button>
 
             {/* Generate Report Action */}
@@ -545,31 +729,31 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                 triggerToast("📑 Exporting Excel & PDF Reports database dump...");
               }}
               style={{
-                backgroundColor: "#FCFDFD",
+                backgroundColor: "#F8FAFC",
                 border: "1px solid #F1F5F9",
                 borderRadius: "16px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                padding: "16px",
-                gap: "10px",
+                padding: "16px 14px",
+                gap: "12px",
                 cursor: "pointer",
-                transition: "all 0.2s",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 textAlign: "left"
               }}
-              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#FF9800"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(255, 152, 0, 0.05)"; }}
-              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.boxShadow = "none"; }}
+              onMouseOver={(e) => { e.currentTarget.style.borderColor = "#F59E0B"; e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(245, 158, 11, 0.08)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.borderColor = "#F1F5F9"; e.currentTarget.style.backgroundColor = "#F8FAFC"; e.currentTarget.style.boxShadow = "none"; }}
             >
-              <div style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#FFF3E0", color: "#FF9800", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <FileText size={16} />
+              <div style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#FEF3C7", color: "#F59E0B", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <FileText size={18} />
               </div>
-              <span style={{ fontSize: "12px", fontWeight: "750", color: "#060F2D" }}>Generate Report</span>
+              <span style={{ fontSize: "13px", fontWeight: "750", color: "#0F172A", lineHeight: "1.2" }}>Generate Report</span>
             </button>
 
           </div>
         </div>
       </div>
-      
+
     </div>
   );
 };

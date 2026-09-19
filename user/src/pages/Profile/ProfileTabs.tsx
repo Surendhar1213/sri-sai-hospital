@@ -544,12 +544,14 @@ export const AppointmentsTab: React.FC<AppointmentsTabProps> = ({
                         }}>
                           <span style={{ color: "#10B981", display: "flex", fontSize: "14px" }}><FaVideo /></span>
                           <div style={{ textAlign: "left" }}>
-                            <span style={{ display: "block", fontSize: "10px", color: "#15803D", fontWeight: "600" }}>Meeting Link</span>
+                            <span style={{ display: "block", fontSize: "10px", color: "#15803D", fontWeight: "600" }}>Meeting Link (Opens 3 mins before slot)</span>
                             <a
                               href={app.meetingLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ color: "#2563EB", fontWeight: "600", textDecoration: "none" }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleJoinMeeting(app._id);
+                              }}
+                              style={{ color: "#2563EB", fontWeight: "600", textDecoration: "none", cursor: "pointer" }}
                               onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
                               onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
                             >

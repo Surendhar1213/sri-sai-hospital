@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FiPhone,
   FiMail,
@@ -6,6 +6,7 @@ import {
   FiUser,
   FiMessageSquare,
 } from "react-icons/fi";
+import { toast } from "react-toastify";
 import "./Contactus.css";
 import PageBanner from "../PageBanner/PageBanner";
 
@@ -36,6 +37,94 @@ function useScrollReveal<T extends HTMLElement>() {
 export default function Contactus() {
   const sectionRef1 = useScrollReveal<HTMLElement>();
   const sectionRef5 = useScrollReveal<HTMLElement>();
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    mobile: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.fullName.trim()) {
+      toast.warning("Please enter your Full Name.");
+      return;
+    }
+    if (!formData.mobile.trim()) {
+      toast.warning("Please enter your Mobile Number.");
+      return;
+    }
+    if (!formData.email.trim()) {
+      toast.warning("Please enter your Email Address.");
+      return;
+    }
+    if (!formData.message.trim()) {
+      toast.warning("Please enter your Message or Health Concern.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const rawBackendUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const backendUrl = rawBackendUrl.replace(/\/+$/, "");
+      const res = await fetch(`${backendUrl}/api/user/contact-enquiry`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const contentType = res.headers.get("content-type");
+      let data: any = {};
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        throw new Error(
+          "Backend API server endpoint not ready (404). Please restart Node.js app in cPanel.",
+        );
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to send enquiry");
+      }
+
+      toast.success("Thank you! Your enquiry has been sent successfully.");
+      setFormData({
+        fullName: "",
+        mobile: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (err: any) {
+      toast.error(
+        err.message || "Error sending enquiry. Please try again later.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      fullName: "",
+      mobile: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  };
 
   return (
     <div className="contact-page">
@@ -97,17 +186,79 @@ export default function Contactus() {
           <div className="row g-5 align-items-start">
             {/* Form */}
             <div className="col-lg-8">
-              <div className="contact-form-wrap contact-reveal">
+              <div className="contact-form-wrap contact-reveal" style={{ position: "relative" }}>
+                <style>{`
+                  @keyframes contactSpin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                `}</style>
+
+                {/* 🔄 Spinning Loader Screen Overlay when submitting */}
+                {loading && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: "rgba(255, 255, 255, 0.9)",
+                      backdropFilter: "blur(6px)",
+                      zIndex: 20,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "24px",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "52px",
+                        height: "52px",
+                        border: "5px solid #EEF2FF",
+                        borderTop: "5px solid #4A65FF",
+                        borderRadius: "50%",
+                        animation: "contactSpin 0.8s linear infinite",
+                        marginBottom: "16px",
+                      }}
+                    />
+                    <h5
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "750",
+                        color: "#060F2D",
+                        margin: 0,
+                      }}
+                    >
+                      Sending Your Enquiry...
+                    </h5>
+                    <p
+                      style={{
+                        fontSize: "13.5px",
+                        color: "#64748B",
+                        marginTop: "6px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      Please wait a moment while we process your request.
+                    </p>
+                  </div>
+                )}
+
                 <div className="contact-form-header">
                   <div className="section-title">
                     <h2 className="contact-form-title">
-                      Request an Appointment
+                      {/* Request an Appointment */}
+                      Contact & Medical Enquiry
                     </h2>
                   </div>
                   <div className="contact-form-divider" />
                 </div>
 
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="row g-3">
                     <div className="col-md-6">
                       <div className="contact-float-group">
@@ -118,6 +269,9 @@ export default function Contactus() {
                             id="cf-fullName"
                             name="fullName"
                             placeholder="Full Name"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            required
                           />
                           <label htmlFor="cf-fullName">
                             <FiUser style={{ marginRight: 6 }} />
@@ -135,6 +289,9 @@ export default function Contactus() {
                             id="cf-mobile"
                             name="mobile"
                             placeholder="Mobile"
+                            value={formData.mobile}
+                            onChange={handleChange}
+                            required
                           />
                           <label htmlFor="cf-mobile">
                             <FiPhone style={{ marginRight: 6 }} />
@@ -152,6 +309,9 @@ export default function Contactus() {
                             id="cf-email"
                             name="email"
                             placeholder="Email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
                           />
                           <label htmlFor="cf-email">
                             <FiMail style={{ marginRight: 6 }} />
@@ -167,11 +327,13 @@ export default function Contactus() {
                           <input
                             type="text"
                             className="form-control"
-                            id="cf-fullName"
-                            name="fullName"
+                            id="cf-subject"
+                            name="subject"
                             placeholder="Subject"
+                            value={formData.subject}
+                            onChange={handleChange}
                           />
-                          <label htmlFor="cf-fullName">
+                          <label htmlFor="cf-subject">
                             <FiUser style={{ marginRight: 6 }} />
                             Subject
                           </label>
@@ -188,6 +350,9 @@ export default function Contactus() {
                             name="message"
                             placeholder="Message"
                             style={{ height: "110px" }}
+                            value={formData.message}
+                            onChange={handleChange}
+                            required
                           />
                           <label htmlFor="cf-message">
                             <FiMessageSquare style={{ marginRight: 6 }} />
@@ -198,10 +363,19 @@ export default function Contactus() {
                     </div>
                   </div>
                   <div className="contact-form-actions">
-                    <button type="submit" className="contact-btn-submit">
-                      <FiCalendar /> Submit Appointment Request
+                    <button
+                      type="submit"
+                      className="contact-btn-submit"
+                      disabled={loading}
+                    >
+                      <FiCalendar /> Submit Enquiry
                     </button>
-                    <button type="button" className="contact-btn-reset">
+                    <button
+                      type="button"
+                      className="contact-btn-reset"
+                      onClick={handleReset}
+                      disabled={loading}
+                    >
                       Reset Form
                     </button>
                   </div>

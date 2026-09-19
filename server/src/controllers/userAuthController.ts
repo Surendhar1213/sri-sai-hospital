@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
-import { sendResetOTPEmail } from "../config/emailService.js";
+import { sendResetOTPEmail, sendContactEnquiryEmail } from "../config/emailService.js";
 
 // ─────────────────────────────────────────
 // REGISTER — New patient create பண்ண
@@ -350,6 +350,33 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
   } catch (error) {
     console.error("Get Profile Error:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ─────────────────────────────────────────
+// CONTACT ENQUIRY — Send email to admin (No DB store)
+// ─────────────────────────────────────────
+export const sendContactEnquiry = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { fullName, mobile, email, subject, message } = req.body;
+
+    if (!fullName || !email || !message) {
+      res.status(400).json({ message: "Full Name, Email Address, and Message are required." });
+      return;
+    }
+
+    await sendContactEnquiryEmail({
+      fullName,
+      mobile,
+      email,
+      subject,
+      message
+    });
+
+    res.status(200).json({ success: true, message: "Your enquiry has been sent successfully!" });
+  } catch (error: any) {
+    console.error("Contact Enquiry Controller Error:", error);
+    res.status(500).json({ message: "Failed to send enquiry email. Please try again later." });
   }
 };
 
