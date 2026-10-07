@@ -143,7 +143,7 @@ const Specialities = () => {
   );
 
   return (
-    <section className="service section-space ">
+    <section className="service section-space" id="specialities">
       <div className="container-fluid p-0">
         <div className="mlr-70">
           <div className="xb-service-top sec-title-wrap text-center mb-55">

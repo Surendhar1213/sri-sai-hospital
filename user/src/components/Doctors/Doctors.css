@@ -189,12 +189,7 @@
 .doctors-photo-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 45%,
-    rgba(11, 29, 53, 0.60) 80%,
-    rgba(11, 29, 53, 0.88) 100%
-  );
+  background: inear-gradient(to bottom, transparent 45%, rgba(46, 58, 73, 0.6) 80%, rgb(11 29 53 / 33%) 100%);
   z-index: 1;
 }
 
@@ -222,7 +217,7 @@
   bottom: 16px;
   right: 16px;
   z-index: 2;
-  background: rgba(196, 151, 90, 0.92);
+  background: rgb(13 13 12);
   backdrop-filter: blur(6px);
   color: var(--doctors-white);
   font-size: 10.5px;
@@ -253,12 +248,11 @@
 }
 
 .doctors-credentials {
-  font-size: 11.5px;
+  font-size: 0.85em;
   font-weight: 600;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--doctors-teal);
-  margin-bottom: 4px;
+  display: inline;
 }
 
 .doctors-role {

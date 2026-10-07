@@ -27,6 +27,9 @@ const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Profile = lazy(() => import("./pages/Profile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsConditions = lazy(() => import("./pages/TermsConditions"));
+
 
 
 import { ToastContainer } from "react-toastify";
@@ -117,6 +120,10 @@ function App() {
 
             {/* ✅ User Profile / Dashboard Page */}
             <Route path="/profile" element={<Profile />} />
+
+            {/* ✅ Legal Pages */}
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsConditions />} />
 
             {/* ✅ Admin Redirect Fallback Routes */}
             <Route path="/admin" element={<AdminRedirect />} />

@@ -237,7 +237,7 @@ const Navbar = () => {
                   <ul>
                     <li>
                       <FaPhoneAlt />
-                      <a href="tel:+914426378138">+91 94444 79090</a>
+                      <a href="tel:+919444479090">+91 94444 79090</a>
                     </li>
                     <li className="d-none d-xl-inline-block">
                       <IoMdMail />

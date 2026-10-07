@@ -116,15 +116,15 @@ export default function Contactus() {
     }
   };
 
-  const handleReset = () => {
-    setFormData({
-      fullName: "",
-      mobile: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-  };
+  // const handleReset = () => {
+  //   setFormData({
+  //     fullName: "",
+  //     mobile: "",
+  //     email: "",
+  //     subject: "",
+  //     message: "",
+  //   });
+  // };
 
   return (
     <div className="contact-page">
@@ -159,7 +159,7 @@ export default function Contactus() {
                 Our specialists are committed to helping you achieve better
                 health, confidence, and wellness through advanced medical care
                 and personalized treatment solutions. Call today to schedule
-                your consultation and take the first step toward better health.
+                your consultation and take the first step towards better health.
               </p>
             </div>
             <div className="col-lg-5">
@@ -167,7 +167,7 @@ export default function Contactus() {
                 {/* <a href="tel:+91XXXXXXXXXX" className="contact-btn-emergency">
                   <FiAlertCircle /> Call Emergency
                 </a> */}
-                <a href="#contact-appointment" className="contact-btn-consult">
+                <a href="/#appointment-section" className="contact-btn-consult">
                   <FiCalendar /> Book Appoitment
                 </a>
               </div>
@@ -252,7 +252,7 @@ export default function Contactus() {
                   <div className="section-title">
                     <h2 className="contact-form-title">
                       {/* Request an Appointment */}
-                      Contact & Medical Enquiry
+                     Enquire Now
                     </h2>
                   </div>
                   <div className="contact-form-divider" />
@@ -370,14 +370,14 @@ export default function Contactus() {
                     >
                       <FiCalendar /> Submit Enquiry
                     </button>
-                    <button
+                    {/* <button
                       type="button"
                       className="contact-btn-reset"
                       onClick={handleReset}
                       disabled={loading}
                     >
                       Reset Form
-                    </button>
+                    </button> */}
                   </div>
                 </form>
               </div>
@@ -389,6 +389,8 @@ export default function Contactus() {
                 <div className="contact-form-tips contact-reveal contact-reveal-delay-3">
                   <h6>Chennai </h6>
                   <p>
+                    Sri Sai Subhramaniya Hospitals,
+                    <br />
                     # 35,36, Masilamaneeswarar Nagar, Thirumullaivoyal,
                     Chennai-600062
                   </p>
@@ -396,7 +398,7 @@ export default function Contactus() {
                 <div className="contact-form-tips contact-reveal contact-reveal-delay-3">
                   <h6>Coimbatore </h6>
                   <p>
-                    Srisai Subhramaniya Hospitals,
+                    Sri Sai Subhramaniya Hospitals,
                     <br />
                     43, P & T Colony, Ganapathy, Coimbatore - 641006
                   </p>

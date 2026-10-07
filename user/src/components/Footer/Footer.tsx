@@ -42,6 +42,34 @@ const Footer = () => {
     }
   };
 
+  const handleSpecialitiesClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (window.location.pathname === "/") {
+      const element = document.getElementById("specialities");
+      if (element) {
+        const headerHeight = 90;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: elementPosition - headerHeight - 20,
+          behavior: "smooth",
+        });
+      }
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById("specialities");
+        if (element) {
+          const headerHeight = 90;
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({
+            top: elementPosition - headerHeight - 20,
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+    }
+  };
+
   return (
     <footer className="main-footer footer-style-one">
       <div className="outer-box">
@@ -122,37 +150,10 @@ const Footer = () => {
             {/* Widgets */}
             <div className="widgets-section">
               <div className="row g-4">
-                {/* Services */}
-                <div className="col-lg-4 footer-column">
+                {/* Quick Links (First Column) */}
+                <div className="col-lg-4 col-md-6 footer-column">
                   <div className="footer-widget links-widget">
-                    <h4 className="widget-title">Services</h4>
-
-                    <div className="widget-content">
-                      <ul className="user-links">
-                        <li>
-                          <Link to="/facilities">Clinical Laboratory</Link>
-                        </li>
-                        <li>
-                          <Link to="/facilities">Pharmacy</Link>
-                        </li>
-                        <li>
-                          <Link to="/facilities">Digital X-Ray</Link>
-                        </li>
-                        <li>
-                          <Link to="/facilities">Ultrasound Scan</Link>
-                        </li>
-                        <li>
-                          <Link to="/facilities">ICU & NICU</Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pages */}
-                <div className="col-lg-4 footer-column">
-                  <div className="footer-widget links-widget">
-                    <h4 className="widget-title">Pages</h4>
+                    <h4 className="widget-title">Quick Links</h4>
 
                     <div className="widget-content">
                       <ul className="user-links">
@@ -163,10 +164,12 @@ const Footer = () => {
                           <Link to="/about">About Us</Link>
                         </li>
                         <li>
-                          <Link to="/facilities">Facilities</Link>
+                          <Link to="/facilities">Our Facilities</Link>
                         </li>
                         <li>
-                          <Link to="/generalmedicine">Speciality</Link>
+                          <a href="/#specialities" onClick={handleSpecialitiesClick}>
+                            Our Specialities
+                          </a>
                         </li>
                         <li>
                           <Link to="/contactus">Contact Us</Link>
@@ -176,43 +179,61 @@ const Footer = () => {
                   </div>
                 </div>
 
-                {/* Newsletter */}
-                <div className="col-lg-4 footer-column">
+                {/* Address (Second Column) */}
+                <div className="col-lg-4 col-md-6 footer-column">
                   <div className="footer-widget links-widget">
                     <h4 className="widget-title">Address</h4>
 
                     <div className="content">
-                      <h5 style={{ color: "#fff", lineHeight: "1.4" }}>
+                      <p className="footer-address-text">
                         # 35,36, Masilamaneeswarar Nagar, Thirumullaivoyal,
                         Chennai-600062
-                      </h5>
+                      </p>
                     </div>
 
                     <ul className="footer-nav">
                       <li>
-                        <a href="/">
+                        <a href="/" aria-label="Facebook">
                           <FaFacebookF />
                         </a>
                       </li>
 
                       <li>
-                        <a href="/">
+                        <a href="/" aria-label="Twitter">
                           <FaXTwitter />
                         </a>
                       </li>
 
                       <li>
-                        <a href="/">
+                        <a href="/" aria-label="Whatsapp">
                           <FaWhatsapp />
                         </a>
                       </li>
 
                       <li>
-                        <a href="/">
+                        <a href="/" aria-label="Instagram">
                           <FaInstagram />
                         </a>
                       </li>
                     </ul>
+                  </div>
+                </div>
+
+                {/* Legal & Policies (Third Column) */}
+                <div className="col-lg-4 col-md-6 footer-column">
+                  <div className="footer-widget links-widget">
+                    <h4 className="widget-title">Legal & Policies</h4>
+
+                    <div className="widget-content">
+                      <ul className="user-links">
+                        <li>
+                          <Link to="/privacy-policy">Privacy Policy</Link>
+                        </li>
+                        <li>
+                          <Link to="/terms-and-conditions">Terms & Conditions</Link>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -228,6 +249,11 @@ const Footer = () => {
                 </a>
                 .
               </p>
+              {/* <div className="footer-bottom-legal">
+                <Link to="/privacy-policy">Privacy Policy</Link>
+                <span className="legal-dot">•</span>
+                <Link to="/terms-and-conditions">Terms & Conditions</Link>
+              </div> */}
             </div>
           </div>
 

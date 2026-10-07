@@ -4,7 +4,7 @@ import PageBanner from '../PageBanner/PageBanner';
 // ── Placeholder image imports (replace with real paths) ──────
 import drAnuradhaImg    from '../../assets/Doctors/Doctors.png';
 import drJayashreeImg   from '../../assets/Doctors/Doctors.png';
-import drArunkarthickImg from '../../assets/Doctors/Doctors.png';
+import drArunkarthickImg from '../../assets/Doctors/doctor-men.png';
 
 interface Doctor {
   id: number;
@@ -37,12 +37,29 @@ const specialists: Doctor[] = [
     image: drAnuradhaImg,
   },
   {
+    id: 3,
+    name: 'Dr. R. Arunkarthick',
+    credentials: null,
+    role: 'Consultant Endocrinologist & Diabetologist',
+    centre: 'Coimbatore Centre',
+    expertiseLabel: 'Areas of Expertise',
+    expertise: [
+      'Diabetes Management',
+      'Thyroid Disorders',
+      'Metabolic Health',
+      'PCOS & Hormonal Care',
+      'Obesity & Weight Management',
+      'Gestational Diabetes',
+    ],
+    image: drArunkarthickImg,
+  },
+  {
     id: 2,
     name: 'Dr. R. Jayashree',
     credentials: null,
     role: 'Consultant Dermatologist & Cosmetologist',
     centre: 'Coimbatore Centre',
-    expertiseLabel: 'Special Interests',
+    expertiseLabel: 'Areas of Expertise',
     expertise: [
       'Acne Management',
       'Laser Hair Removal',
@@ -51,22 +68,6 @@ const specialists: Doctor[] = [
       'Pigmentation Correction',
     ],
     image: drJayashreeImg,
-  },
-  {
-    id: 3,
-    name: 'Dr. R. Arunkarthick',
-    credentials: null,
-    role: 'Consultant Dermatologist & Aesthetic Specialist',
-    centre: 'Coimbatore Centre',
-    expertiseLabel: 'Special Interests',
-    expertise: [
-      'Laser Treatments',
-      'Tattoo Removal',
-      'Hair Restoration Solutions',
-      'Skin Rejuvenation',
-      'Cosmetic Dermatology',
-    ],
-    image: drArunkarthickImg,
   },
 ];
 
@@ -104,10 +105,12 @@ function DoctorCard({ doctor, index }: DoctorCardProps) {
       <div className="doctors-card-body">
         {/* Name & role */}
         <div>
-          <h3 className="doctors-name">{doctor.name}</h3>
-          {doctor.credentials && (
-            <p className="doctors-credentials">{doctor.credentials}</p>
-          )}
+          <h3 className="doctors-name">
+            {doctor.name}
+            {doctor.credentials && (
+              <span className="doctors-credentials">, {doctor.credentials}</span>
+            )}
+          </h3>
           <p className="doctors-role">{doctor.role}</p>
         </div>
 

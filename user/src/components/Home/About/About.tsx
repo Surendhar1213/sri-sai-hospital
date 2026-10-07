@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { FaStar, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -7,9 +6,6 @@ import "./About.css";
 
 import About1 from "../../../assets/home/about/about-us-image-1.jpg";
 import About2 from "../../../assets/home/about/about-us-image-2.jpg";
-// import Aboutauthor1 from "../../../assets/home/about/author-1.jpg";
-// import Aboutauthor2 from "../../../assets/home/about/author-2.jpg";
-// import Aboutauthor3 from "../../../assets/home/about/author-3.jpg";
 import DiabetesTest from "../../../assets/home/about/diabetes-test.jpg";
 
 // Register ScrollTrigger plugin
@@ -30,25 +26,7 @@ const About = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Initial state - set elements to hidden
-      // gsap.set([image1Ref.current, image2Ref.current, reviewBoxRef.current], {
-      //   opacity: 0,
-      //   scale: 0.8,
-      //   y: 50,
-      // });
-
-      // gsap.set(
-      //   [subtitleRef.current, headingRef.current, descriptionRef.current],
-      //   {
-      //     opacity: 0,
-      //     y: 60,
-      //   },
-      // );
-
-
-
-
-
+      
       if (clientImagesRef.current) {
         gsap.set(clientImagesRef.current, {
           opacity: 0,
@@ -74,17 +52,7 @@ const About = () => {
           duration: 0.8,
           ease: "back.out(1.7)",
         })
-        // .to(
-        //   image1Ref.current,
-        //   {
-        //     opacity: 1,
-        //     scale: 1,
-        //     y: 0,
-        //     duration: 0.8,
-        //     ease: "power3.out",
-        //   },
-        //   "-=0.4"
-        // )
+
         .to(
           image2Ref.current,
           {
@@ -164,25 +132,6 @@ const About = () => {
         )
 
 
-
-      // Add hover animations for images
-      // if (image1Ref.current) {
-      //   image1Ref.current.addEventListener("mouseenter", () => {
-      //     gsap.to(image1Ref.current, {
-      //       scale: 1.05,
-      //       duration: 0.4,
-      //       ease: "power2.out",
-      //     });
-      //   });
-      //   image1Ref.current.addEventListener("mouseleave", () => {
-      //     gsap.to(image1Ref.current, {
-      //       scale: 1,
-      //       duration: 0.4,
-      //       ease: "power2.out",
-      //     });
-      //   });
-      // }
-
       if (image2Ref.current) {
         image2Ref.current.addEventListener("mouseenter", () => {
           gsap.to(image2Ref.current, {
@@ -200,22 +149,6 @@ const About = () => {
         });
       }
 
-
-
-
-
-      // Parallax effect for images on scroll
-      // if (image1Ref.current) {
-      //   gsap.to(image1Ref.current, {
-      //     y: 30,
-      //     scrollTrigger: {
-      //       trigger: sectionRef.current,
-      //       start: "top bottom",
-      //       end: "bottom top",
-      //       scrub: 1,
-      //     },
-      //   });
-      // }
 
       if (image2Ref.current) {
         gsap.to(image2Ref.current, {
@@ -366,8 +299,8 @@ const About = () => {
               {/* About Us Button Start */}
               <div className="about-us-btn wow fadeInUp" data-wow-delay="0.8s" ref={buttonRef}>
                 <Link className="thm-btn consulting-btn" to="/about">
-                  <span className="btn_label" data-text="More About Us">
-                    More About Us
+                  <span className="btn_label" data-text="Read More">
+                  Read More
                   </span>
                   <span className="xb-arrow">
                     <svg

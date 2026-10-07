@@ -536,7 +536,7 @@ const Appointment = () => {
                               Submitting...
                             </>
                           ) : (
-                            "Pay ₹1,000 & Book Appointment"
+                            "Pay & Confirm Appointment"
                           )}
                         </button>
                       </div>
@@ -870,7 +870,7 @@ const Appointment = () => {
 
             {/* Scrollable Terms Content */}
             <div className="terms-scroll-container" style={{
-              maxHeight: "180px",
+              maxHeight: "200px",
               overflowY: "auto",
               padding: "16px 18px",
               backgroundColor: "#F8FAFC",
@@ -885,13 +885,15 @@ const Appointment = () => {
               <p style={{ margin: "0 0 14px 0" }}>
                 Appointments can be booked online by paying a standard consultation fee of ₹1000. Cancellations made at least 24 hours prior to the slot are eligible for a full refund.
               </p>
+
               <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>2. Privacy & Data Protection</h4>
               <p style={{ margin: "0 0 14px 0" }}>
                 Sri Sai Hospital values your privacy. The patient details (Name, Contact, and Email) provided during booking will only be used for appointment coordination, health record maintenance, and notifications.
               </p>
-              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>3. Consultation Terms</h4>
+
+              <h4 style={{ fontWeight: "700", color: "#0F172A", fontSize: "13.5px", margin: "0 0 6px 0" }}>3. Consultation Terms & Online Room Access</h4>
               <p style={{ margin: 0 }}>
-                The fee paid covers online consultation scheduling or in-hospital checkups for the selected specialty. Please ensure you arrive 15 minutes before your slot.
+                The fee paid covers online consultation scheduling or in-hospital checkups for the selected specialty. Please ensure you arrive 15 minutes before your slot for in-person checkups. For online consultations, the video/audio consultation link opens <strong style={{ color: "#D44E54" }}>3 minutes before</strong> your scheduled slot time.
               </p>
             </div>
 
@@ -936,7 +938,27 @@ const Appointment = () => {
                 }}
               />
               <span style={{ fontWeight: "500", lineHeight: "1.4" }}>
-                I agree to the <b style={{ color: "#0F172A" }}>Terms of Booking</b> and authorize Sri Sai Hospital to contact me regarding this appointment.
+                I agree to the{" "}
+                <a
+                  href="/terms-and-conditions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#276BD4", fontWeight: "700", textDecoration: "underline" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Terms & Conditions
+                </a>{" "}
+                and{" "}
+                <a
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#276BD4", fontWeight: "700", textDecoration: "underline" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Privacy Policy
+                </a>{" "}
+                and authorize Sri Sai Hospital to contact me regarding this appointment.
               </span>
             </label>
 

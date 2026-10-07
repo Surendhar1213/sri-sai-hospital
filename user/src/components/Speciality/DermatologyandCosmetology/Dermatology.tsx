@@ -1,10 +1,7 @@
 import {
-  Stethoscope,
   Activity,
   Sparkles,
   Zap,
-  MapPin,
-  User,
 } from "lucide-react";
 import "./Dermatology.css";
 import PageBanner from "../../PageBanner/PageBanner";
@@ -44,8 +41,8 @@ const Dermatology = () => {
       </section>
 
       <main className="container DermatologyandCosmetology-main">
-        {/* DOCTORS SECTION */}
-        <section className="DermatologyandCosmetology-doctors-section">
+         
+        {/* <section className="DermatologyandCosmetology-doctors-section">
           <div className="text-center DermatologyandCosmetology-badge-wrap">
             <span className="DermatologyandCosmetology-badge d-inline-flex align-items-center gap-2 text-uppercase">
               <Stethoscope size={18} />
@@ -54,7 +51,7 @@ const Dermatology = () => {
           </div>
 
           <div className="row g-4 justify-content-center DermatologyandCosmetology-doctors-row">
-            {/* Doctor 1 */}
+        
             <div className="col-12 col-md-6">
               <div className="DermatologyandCosmetology-doctor-card h-100">
                 <div className="DermatologyandCosmetology-doctor-icon">
@@ -71,7 +68,7 @@ const Dermatology = () => {
               </div>
             </div>
 
-            {/* Doctor 2 */}
+        
             <div className="col-12 col-md-6">
               <div className="DermatologyandCosmetology-doctor-card h-100">
                 <div className="DermatologyandCosmetology-doctor-icon">
@@ -95,7 +92,7 @@ const Dermatology = () => {
               Available at Coimbatore Centre
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* SERVICES GRID */}
         <div className="row DermatologyandCosmetology-services-row">

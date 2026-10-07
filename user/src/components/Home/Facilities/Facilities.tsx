@@ -200,7 +200,7 @@ const Facilities = () => {
                   <div className="services-two__single-inner">
                     <div className="services-two__content-box">
                       <h3>
-                        <a href="#">{facility.title}</a>
+                        <Link to="/facilities">{facility.title}</Link>
                       </h3>
                     </div>
 
@@ -208,19 +208,22 @@ const Facilities = () => {
                   </div>
 
                   <div className="services-two__read-more">
-                    <a href="#">
+                    <Link to="/facilities" aria-label={`View details of ${facility.title}`}>
                       <FaPlus />
-                    </a>
+                    </Link>
                   </div>
                 </div>
 
                 {/* Hover image box - show when active or hovered */}
                 <div className={`hover-item__box ${activeIndex === index ? 'visible' : ''}`}>
-                  <img
-                    src={facility.image}
-                    alt={facility.title}
-                    className="hover-item__box-img"
-                  />
+                  <Link to="/facilities">
+                    <img
+                      src={facility.image}
+                      alt={facility.title}
+                      className="hover-item__box-img"
+                      style={{ cursor: "pointer" }}
+                    />
+                  </Link>
                 </div>
               </li>
             ))}

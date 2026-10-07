@@ -282,6 +282,29 @@
   color: #ffffff;
 }
 
+.footer-bottom-legal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-bottom-legal a {
+  color: #94a3b8;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-bottom-legal a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer-bottom-legal .legal-dot {
+  color: #64748b;
+  font-size: 12px;
+}
+
 @media (max-width: 767.98px) {
   .footer-bottom {
     -webkit-box-pack: center;
@@ -544,6 +567,14 @@
   position: absolute;
   bottom: 0;
   left: 0;
+}
+
+.footer-address-text {
+  color: #ffffff;
+  font-size: 19px;
+  line-height: 1.6;
+  font-weight: 400;
+  margin-bottom: 0;
 }
 
 .footer-style-one .right-column .shape img {
