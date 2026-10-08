@@ -1,5 +1,6 @@
 import React from "react";
 import PageBanner from "../components/PageBanner/PageBanner";
+import privacyBanner from "../assets/privacy-banner.webp";
 import "./Legal.css";
 import {
   FileText,
@@ -21,7 +22,7 @@ import {
 const TermsConditions: React.FC = () => {
   return (
     <>
-      <PageBanner title="Terms & Conditions" />
+      <PageBanner title="Terms & Conditions" bgImage={privacyBanner} />
 
       <div className="legal-page-wrapper">
         <div className="container">

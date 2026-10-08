@@ -1,5 +1,6 @@
 import React from "react";
 import PageBanner from "../components/PageBanner/PageBanner";
+import privacyBanner from "../assets/privacy-banner.webp";
 import "./Legal.css";
 import {
   ShieldCheck,
@@ -20,7 +21,7 @@ import {
 const PrivacyPolicy: React.FC = () => {
   return (
     <>
-      <PageBanner title="Privacy Policy" />
+      <PageBanner title="Privacy Policy" bgImage={privacyBanner} />
 
       <div className="legal-page-wrapper">
         <div className="container">
@@ -35,7 +36,7 @@ const PrivacyPolicy: React.FC = () => {
             </p>
             <div className="legal-meta-strip">
               <div className="legal-meta-item">
-                <Clock size={16} /> Last Updated: October 06, 2026
+                <Clock size={16} /> Last Updated: October 07, 2026
               </div>
               <div className="legal-meta-item">
                 <FileText size={16} /> Effective Date: Immediate

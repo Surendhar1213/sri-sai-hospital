@@ -484,21 +484,22 @@ select.form-control option {
   width: 100%;
   padding: 14px 28px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #ffffff;
-  background: linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%);
-  border: none;
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%) !important;
+  border: none !important;
   border-radius: 12px;
   height: 56px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  letter-spacing: 0.2px;
 }
 
 .submit-btn::before {
@@ -508,7 +509,7 @@ select.form-control option {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
   transition: left 0.6s ease;
 }
 
@@ -517,8 +518,15 @@ select.form-control option {
 }
 
 .submit-btn:hover:not(:disabled) {
+  color: #000000 !important;
+  background: linear-gradient(90deg, #DA4D4F 0%, #276BD4 100%) !important;
+  font-weight: 600;
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(74, 108, 247, 0.35);
+  box-shadow: 0 12px 28px rgba(39, 107, 212, 0.4);
+}
+
+.submit-btn:hover:not(:disabled) * {
+  color: #000000 !important;
 }
 
 .submit-btn:active:not(:disabled) {
@@ -526,9 +534,10 @@ select.form-control option {
 }
 
 .submit-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.75;
   cursor: not-allowed;
   transform: none;
+  color: #ffffff !important;
 }
 
 /* Spinner */

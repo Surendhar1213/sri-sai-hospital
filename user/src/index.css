@@ -770,8 +770,51 @@ figure {
   font-weight: 500;
   line-height: 1.12;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   letter-spacing: -0.01em;
+}
+
+/* ── Breadcrumb Navigation ── */
+.pages-hero-breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.breadcrumb-link {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumb-link:hover {
+  color: #31B0FF;
+  text-decoration: underline;
+  text-shadow: 0 0 8px rgba(49, 176, 255, 0.4);
+}
+
+.breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+.breadcrumb-item.active {
+  color: #ffffff;
+  font-weight: 600;
+  opacity: 0.95;
 }
 
 
